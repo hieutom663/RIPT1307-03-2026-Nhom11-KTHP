@@ -1,0 +1,1 @@
+export default () => <div>Thiết bị</div>

@@ -1,0 +1,1 @@
+export default () => <div>Trang Lịch Sử Mượn</div>
