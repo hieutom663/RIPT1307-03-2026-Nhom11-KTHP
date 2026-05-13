@@ -79,7 +79,7 @@ export default function AdminLayout() {
           />
         </Sider>
 
-        <Layout style={{ padding: '25px' }}>
+        <Layout style={{ padding: '15px' }}>
           <Content className={styles.content}>
             <Outlet />
           </Content>

@@ -73,7 +73,7 @@ export default function UserLayout() {
         </Sider>
 
         {/* CONTENT */}
-        <Layout>
+        <Layout style={{padding:15}}>
           <Content className={styles.content}>
             <Outlet />
           </Content>
