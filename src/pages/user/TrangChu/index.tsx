@@ -4,7 +4,7 @@ const TrangChu = () => {
     const ten = 'Giáp Văn Hiếu';
     return(
         <div>
-            <Row style={{border:'1px solid black'}}>
+            <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} style={{border:'1px solid black'}}>
                 <Col span={12}>
                     <div className="banner" style={{padding: '24px 68px'}}> 
                         <div style={{fontSize:20, marginBottom: 16}}>
