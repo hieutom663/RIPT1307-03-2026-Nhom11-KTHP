@@ -1,7 +1,8 @@
 import { Link, Outlet, useAppData, useLocation } from 'umi';
-import { Layout, Menu, Avatar, Button, Space, Badge, Dropdown } from 'antd';
+import { Layout, Menu, Avatar, Button, Input, Badge, Dropdown, Typography } from 'antd';
 import type { MenuProps } from 'antd';
 import styles from './index.less';
+import LogoPtit from '@/assets/LogoPtit.png';
 import {
   HomeOutlined,
   BellOutlined,
@@ -13,9 +14,12 @@ import {
   FormOutlined,
   BarChartOutlined,
   SettingOutlined,
+  SearchOutlined,
+  PoweroffOutlined,
 } from '@ant-design/icons';
 
-const { Header, Sider, Content, Footer } = Layout;
+const { Header, Sider, Content } = Layout;
+const { Text } = Typography;
 
 const iconMap: Record<string, React.ReactNode> = {
   HomeOutlined: <HomeOutlined />,
@@ -44,52 +48,79 @@ export default function AdminLayout() {
       };
     });
 
-  const userMenuItems: MenuProps['items'] = [
-    { key: 'profile', icon: <UserOutlined />, label: 'Hồ sơ' },
-    { type: 'divider' },
-    { key: 'logout', icon: <LogoutOutlined />, label: 'Đăng xuất', danger: true },
-  ];
-
   return (
     <Layout style={{ minHeight: '100vh' }}>
-
+      {/* ─── Header ─── */}
       <Header className={styles.header}>
-        <div className={styles.logo}>Hệ thống mượn đồ dùng Sinh viên PTIT (Admin)</div>
+        <div className={styles.logoBox}>
+          <img src={LogoPtit} alt="PTIT" className={styles.logoImg} />
+          <div className={styles.logoText}>
+            <div style={{ fontWeight: 700, fontSize: 11, lineHeight: 1.2 }}>Hệ thống Quản lý</div>
+            <div style={{ fontWeight: 700, fontSize: 11, lineHeight: 1.2 }}>Mượn Đồ Dùng SV</div>
+          </div>
+        </div>
+
+        <div className={styles.headerTitle}>
+          TRANG CHỦ QUẢN TRỊ VIÊN - UGO
+        </div>
+
         <div style={{ flex: 1 }} />
-        <div className={styles.headerRight}>
-          <Badge count={3}>
-            <Button type="text" icon={<BellOutlined />} className={styles.iconBtn} />
-          </Badge>
-          <Dropdown menu={{ items: userMenuItems }} placement="bottomRight">
-            <div className={styles.userInfo}>
-              <Avatar icon={<UserOutlined />} />
-              <span>Admin</span>
-            </div>
-          </Dropdown>
+
+        <Input
+          placeholder="Search..."
+          prefix={<SearchOutlined />}
+          className={styles.searchInput}
+          style={{ width: 200, borderRadius: 20, marginRight: 16 }}
+        />
+
+        <Badge count={3} size="small">
+          <BellOutlined style={{ fontSize: 20, color: '#fff', cursor: 'pointer' }} />
+        </Badge>
+
+        <div className={styles.headerUser}>
+          <Avatar size={36} icon={<UserOutlined />} style={{ backgroundColor: '#e8e8e8', color: '#595959' }} />
+          <span className={styles.headerUserName}>Trần Nam Khánh</span>
         </div>
       </Header>
 
       <Layout>
+        {/* ─── Sidebar ─── */}
         <Sider width={220} className={styles.sider}>
+          <div className={styles.siderHeader}>
+            <HomeOutlined style={{ fontSize: 18 }} />
+            <span style={{ fontWeight: 600, fontSize: 16 }}>Trang chủ</span>
+          </div>
           <Menu
             mode="inline"
             selectedKeys={[location.pathname]}
             items={siderItems}
-            style={{ height: '100%', borderRight: 0 }}
+            className={styles.siderMenu}
           />
         </Sider>
 
-        <Layout style={{ padding: '15px' }}>
+        {/* ─── Main Content ─── */}
+        <Layout style={{ padding: 20, backgroundColor: '#f5f5f5' }}>
           <Content className={styles.content}>
             <Outlet />
           </Content>
-
-          <Footer className={styles.footer}>
-            © 2026 Nhóm 11
-          </Footer>
         </Layout>
-      </Layout>
 
+        {/* ─── Right Panel ─── */}
+        <div className={styles.rightPanel}>
+          <div className={styles.rightUser}>
+            <Avatar size={48} icon={<UserOutlined />} style={{ backgroundColor: '#e8e8e8', color: '#595959' }} />
+            <Text strong style={{ fontSize: 14 }}>Trần Nam Khánh</Text>
+          </div>
+          <Button
+            type="link"
+            icon={<PoweroffOutlined />}
+            danger
+            style={{ fontWeight: 600, fontSize: 14 }}
+          >
+            Đăng xuất
+          </Button>
+        </div>
+      </Layout>
     </Layout>
   );
 }
