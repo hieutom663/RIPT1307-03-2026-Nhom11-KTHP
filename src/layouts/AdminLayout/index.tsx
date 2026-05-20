@@ -1,5 +1,5 @@
 import { Link, Outlet, useAppData, useLocation } from 'umi';
-import { Layout, Menu, Avatar, Button, Space, Badge, Dropdown } from 'antd';
+import { Layout, Menu, Avatar, Button, Badge, Dropdown } from 'antd';
 import type { MenuProps } from 'antd';
 import styles from './index.less';
 import {
