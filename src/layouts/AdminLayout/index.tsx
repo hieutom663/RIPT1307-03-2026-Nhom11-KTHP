@@ -46,12 +46,12 @@ export default function AdminLayout() {
     try {
       const userInfo = JSON.parse(userInfoStr);
       
-      if (userInfo.role !== 'admin') {
+      if (userInfo.vai_tro !== 'admin') {
         history.replace('/403');
         return;
       }
 
-      setUserName(userInfo.full_name || 'Admin');
+      setUserName(userInfo.ten || 'Admin');
     } catch (error) {
       localStorage.clear();
       history.replace('/login');
