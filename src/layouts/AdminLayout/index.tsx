@@ -1,5 +1,6 @@
-import { Link, Outlet, useAppData, useLocation } from 'umi';
-import { Layout, Menu, Avatar, Button, Badge, Dropdown } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Link, Outlet, useAppData, useLocation, history } from 'umi';
+import { Layout, Menu, Avatar, Button, Badge, Dropdown, message } from 'antd';
 import type { MenuProps } from 'antd';
 import styles from './index.less';
 import {
@@ -30,6 +31,32 @@ const iconMap: Record<string, React.ReactNode> = {
 export default function AdminLayout() {
   const location = useLocation();
   const { clientRoutes } = useAppData();
+  const [userName, setUserName] = useState('Admin');
+
+  useEffect(() => {
+    const token = localStorage.getItem('accessToken');
+    const userInfoStr = localStorage.getItem('userInfo');
+
+    if (!token || !userInfoStr) {
+      message.error('Vui lòng đăng nhập để truy cập hệ thống!');
+      history.replace('/login');
+      return;
+    }
+
+    try {
+      const userInfo = JSON.parse(userInfoStr);
+      
+      if (userInfo.role !== 'admin') {
+        history.replace('/403');
+        return;
+      }
+
+      setUserName(userInfo.full_name || 'Admin');
+    } catch (error) {
+      localStorage.clear();
+      history.replace('/login');
+    }
+  }, [location.pathname]);
 
   const adminRoute = clientRoutes.find((r: any) => r.path === '/admin');
 
@@ -44,6 +71,18 @@ export default function AdminLayout() {
       };
     });
 
+  const handleLogout = () => {
+    localStorage.clear();
+    message.success('Bạn đã đăng xuất thành công!');
+    history.push('/login');
+  };
+
+  const onUserMenuClick: MenuProps['onClick'] = (e) => {
+    if (e.key === 'logout') {
+      handleLogout();
+    }
+  };
+
   const userMenuItems: MenuProps['items'] = [
     { key: 'profile', icon: <UserOutlined />, label: 'Hồ sơ' },
     { type: 'divider' },
@@ -52,7 +91,6 @@ export default function AdminLayout() {
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
-
       <Header className={styles.header}>
         <div className={styles.logo}>Hệ thống mượn đồ dùng Sinh viên PTIT (Admin)</div>
         <div style={{ flex: 1 }} />
@@ -60,10 +98,11 @@ export default function AdminLayout() {
           <Badge count={3}>
             <Button type="text" icon={<BellOutlined />} className={styles.iconBtn} />
           </Badge>
-          <Dropdown menu={{ items: userMenuItems }} placement="bottomRight">
-            <div className={styles.userInfo}>
+          
+          <Dropdown menu={{ items: userMenuItems, onClick: onUserMenuClick }} placement="bottomRight">
+            <div className={styles.userInfo} style={{ cursor: 'pointer' }}>
               <Avatar icon={<UserOutlined />} />
-              <span>Admin</span>
+              <span style={{ marginLeft: 8 }}>{userName}</span>
             </div>
           </Dropdown>
         </div>
@@ -79,17 +118,16 @@ export default function AdminLayout() {
           />
         </Sider>
 
-        <Layout style={{ padding: '15px' }}>
+        <Layout style={{ padding: '12px' }}>
           <Content className={styles.content}>
             <Outlet />
           </Content>
 
           <Footer className={styles.footer}>
-            © 2026 Nhóm 11
+            © 2026 Nhóm X-KTHP
           </Footer>
         </Layout>
       </Layout>
-
     </Layout>
   );
 }
