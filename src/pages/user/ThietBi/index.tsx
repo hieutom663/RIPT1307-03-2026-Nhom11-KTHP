@@ -81,12 +81,13 @@ const ThietBi = () => {
                     value={boLoc}
                     onChange={(giaTri) => { setBoLoc(giaTri); setTrangHienTai(1); }}
                     style={{ width: 200 }}
-                >
-                    <Select.Option value="tat-ca">Tất cả</Select.Option>
-                    <Select.Option value="dien-tu">Điện tử</Select.Option>
-                    <Select.Option value="hoc-tap">Học tập</Select.Option>
-                    <Select.Option value="tien-ich">Tiện ích</Select.Option>
-                </Select>
+                    options={[
+                        { value: 'tat-ca', label: 'Tất cả' },
+                        { value: 'dien-tu', label: 'Điện tử' },
+                        { value: 'hoc-tap', label: 'Học tập' },
+                        { value: 'tien-ich', label: 'Tiện ích' },
+                    ]}
+                />
             </div>
 
             <div style={{ padding: '16px 36px' }}>
