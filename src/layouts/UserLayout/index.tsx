@@ -16,10 +16,8 @@ export default function UserLayout() {
   const location = useLocation();
   const { clientRoutes } = useAppData();
 
-  // Tìm route cha '/user' để lấy danh sách children cho sidebar
   const userRoute = clientRoutes.find((r: any) => r.path === '/user');
 
-  // Tạo menu items từ children routes (chỉ lấy route có name)
   const siderItems: MenuProps['items'] = (userRoute?.children ?? [])
     .filter((r: any) => (r as any).name)
     .map((r: any) => {
@@ -62,7 +60,6 @@ export default function UserLayout() {
       </Header>
 
       <Layout>
-        {/* SIDEBAR */}
         <Sider width={220} className={styles.sider}>
           <Menu
             mode="inline"
