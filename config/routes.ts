@@ -46,7 +46,7 @@ export default [
                 path: '/admin/danh-muc',
                 name: 'Danh Mục Mượn',
                 icon: 'AppstoreOutlined',
-                component: './admin/DanhMuc',
+                component: './admin/DanhMucThietBi',
             },
             {
                 path: '/admin/lich-su-muon-tra',
