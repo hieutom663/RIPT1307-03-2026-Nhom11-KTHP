@@ -66,12 +66,6 @@ export default [
                 icon: 'BarChartOutlined',
                 component: './admin/ThongKe',
             },
-            {
-                path: '/admin/cai-dat',
-                name: 'Cài Đặt & Thông Báo',
-                icon: 'SettingOutlined',
-                component: './admin/CaiDat',
-            },
         ],
     },
     
