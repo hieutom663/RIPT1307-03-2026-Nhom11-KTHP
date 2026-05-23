@@ -34,8 +34,12 @@ const ChiTietThietBi = (props: any) => {
                 <Button onClick={props.onClose} style={{ marginRight: 8 }}>
                     Đóng
                 </Button>
-                <Button type="primary">
-                    Gửi yêu cầu mượn
+                <Button
+                    type="primary"
+                    disabled={props.thietBi.soLuongConLai === 0}
+                    onClick={props.onMuonNgay}
+                >
+                    {props.thietBi.soLuongConLai === 0 ? 'Hết hàng' : 'Mượn ngay'}
                 </Button>
             </div>
         </Modal>
