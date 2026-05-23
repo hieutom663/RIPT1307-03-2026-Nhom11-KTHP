@@ -1,6 +1,7 @@
 import { Row, Col, Card, Space, Pagination, Select } from 'antd';
 import { useState } from 'react';
 import ChiTietThietBi from './component/ChiTietThietBi';
+import GuiYeuCauMuon from './component/GuiYeuCauMuon';
 
 const { Meta } = Card;
 
@@ -43,6 +44,12 @@ const ThietBi = () => {
     const [trangHienTai, setTrangHienTai] = useState(1);
     const [boLoc, setBoLoc] = useState('tat-ca');
 
+    const [muonVisible, setMuonVisible] = useState(false);
+    const [soLuongMuon, setSoLuongMuon] = useState(1);
+    const [ngayMuon, setNgayMuon] = useState(null);
+    const [ngayTra, setNgayTra] = useState(null);
+    const [lyDo, setLyDo] = useState('');
+
     const moChiTiet = (thietBi: any) => {
         setThietBiChon(thietBi);
         setVisible(true);
@@ -51,6 +58,19 @@ const ThietBi = () => {
     const dongChiTiet = () => {
         setVisible(false);
         setThietBiChon(null);
+    };
+
+    const moFormMuon = () => {
+        setVisible(false);
+        setSoLuongMuon(1);
+        setNgayMuon(null);
+        setNgayTra(null);
+        setLyDo('');
+        setMuonVisible(true);
+    };
+
+    const dongFormMuon = () => {
+        setMuonVisible(false);
     };
 
     const danhSachLoc = boLoc === 'tat-ca'
@@ -125,6 +145,21 @@ const ThietBi = () => {
                 visible={visible}
                 thietBi={thietBiChon}
                 onClose={dongChiTiet}
+                onMuonNgay={moFormMuon}
+            />
+
+            <GuiYeuCauMuon
+                visible={muonVisible}
+                thietBi={thietBiChon}
+                soLuongMuon={soLuongMuon}
+                ngayMuon={ngayMuon}
+                ngayTra={ngayTra}
+                lyDo={lyDo}
+                onChangeSoLuongMuon={(giaTri: any) => setSoLuongMuon(giaTri)}
+                onChangeNgayMuon={(ngay: any) => setNgayMuon(ngay)}
+                onChangeNgayTra={(ngay: any) => setNgayTra(ngay)}
+                onChangeLyDo={(giaTri: any) => setLyDo(giaTri)}
+                onClose={dongFormMuon}
             />
         </div>
     );
