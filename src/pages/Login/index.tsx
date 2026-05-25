@@ -1,5 +1,5 @@
 import { Button, Image, Flex, Col, Row, Form, Input, Checkbox, message } from 'antd';
-import { loginAPI } from '../services/TaiKhoan/index';
+import { loginAPI } from '../../services/TaiKhoan/index';
 import LogoPtit from '../../assets/LogoPtit.png';
 import hocVien from '../../assets/HocVien.png';
 import { Link, history } from 'umi';
