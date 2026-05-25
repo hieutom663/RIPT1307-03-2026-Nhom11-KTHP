@@ -79,7 +79,7 @@ const QuanLyThietBi = () => {
         if (dangSua) {
             const danhSachMoi = danhSach.map((tb) => {
                 if (tb.key === (dangSua as any).key) {
-                    return { ...tb, ...duLieu };
+                    return { key: tb.key, ten: duLieu.ten, moTa: duLieu.moTa, soLuongTong: duLieu.soLuongTong, soLuongConLai: duLieu.soLuongConLai, loai: duLieu.loai, img: duLieu.img };
                 }
                 return tb;
             });
