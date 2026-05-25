@@ -37,7 +37,7 @@ const login = async (req, res) => {
             success: true,
             message: "Đăng nhập thành công",
             token: token,
-            user: user
+            user: user,
         });
 
     } catch (error) {

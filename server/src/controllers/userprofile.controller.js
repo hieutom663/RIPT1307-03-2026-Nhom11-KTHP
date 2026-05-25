@@ -81,7 +81,7 @@ const changePassword = async (req, res) => {
         res.json({ success: true, message: "Đổi mật khẩu thành công!" });
 
     } catch (error) {
-        console.error("Lỗi đổi mật khẩu:", error);
+        console.error("Lỗi:", error);
         res.status(500).json({ success: false, message: "Lỗi server khi đổi mật khẩu" });
     }
 };

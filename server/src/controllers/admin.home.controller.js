@@ -27,7 +27,7 @@ const getAdminHome = async (req, res) => {
                 SELECT 
                     y.id, 
                     u.ten AS tenSinhVien, 
-                    GROUP_CONCAT(t.ten SEPARATOR ', ') AS doMuon, 
+                    GROUP_CONCAT(t.ten_thiet_bi SEPARATOR ', ') AS doMuon, 
                     DATE_FORMAT(y.ngay_muon, '%d/%m/%Y') AS ngay
                 FROM yeucaumuon y
                 JOIN users u ON y.nguoi_muon_id = u.ma_sv
@@ -44,7 +44,7 @@ const getAdminHome = async (req, res) => {
                 SELECT 
                     y.id, 
                     u.ten AS tenSinhVien, 
-                    GROUP_CONCAT(t.ten SEPARATOR ', ') AS doMuon, 
+                    GROUP_CONCAT(t.ten_thiet_bi SEPARATOR ', ') AS doMuon, 
                     DATE_FORMAT(COALESCE(y.ngay_duyet, y.ngay_muon), '%d/%m/%Y') AS ngay, 
                     y.trang_thai AS trang_thai
                 FROM yeucaumuon y

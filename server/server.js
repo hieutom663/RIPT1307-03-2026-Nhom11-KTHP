@@ -8,7 +8,8 @@ const dbPool = require('./src/config/db.config');
 // routes
 const authRoutes = require('./src/routes/auth.route');
 const adminHomeRoutes = require('./src/routes/admin.home.route');
-const userProfileRoutes = require('./src/routes/userprofile.route')
+const userProfileRoutes = require('./src/routes/userprofile.route');
+const equipmentRoutes = require('./src/routes/equipments.route');
 
 const app = express();
 
@@ -28,7 +29,7 @@ app.use('/api/admin/trang-chu', adminHomeRoutes);
 
 app.use('/api/user', userProfileRoutes);
 
-// app.use('/api/equipments', equipmentRoutes);
+app.use('/api', equipmentRoutes);
 // app.use('/api/requests', requestRoutes);
 
 const PORT = process.env.PORT || 3000;

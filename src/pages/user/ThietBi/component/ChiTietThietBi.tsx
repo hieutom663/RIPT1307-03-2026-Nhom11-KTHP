@@ -7,7 +7,7 @@ const ChiTietThietBi = (props: any) => {
 
     return (
         <Modal
-            title={props.thietBi.ten}
+            title={props.thietBi.ten_thiet_bi}
             open={props.visible}
             onCancel={props.onClose}
             footer={null}
@@ -16,13 +16,13 @@ const ChiTietThietBi = (props: any) => {
             <div style={{ textAlign: 'center', marginBottom: 16 }}>
                 <img
                     src={props.thietBi.img}
-                    alt={props.thietBi.ten}
-                    style={{ width: 200, height: 200, borderRadius: 8 }}
+                    alt={props.thietBi.ten_thiet_bi}
+                    style={{ width: 200, height: 200, borderRadius: 8, objectFit: 'cover' }}
                 />
             </div>
             <div style={{ marginBottom: 12 }}>
                 <strong>Mô tả:</strong>
-                <p>{props.thietBi.moTa}</p>
+                <p>{props.thietBi.moTa}</p> 
             </div>
             <div style={{ marginBottom: 8 }}>
                 <strong>Số lượng tổng:</strong> {props.thietBi.soLuongTong}
