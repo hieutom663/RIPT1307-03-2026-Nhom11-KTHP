@@ -74,6 +74,9 @@ export default function UserLayout() {
     if (e.key === 'logout') {
       handleLogout();
     }
+    if (e.key === 'profile') {
+      history.push('/user/trang-ca-nhan');
+    }
   };
 
   const userMenuItems: MenuProps['items'] = [
@@ -115,7 +118,7 @@ export default function UserLayout() {
           />
         </Sider>
 
-        <Layout style={{ padding: 24 }}>
+        <Layout style={{ padding: 12 }}>
           <Content className={styles.content}>
             <Outlet />
           </Content>

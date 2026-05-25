@@ -22,6 +22,10 @@ export default [
                 name: 'Lịch sử mượn',
                 component: './user/LichSuMuon',
                 icon: 'HistoryOutlined',
+            },
+            {
+                path: '/user/trang-ca-nhan',
+                component: './user/TrangCaNhan',
             }
         ],
     },
