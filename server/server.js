@@ -1,0 +1,41 @@
+const express = require('express');
+const cors = require('cors');
+require('dotenv').config();
+
+// db
+const dbPool = require('./src/config/db.config'); 
+
+// routes
+const authRoutes = require('./src/routes/auth.route');
+const adminHomeRoutes = require('./src/routes/admin.home.route');
+const userProfileRoutes = require('./src/routes/userprofile.route')
+
+const app = express();
+
+app.use(cors());
+
+app.use(express.json()); 
+
+app.use(express.urlencoded({ extended: true }));
+
+app.get('/', (req, res) => {
+    res.json({ message: "Chào mừng đến với Backend Hệ thống Quản lý Mượn Đồ Dùng!" });
+});
+
+app.use('/api/auth', authRoutes);
+
+app.use('/api/admin/trang-chu', adminHomeRoutes);
+
+app.use('/api/user', userProfileRoutes);
+
+// app.use('/api/equipments', equipmentRoutes);
+// app.use('/api/requests', requestRoutes);
+
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+    console.log(`=================================`);
+    console.log(`Server đang chạy tại cổng: ${PORT}`);
+    console.log(`Link: http://localhost:${PORT}`);
+    console.log(`=================================`);
+});
