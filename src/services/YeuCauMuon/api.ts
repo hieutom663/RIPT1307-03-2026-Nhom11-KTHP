@@ -1,5 +1,5 @@
-import apiClient from '../api';
+import api from '../api';
 
 export async function guiDonMuonThietBi(data: any) {
-    return apiClient.post('/yeu-cau-muon', data);
+    return api.post('/yeu-cau-muon', data);
 }

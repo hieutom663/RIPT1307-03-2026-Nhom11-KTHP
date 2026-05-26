@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { Row, Col, Card, Space, Pagination, Select, Spin, message, Input } from 'antd'; 
+import { Card, Space, Pagination, Select, Spin, message, Input } from 'antd'; 
 import { useModel } from 'umi';
+
+import { useFormMuon } from '../../../hooks/useFormMuon';
+
 import ChiTietThietBi from './component/ChiTietThietBi';
 import GuiYeuCauMuon from './component/GuiYeuCauMuon';
 import { getDanhSachThietBi } from '../../../services/ThietBi/api'; 
@@ -32,27 +35,19 @@ const ThietBiCard = React.memo(({ thietBi, onClick }: { thietBi: any, onClick: (
 const ThietBi = () => {
     const { danhSachDanhMuc } = useModel('danhMuc');
 
+    const formMuon = useFormMuon();
+
     const [danhSachThietBi, setDanhSachThietBi] = useState<any[]>([]);
     const [tongSoLuong, setTongSoLuong] = useState(0); 
     const [loading, setLoading] = useState(false);
-
-    const [visible, setVisible] = useState(false);
-    const [thietBiChon, setThietBiChon] = useState(null);
     const [trangHienTai, setTrangHienTai] = useState(1);
     const [boLoc, setBoLoc] = useState('tat-ca');
     const [tuKhoa, setTuKhoa] = useState(''); 
     const soThietBiMoiTrang = 10;
 
-    const [muonVisible, setMuonVisible] = useState(false);
-    const [soLuongMuon, setSoLuongMuon] = useState(1);
-    const [ngayMuon, setNgayMuon] = useState(null);
-    const [ngayTra, setNgayTra] = useState(null);
-    const [lyDo, setLyDo] = useState('');
-
     const fetchDanhSachThietBi = useCallback(async () => {
         setLoading(true);
         try {
-
             const response = await getDanhSachThietBi({
                 danhMuc: boLoc, 
                 tuKhoa: tuKhoa, 
@@ -88,34 +83,6 @@ const ThietBi = () => {
         ];
     }, [danhSachDanhMuc]);
 
-    const moChiTiet = useCallback((thietBi: any) => {
-        setThietBiChon(thietBi);
-        setVisible(true);
-    }, []);
-
-    const dongChiTiet = useCallback(() => {
-        setVisible(false);
-        setThietBiChon(null);
-    }, []);
-
-    const moFormMuon = useCallback(() => {
-        setVisible(false);
-        setSoLuongMuon(1);
-        setNgayMuon(null);
-        setNgayTra(null);
-        setLyDo('');
-        setMuonVisible(true);
-    }, []);
-
-    const dongFormMuon = useCallback(() => {
-        setMuonVisible(false);
-    }, []);
-
-    const handleChangeSoLuongMuon = useCallback((giaTri: any) => setSoLuongMuon(giaTri), []);
-    const handleChangeNgayMuon = useCallback((ngay: any) => setNgayMuon(ngay), []);
-    const handleChangeNgayTra = useCallback((ngay: any) => setNgayTra(ngay), []);
-    const handleChangeLyDo = useCallback((giaTri: any) => setLyDo(giaTri), []);
-
     const onSearch = (value: string) => {
         setTuKhoa(value);
         setTrangHienTai(1); 
@@ -130,7 +97,6 @@ const ThietBi = () => {
                      </div>
                 </div>
 
-                {/* KHU VỰC TÌM KIẾM & BỘ LỌC */}
                 <div style={{ padding: '0 36px', display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
                     <Search
                         placeholder="Nhập tên thiết bị cần tìm..."
@@ -153,7 +119,7 @@ const ThietBi = () => {
                             <ThietBiCard 
                                 key={thietBi.ma_thiet_bi} 
                                 thietBi={thietBi} 
-                                onClick={moChiTiet} 
+                                onClick={formMuon.moChiTiet} 
                             />
                         ))}
                     </Space>
@@ -170,24 +136,24 @@ const ThietBi = () => {
                 </div>
 
                 <ChiTietThietBi
-                    visible={visible}
-                    thietBi={thietBiChon}
-                    onClose={dongChiTiet}
-                    onMuonNgay={moFormMuon}
+                    visible={formMuon.visible}
+                    thietBi={formMuon.thietBiChon}
+                    onClose={formMuon.dongChiTiet}
+                    onMuonNgay={formMuon.moFormMuon}
                 />
 
                 <GuiYeuCauMuon
-                    visible={muonVisible}
-                    thietBi={thietBiChon}
-                    soLuongMuon={soLuongMuon}
-                    ngayMuon={ngayMuon}
-                    ngayTra={ngayTra}
-                    lyDo={lyDo}
-                    onChangeSoLuongMuon={handleChangeSoLuongMuon}
-                    onChangeNgayMuon={handleChangeNgayMuon}
-                    onChangeNgayTra={handleChangeNgayTra}
-                    onChangeLyDo={handleChangeLyDo}
-                    onClose={dongFormMuon}
+                    visible={formMuon.muonVisible}
+                    thietBi={formMuon.thietBiChon}
+                    soLuongMuon={formMuon.soLuongMuon}
+                    ngayMuon={formMuon.ngayMuon}
+                    ngayTra={formMuon.ngayTra}
+                    lyDo={formMuon.lyDo}
+                    onChangeSoLuongMuon={formMuon.handleChangeSoLuongMuon}
+                    onChangeNgayMuon={formMuon.handleChangeNgayMuon}
+                    onChangeNgayTra={formMuon.handleChangeNgayTra}
+                    onChangeLyDo={formMuon.handleChangeLyDo}
+                    onClose={formMuon.dongFormMuon}
                     onSuccess={fetchDanhSachThietBi} 
                 />
             </div>

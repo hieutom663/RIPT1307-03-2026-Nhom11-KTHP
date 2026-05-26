@@ -56,6 +56,54 @@ const getDanhSachThietBi = async (req, res) => {
     }
 };
 
+const getThietBiPhoBien = async (req, res) => {
+    try {
+        const queryStr = `
+            SELECT 
+                ma_thiet_bi, 
+                ten_thiet_bi, 
+                hinh_anh AS img,
+                mo_ta AS moTa, 
+                tong_so_luong AS soLuongTong, 
+                so_luong_con_lai AS soLuongConLai, 
+                tinh_trang
+            FROM thietbi 
+            WHERE so_luong_da_cho_muon > 0
+            ORDER BY so_luong_da_cho_muon DESC 
+            LIMIT 7
+        `;
+        const [rows] = await pool.query(queryStr);
+        res.json({ success: true, data: rows });
+    } catch (error) {
+        console.error("Lỗi getThietBiPhoBien:", error);
+        res.status(500).json({ success: false, message: "Lỗi server" });
+    }
+};
+
+const getThietBiSan = async (req, res) => {
+    try {
+        const queryStr = `
+            SELECT 
+                ma_thiet_bi, 
+                ten_thiet_bi, 
+                hinh_anh AS img,
+                mo_ta AS moTa, 
+                tong_so_luong AS soLuongTong, 
+                so_luong_con_lai AS soLuongConLai, 
+                tinh_trang
+            FROM thietbi 
+            WHERE so_luong_con_lai > 0
+            ORDER BY ma_thiet_bi DESC 
+            LIMIT 7
+        `;
+        const [rows] = await pool.query(queryStr);
+        res.json({ success: true, data: rows });
+    } catch (error) {
+        console.error("Lỗi getThietBiSan:", error);
+        res.status(500).json({ success: false, message: "Lỗi server" });
+    }
+};
+
 const getTatCaDanhMuc = async (req, res) => {
     try {
         const [rows] = await pool.query("SELECT ma_danh_muc, ten_danh_muc FROM danhmuc");
@@ -156,4 +204,4 @@ const taoYeuCauMuon = async (req, res) => {
 };
 
 
-module.exports = { getDanhSachThietBi, getTatCaDanhMuc, taoYeuCauMuon };
+module.exports = { getDanhSachThietBi, getThietBiPhoBien, getThietBiSan, getTatCaDanhMuc, taoYeuCauMuon };
