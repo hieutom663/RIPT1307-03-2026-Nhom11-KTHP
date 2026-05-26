@@ -1,85 +1,98 @@
-import { Input, Row, Col, Button, Table, Checkbox } from "antd";
-import { SearchOutlined } from "@ant-design/icons";
+import { Input, Table, Tag, message } from "antd";
+import { useState, useEffect, useMemo } from "react";
+import { getPhieuMuonAPI } from "../../../../services/LichSuMuon/api"; 
 
 const PhieuMuon = () => {
-    const dataSource: any = [];
+    const [dataSourceRaw, setDataSourceRaw] = useState<any[]>([]);
+    const [loading, setLoading] = useState(false);
+    const [searchText, setSearchText] = useState('');
+
+    useEffect(() => {
+        const fetchPhieuMuon = async () => {
+            setLoading(true);
+            try {
+                const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
+                const ma_sv = userInfo.ma_sv;
+                if (!ma_sv) return;
+
+                const res = await getPhieuMuonAPI(ma_sv);
+                if (res.data?.success) setDataSourceRaw(res.data.data);
+            } catch (error) {
+                message.error('Lỗi kết nối!');
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchPhieuMuon();
+    }, []);
+
+    const dataSource = useMemo(() => {
+        return dataSourceRaw.filter(item => 
+            item.maYeuCau.toLowerCase().includes(searchText.toLowerCase()) ||
+            item.lyDo.toLowerCase().includes(searchText.toLowerCase())
+        );
+    }, [dataSourceRaw, searchText]);
 
     const columns = [
         {
-            title: 'TT', 
-            dataIndex: 'tt', 
-            key: 'tt',
+            title: 'Mã Phiếu', 
+            dataIndex: 'maYeuCau', 
+            key: 'maYeuCau',
         },
         {
-            title: 'Vai trò', 
-            dataIndex: 'vaiTro', 
-            key: 'vaitro',
+            title: 'Ngày tạo phiếu', 
+            dataIndex: 'ngayTao', 
+            key: 'ngayTao',
+            sorter: (a: any, b: any) => new Date(a.ngayTao).getTime() - new Date(b.ngayTao).getTime(),
         },
         {
-            title: 'Mã định danh', 
-            dataIndex: 'maDinhDanh', 
-            key: 'madinhdanh', 
-            filterIcon: () => <SearchOutlined />,
-            filterDropdown: () => <div><Input.Search placeholder="Tìm mã định danh" /></div>,
-    },
-        {
-            title: 'Họ tên', 
-            dataIndex: 'hoTen', 
-            key: 'hoten',
-            filterIcon: () => <SearchOutlined />,
-            filterDropdown: () => <div><Input.Search placeholder="Tìm theo tên" /></div>,
+            title: 'Ngày trả dự kiến', 
+            dataIndex: 'ngayTraDuKien', 
+            key: 'ngayTraDuKien',
+            sorter: (a: any, b: any) => new Date(a.ngayTraDuKien).getTime() - new Date(b.ngayTraDuKien).getTime(),
         },
         {
-            title: 'Thời gian đăng ký', 
-            dataIndex: 'ThoiGianDangKy', 
-            key: 'thoigiandangky',
-            sorter: (a: any, b: any) => new Date(a.thoi_gian_dang_ky).getTime() - new Date(b.thoi_gian_dang_ky).getTime(),
+            title: 'Lý do mượn', 
+            dataIndex: 'lyDo', 
+            key: 'lyDo',
         },
         {
             title: 'Trạng thái', 
             dataIndex: 'trangThai', 
-            key: 'trangthai',
-            filterDropdown: () => <div style={{display: 'flex', flexDirection: 'column', padding:8}}>
-                <div>
-                    <Input.Search placeholder="Tìm theo bộ lọc" /> 
-                </div>
-                <Checkbox.Group 
-                     style={{ display: 'flex', flexDirection: 'column', gap: 8 }}
-                >
-                    <Checkbox value="Chờ duyệt">Chờ duyệt</Checkbox> 
-                    <Checkbox value="Đã duyệt">Đã duyệt</Checkbox> 
-                    <Checkbox value="Không duyệt">Không duyệt</Checkbox>
-                </Checkbox.Group>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4 }}>
-                    <Button size="small" type="text" danger >
-                        Bỏ lọc
-                    </Button>
-                    <Button size="small" type="primary" onClick={() => confirm()}>
-                        Đồng ý
-                    </Button>
-                </div>
-            </div>,
+            key: 'trangThai',
+            filters: [
+                { text: 'Chờ duyệt', value: 'Chờ duyệt' },
+                { text: 'Đã duyệt', value: 'Đã duyệt' },
+                { text: 'Đang mượn', value: 'Đang mượn' },
+                { text: 'Hoàn thành', value: 'Hoàn thành' },
+                { text: 'Bị từ chối', value: 'Bị từ chối' },
+            ],
+            onFilter: (value: any, record: any) => record.trangThai === value,
+            render: (text: string) => {
+                const colors: any = { 'Chờ duyệt': 'gold', 'Đã duyệt': 'cyan', 'Đang mượn': 'geekblue', 'Hoàn thành': 'green', 'Bị từ chối': 'red' };
+                return <Tag color={colors[text] || 'default'}>{text}</Tag>;
+            },
         },
     ];
 
     return (
-        <div> 
-            <div className="congCu" style={{display: 'flex', justifyContent: 'end', marginBottom: 8}}>
-                <Input.Search placeholder="Tìm theo Mã định danh, Họ tên,..." style={{maxWidth: 250}} />
+        <div>
+            <div style={{ marginBottom: 16 }}>
+                <Input.Search 
+                    placeholder="Tìm theo mã phiếu hoặc lý do..." 
+                    onChange={(e) => setSearchText(e.target.value)} 
+                    style={{ maxWidth: 300 }} 
+                />
             </div>
             <Table 
-            columns={columns} 
-            dataSource={dataSource} 
-            bordered 
-            pagination={{
-                total: 1,
-                showTotal: (total) => `Tổng số: ${total}`,
-                showSizeChanger: true,
-                pageSizeOptions: ['10', '20', '50'],
-                defaultPageSize: 10,
-                }} 
+                rowKey="maYeuCau"
+                columns={columns} 
+                dataSource={dataSource} 
+                loading={loading}
+                bordered 
+                pagination={{ showSizeChanger: true }} 
             />
         </div>
     );
 }
-export  default PhieuMuon;
+export default PhieuMuon;

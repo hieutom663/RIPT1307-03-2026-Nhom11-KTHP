@@ -10,6 +10,7 @@ const authRoutes = require('./src/routes/auth.route');
 const adminHomeRoutes = require('./src/routes/admin.home.route');
 const userProfileRoutes = require('./src/routes/userprofile.route');
 const equipmentRoutes = require('./src/routes/equipments.route');
+const historyRoutes = require('./src/routes/history.routes');
 
 const app = express();
 
@@ -30,7 +31,8 @@ app.use('/api/admin/trang-chu', adminHomeRoutes);
 app.use('/api/user', userProfileRoutes);
 
 app.use('/api', equipmentRoutes);
-// app.use('/api/requests', requestRoutes);
+
+app.use('/api/lich-su-muon', historyRoutes);
 
 const PORT = process.env.PORT || 3000;
 

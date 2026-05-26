@@ -1,103 +1,113 @@
-import { Input, Row, Col, Button, Table, Checkbox, Segmented } from "antd";
-import { SearchOutlined } from "@ant-design/icons";
-import { useState } from "react";
+import { Input, Table, Tag, message, Segmented } from "antd";
+import { useState, useEffect, useMemo } from "react";
+import { getChiTietLichSuAPI } from "../../../../services/LichSuMuon/api"; 
 
 const TatCaLichSu = () => {
-    const [pageTable, setPageTable] =useState<string>('Tất cả');
-    const dataSource: any = [];
+    const [pageTable, setPageTable] = useState<string>('Tất cả');
+    const [dataSourceRaw, setDataSourceRaw] = useState<any[]>([]);
+    const [loading, setLoading] = useState(false);
+    const [searchText, setSearchText] = useState('');
+
+    useEffect(() => {
+        const fetchChiTietLichSu = async () => {
+            setLoading(true);
+            try {
+                const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
+                const ma_sv = userInfo.ma_sv;
+                if (!ma_sv) {
+                    message.error("Không tìm thấy thông tin sinh viên!");
+                    setLoading(false);
+                    return;
+                }
+
+                const res = await getChiTietLichSuAPI(ma_sv);
+                if (res.data?.success) {
+                    setDataSourceRaw(res.data.data);
+                } else {
+                    message.error(res.data?.message || 'Không thể lấy lịch sử chi tiết');
+                }
+            } catch (error) {
+                console.error("Lỗi fetchChiTietLichSu:", error);
+                message.error('Lỗi kết nối đến máy chủ!');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchChiTietLichSu();
+    }, []);
+
+    const dataSource = useMemo(() => {
+        return dataSourceRaw.filter(item => {
+            const matchType = 
+                pageTable === 'Tất cả' ? true :
+                pageTable === 'Sắp đến hạn' ? item.trangThai === 'Chưa trả' :
+                pageTable === 'Quá hạn' ? item.trangThai === 'Quá hạn' : true;
+
+            const matchSearch = 
+                item.maPhieu.toLowerCase().includes(searchText.toLowerCase()) ||
+                item.maDoDung.toLowerCase().includes(searchText.toLowerCase()) ||
+                item.tenDoDung.toLowerCase().includes(searchText.toLowerCase());
+
+            return matchType && matchSearch;
+        });
+    }, [pageTable, dataSourceRaw, searchText]);
 
     const columns = [
-        {
-            title: 'TT', 
-            dataIndex: 'tt', 
-            key: 'tt',
-        },
-        {
-            title: 'Tên đồ dùng', 
-            dataIndex: 'tenDoDung', 
-            key: 'tendodung',
-        },
-        {
-            title: 'Mã đồ dùng', 
-            dataIndex: 'maDoDung', 
-            key: 'madodung', 
-            filterIcon: () => <SearchOutlined />,
-            filterDropdown: () => <div><Input.Search placeholder="Tìm theo mã đồ dùng" /></div>,
-    },
-        {
-            title: 'Họ tên', 
-            dataIndex: 'hoTen', 
-            key: 'hoten',
-            filterIcon: () => <SearchOutlined />,
-            filterDropdown: () => <div><Input.Search placeholder="Tìm theo tên" /></div>,
-        },
-        {
-            title: 'Thời gian mượn', 
-            dataIndex: 'thoiGianMuon', 
-            key: 'thoigianmuon',
-            sorter: (a: any, b: any) => new Date(a.thoi_gian_dang_ky).getTime() - new Date(b.thoi_gian_dang_ky).getTime(),
-        },
-        {
+        { title: 'Mã Phiếu', dataIndex: 'maPhieu', key: 'maPhieu' },
+        { title: 'Mã Thiết bị', dataIndex: 'maDoDung', key: 'maDoDung' },
+        { title: 'Tên thiết bị', dataIndex: 'tenDoDung', key: 'tenDoDung' },
+        { title: 'SL', dataIndex: 'soLuong', key: 'soLuong', width: 60, align: 'center' as const },
+        { 
             title: 'Hạn trả', 
             dataIndex: 'hanTra', 
-            key: 'thoigianmuon',
-            sorter: (a: any, b: any) => new Date(a.thoi_gian_dang_ky).getTime() - new Date(b.thoi_gian_dang_ky).getTime(),
-        },
-        {
-            title: 'Ghi chú', 
-            dataIndex: 'ghiChu', 
-            key: 'ghichu',
+            key: 'hanTra',
+            sorter: (a: any, b: any) => new Date(a.hanTra).getTime() - new Date(b.hanTra).getTime(),
         },
         {
             title: 'Trạng thái', 
             dataIndex: 'trangThai', 
-            key: 'trangthai',
-            filterDropdown: () => <div style={{display: 'flex', flexDirection: 'column', padding:8}}>
-                <div>
-                    <Input.Search placeholder="Tìm theo bộ lọc" /> 
-                </div>
-                <Checkbox.Group 
-                     style={{ display: 'flex', flexDirection: 'column', gap: 8 }}
-                >
-                    <Checkbox value="Chờ duyệt">Chờ duyệt</Checkbox> 
-                    <Checkbox value="Đã duyệt">Đã duyệt</Checkbox> 
-                    <Checkbox value="Không duyệt">Không duyệt</Checkbox>
-                </Checkbox.Group>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4 }}>
-                    <Button size="small" type="text" danger >
-                        Bỏ lọc
-                    </Button>
-                    <Button size="small" type="primary" onClick={() => confirm()}>
-                        Đồng ý
-                    </Button>
-                </div>
-            </div>,
+            key: 'trangThai',
+            render: (text: string) => {
+                const colors: any = { 'Chưa trả': 'orange', 'Đã trả': 'green', 'Quá hạn': 'red' };
+                return <Tag color={colors[text] || 'default'}>{text}</Tag>;
+            },
         },
     ];
 
     return (
         <div> 
-            <Segmented
-                value={pageTable}
-                onChange={setPageTable}
-                options={['Tất cả', 'Sắp đến hạn', 'Quá hạn']}
-            />
-            <div className="congCu" style={{display: 'flex', justifyContent: 'end', marginBottom: 8}}>
-                <Input.Search placeholder="Tìm theo Mã định danh, Họ tên,..." style={{maxWidth: 250}} />
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16, alignItems: 'center' }}>
+                <Segmented
+                    value={pageTable}
+                    onChange={setPageTable}
+                    options={['Tất cả', 'Sắp đến hạn', 'Quá hạn']}
+                    style={{ background: '#f0f0f0', padding: 4 }}
+                />
+                
+                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                    <span style={{ fontSize: '13px', color: '#888' }}>
+                        Đang xem: <strong>{pageTable}</strong>
+                    </span>
+                    <Input.Search 
+                        placeholder="Tìm mã phiếu, mã TB hoặc tên..." 
+                        onChange={(e) => setSearchText(e.target.value)} 
+                        style={{ width: 280 }} 
+                        allowClear
+                    />
+                </div>
             </div>
+            
             <Table 
-            columns={columns} 
-            dataSource={dataSource} 
-            bordered 
-            pagination={{
-                total: 1,
-                showTotal: (total) => `Tổng số: ${total}`,
-                showSizeChanger: true,
-                pageSizeOptions: ['10', '20', '50'],
-                defaultPageSize: 10,
-                }} 
+                rowKey={(record) => record.maPhieu + record.maDoDung}
+                columns={columns} 
+                dataSource={dataSource} 
+                loading={loading} 
+                bordered 
+                pagination={{ showSizeChanger: true }} 
             />
         </div>
     );
 }
-export  default TatCaLichSu;
+
+export default TatCaLichSu;
