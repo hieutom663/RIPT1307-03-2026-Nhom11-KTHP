@@ -150,7 +150,7 @@ const taoYeuCauMuon = async (req, res) => {
             ma_yeu_cau = 'YCM' + nextNum.toString().padStart(4, '0'); 
         }
 
-        const [maxCTD] = await connection.query("SELECT MAX(id) as maxId FROM chitietdon");
+        const [maxCTD] = await connection.query("SELECT MAX(ma_don_muon) as maxId FROM chitietdon");
         let id_chi_tiet = 'CTD0001';
         if (maxCTD[0].maxId) {
             const currentNum = parseInt(maxCTD[0].maxId.replace('CTD', ''), 10);
@@ -173,7 +173,7 @@ const taoYeuCauMuon = async (req, res) => {
 
         const insertChiTiet = `
             INSERT INTO chitietdon 
-            (id, id_donmuon, id_thietbi, soluong, trang_thai) 
+            (ma_don_muon, ma_yeu_cau, ma_thiet_bi, soluong, trang_thai) 
             VALUES (?, ?, ?, ?, 'chưa trả')
         `;
         await connection.query(insertChiTiet, [
