@@ -14,13 +14,9 @@ interface TopThietBiItem {
   medal: string;
 }
 
-const danhMucColors: Record<string, { color: string; bg: string }> = {
-  'Âm thanh': { color: '#1677ff', bg: '#e6f4ff' },
-  'Hình ảnh': { color: '#722ed1', bg: '#f9f0ff' },
-  'Nội thất': { color: '#fa8c16', bg: '#fff7e6' },
-  'Điện tử': { color: '#f5222d', bg: '#fff1f0' },
-  'Trang trí': { color: '#13c2c2', bg: '#e6fffb' },
-};
+/* Màu tag danh mục — dùng chung 1 style thống nhất */
+const defaultTagStyle = { color: '#595959', bg: '#fafafa', border: '#d9d9d9' };
+
 
 const topColumns = [
   {
@@ -33,8 +29,7 @@ const topColumns = [
   {
     title: 'Danh mục', dataIndex: 'danhMuc', key: 'danhMuc', width: 120,
     render: (v: string) => {
-      const c = danhMucColors[v] || { color: '#595959', bg: '#fafafa' };
-      return <Tag style={{ color: c.color, backgroundColor: c.bg, border: `1px solid ${c.color}30`, borderRadius: 6, fontWeight: 500 }}>{v}</Tag>;
+      return <Tag style={{ color: defaultTagStyle.color, backgroundColor: defaultTagStyle.bg, border: `1px solid ${defaultTagStyle.border}`, borderRadius: 6, fontWeight: 500 }}>{v}</Tag>;
     },
   },
   {
