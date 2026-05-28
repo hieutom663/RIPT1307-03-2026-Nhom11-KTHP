@@ -1,7 +1,7 @@
 const pool = require('../config/db.config');
 
-// Lấy danh sách yêu cầu đã duyệt - chờ giao thiết bị
-const layDanhSachChoGiao = async (req, res) => {
+// Lấy danh sách yêu cầu chờ duyệt
+const layDanhSachChoDuyet = async (req, res) => {
     try {
         const [rows] = await pool.query(
             `SELECT 
@@ -34,7 +34,7 @@ const layDanhSachChoGiao = async (req, res) => {
 
         res.json({ success: true, data: data });
     } catch (error) {
-        console.error("Lỗi layDanhSachChoGiao:", error);
+        console.error("Lỗi layDanhSachChoDuyet:", error);
         res.status(500).json({ success: false, message: "Lỗi server" });
     }
 };
@@ -148,4 +148,4 @@ const ghiNhanDaTra = async (req, res) => {
     }
 };
 
-module.exports = { layDanhSachChoGiao, layDanhSachDangMuon, ghiNhanChoMuon, ghiNhanDaTra };
+module.exports = { layDanhSachChoDuyet, layDanhSachDangMuon, ghiNhanChoMuon, ghiNhanDaTra };

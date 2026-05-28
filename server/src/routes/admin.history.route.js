@@ -2,8 +2,8 @@ const express = require('express');
 const router = express.Router();
 const adminHistoryController = require('../controllers/admin.history.controller');
 
-// GET: Lấy danh sách chờ giao
-router.get('/cho-giao', adminHistoryController.layDanhSachChoGiao);
+// GET: Lấy danh sách chờ duyệt
+router.get('/cho-duyet', adminHistoryController.layDanhSachChoDuyet);
 
 // GET: Lấy danh sách đang mượn
 router.get('/dang-muon', adminHistoryController.layDanhSachDangMuon);
