@@ -4,7 +4,6 @@ import { Link } from 'umi';
 import banner from '../../../assets/banner.jpg';
 import { getThietBiPhoBienAPI, getThietBiSanAPI } from '../../../services/ThietBi/api'; 
 
-// 1. IMPORT HOOK VÀ 2 COMPONENT MODAL TỪ TRANG THIẾT BỊ
 import { useFormMuon } from '../../../hooks/useFormMuon'; 
 import ChiTietThietBi from '../ThietBi/component/ChiTietThietBi'; 
 import GuiYeuCauMuon from '../ThietBi/component/GuiYeuCauMuon';
@@ -12,8 +11,8 @@ import GuiYeuCauMuon from '../ThietBi/component/GuiYeuCauMuon';
 const { Meta } = Card;
 
 const TrangChu = () => {
-    const userInfo = JSON.parse(localStorage.getItem('user') || '{}');
-    const ten = userInfo.ten || 'Bạn';
+    const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
+    const ten = userInfo.ho_ten || 'Bạn';
 
     const formMuon = useFormMuon();
 

@@ -9,7 +9,7 @@ const getDanhSachYeuCau = async (req, res) => {
         const queryStr = `
             SELECT 
                 y.ma_yeu_cau AS maYC,
-                u.ten AS tenSV,
+                u.ho_ten AS tenSV,
                 y.ma_nguoi_muon AS maSV,
                 GROUP_CONCAT(t.ten_thiet_bi SEPARATOR ', ') AS thietBi,
                 SUM(c.soluong) AS soLuong,
@@ -31,7 +31,7 @@ const getDanhSachYeuCau = async (req, res) => {
             JOIN users u ON y.ma_nguoi_muon = u.ma_sv
             JOIN chitietdon c ON y.ma_yeu_cau = c.ma_yeu_cau
             JOIN thietbi t ON c.ma_thiet_bi = t.ma_thiet_bi
-            GROUP BY y.ma_yeu_cau, u.ten, y.ma_nguoi_muon, y.ngay_muon, y.ngay_tra_du_kien, y.trang_thai
+            GROUP BY y.ma_yeu_cau, u.ho_ten, y.ma_nguoi_muon, y.ngay_muon, y.ngay_tra_du_kien, y.trang_thai
             ORDER BY y.ngay_muon DESC, y.ma_yeu_cau DESC
         `;
 

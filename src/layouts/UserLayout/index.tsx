@@ -44,7 +44,7 @@ export default function UserLayout() {
         return;
       }
 
-      setUserName(userInfo.ten || 'Sinh viên');
+      setUserName(userInfo.ho_ten || 'Sinh viên');
     } catch (error) {
       localStorage.clear();
       history.replace('/login');

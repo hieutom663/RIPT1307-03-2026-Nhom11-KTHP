@@ -6,7 +6,7 @@ const layDanhSachChoGiao = async (req, res) => {
         const [rows] = await pool.query(
             `SELECT 
                 y.ma_yeu_cau AS maYC,
-                u.ten AS tenSV,
+                u.ho_ten AS tenSV,
                 y.ma_nguoi_muon AS maSV,
                 t.ten_thiet_bi AS thietBi,
                 c.soluong AS soLuong,
@@ -45,7 +45,7 @@ const layDanhSachDangMuon = async (req, res) => {
         const [rows] = await pool.query(
             `SELECT 
                 y.ma_yeu_cau AS maYC,
-                u.ten AS tenSV,
+                u.ho_ten AS tenSV,
                 y.ma_nguoi_muon AS maSV,
                 t.ten_thiet_bi AS thietBi,
                 c.soluong AS soLuong,
