@@ -1,20 +1,18 @@
-import React from 'react';
-import { Card, Tag, Typography, Table } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Card, Tag, Typography, Table, Spin, message } from 'antd';
 import { TrophyOutlined } from '@ant-design/icons';
+import { getTopThietBiAPI } from '@/services/ThongKe/api';
 
 const { Text } = Typography;
 
-/* ── Top equipment data ── */
-const topEquipment = [
-  { key: '1', rank: 1, ten: 'Loa JBL PartyBox', danhMuc: 'Âm thanh', luot: 2, medal: '🥇' },
-  { key: '2', rank: 2, ten: 'Micro không dây Shure', danhMuc: 'Âm thanh', luot: 1, medal: '🥈' },
-  { key: '3', rank: 3, ten: 'Máy chiếu Epson', danhMuc: 'Hình ảnh', luot: 1, medal: '🥉' },
-  { key: '4', rank: 4, ten: 'Bàn ghế sự kiện', danhMuc: 'Nội thất', luot: 1, medal: '' },
-  { key: '5', rank: 5, ten: 'Laptop Dell XPS', danhMuc: 'Điện tử', luot: 1, medal: '' },
-  { key: '6', rank: 6, ten: 'Màn chiếu 100 inch', danhMuc: 'Hình ảnh', luot: 0, medal: '' },
-  { key: '7', rank: 7, ten: 'Cờ banner sự kiện', danhMuc: 'Trang trí', luot: 0, medal: '' },
-  { key: '8', rank: 8, ten: 'Máy ảnh Canon EOS', danhMuc: 'Hình ảnh', luot: 0, medal: '' },
-];
+interface TopThietBiItem {
+  key: string;
+  rank: number;
+  ten: string;
+  danhMuc: string;
+  luot: number;
+  medal: string;
+}
 
 const danhMucColors: Record<string, { color: string; bg: string }> = {
   'Âm thanh': { color: '#1677ff', bg: '#e6f4ff' },
@@ -27,7 +25,7 @@ const danhMucColors: Record<string, { color: string; bg: string }> = {
 const topColumns = [
   {
     title: 'Hạng', key: 'rank', width: 70, align: 'center' as const,
-    render: (_: unknown, r: typeof topEquipment[0]) => (
+    render: (_: unknown, r: TopThietBiItem) => (
       <span style={{ fontSize: r.medal ? 20 : 14 }}>{r.medal || r.rank}</span>
     ),
   },
@@ -46,6 +44,29 @@ const topColumns = [
 ];
 
 const TopEquipment: React.FC = () => {
+  const [data, setData] = useState<TopThietBiItem[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const res = await getTopThietBiAPI();
+        if (res.data.success) {
+          setData(res.data.data);
+        } else {
+          message.error(res.data.message || 'Lỗi khi tải top thiết bị');
+        }
+      } catch (error) {
+        console.error('Lỗi fetch top thiết bị:', error);
+        message.error('Không thể kết nối đến server');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
   return (
     <Card
       title={
@@ -57,13 +78,15 @@ const TopEquipment: React.FC = () => {
       style={{ borderRadius: 12, boxShadow: '0 1px 4px rgba(0,0,0,.06)' }}
       styles={{ body: { padding: 0 } }}
     >
-      <Table
-        columns={topColumns}
-        dataSource={topEquipment}
-        pagination={false}
-        size="small"
-        rowKey="key"
-      />
+      <Spin spinning={loading}>
+        <Table
+          columns={topColumns}
+          dataSource={data}
+          pagination={false}
+          size="small"
+          rowKey="key"
+        />
+      </Spin>
     </Card>
   );
 };

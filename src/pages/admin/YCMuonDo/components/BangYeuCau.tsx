@@ -3,6 +3,7 @@ import { Table, Tag, Button, Space, Typography, Card, Tooltip, Modal, message } 
 import { EyeOutlined, CheckOutlined, CloseOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import type { YeuCauMuon } from '../index';
+import { duyetYeuCauAPI, tuChoiYeuCauAPI } from '@/services/YeuCauMuon/api';
 
 const { Text } = Typography;
 
@@ -17,19 +18,29 @@ const statusConfig: Record<YeuCauMuon['trangThai'], { label: string; color: stri
 
 interface Props {
   data: YeuCauMuon[];
-  onDataChange: React.Dispatch<React.SetStateAction<YeuCauMuon[]>>;
+  onRefresh: () => void;
 }
 
-const BangYeuCau: React.FC<Props> = ({ data, onDataChange }) => {
+const BangYeuCau: React.FC<Props> = ({ data, onRefresh }) => {
   const handleDuyet = (record: YeuCauMuon) => {
     Modal.confirm({
       title: 'Xác nhận duyệt',
       content: `Duyệt yêu cầu ${record.maYC} của ${record.tenSV}?`,
       okText: 'Duyệt',
       cancelText: 'Hủy',
-      onOk: () => {
-        onDataChange((prev) => prev.map((r) => (r.key === record.key ? { ...r, trangThai: 'da_duyet' as const } : r)));
-        message.success(`Đã duyệt yêu cầu ${record.maYC}`);
+      onOk: async () => {
+        try {
+          const res = await duyetYeuCauAPI(record.maYC);
+          if (res.data.success) {
+            message.success(res.data.message);
+            onRefresh();
+          } else {
+            message.error(res.data.message);
+          }
+        } catch (error) {
+          console.error('Lỗi duyệt:', error);
+          message.error('Lỗi khi duyệt yêu cầu');
+        }
       },
     });
   };
@@ -41,9 +52,19 @@ const BangYeuCau: React.FC<Props> = ({ data, onDataChange }) => {
       okText: 'Từ chối',
       okButtonProps: { danger: true },
       cancelText: 'Hủy',
-      onOk: () => {
-        onDataChange((prev) => prev.map((r) => (r.key === record.key ? { ...r, trangThai: 'tu_choi' as const } : r)));
-        message.info(`Đã từ chối yêu cầu ${record.maYC}`);
+      onOk: async () => {
+        try {
+          const res = await tuChoiYeuCauAPI(record.maYC);
+          if (res.data.success) {
+            message.info(res.data.message);
+            onRefresh();
+          } else {
+            message.error(res.data.message);
+          }
+        } catch (error) {
+          console.error('Lỗi từ chối:', error);
+          message.error('Lỗi khi từ chối yêu cầu');
+        }
       },
     });
   };

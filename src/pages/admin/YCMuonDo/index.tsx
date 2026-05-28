@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
-import { Typography } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Typography, message, Spin } from 'antd';
 import { FileTextOutlined } from '@ant-design/icons';
 import ThanhTimKiem from './components/ThanhTimKiem';
 import BoLocTrangThai from './components/BoLocTrangThai';
 import BangYeuCau from './components/BangYeuCau';
+import { getDanhSachYeuCauAPI } from '@/services/YeuCauMuon/api';
 
 const { Title } = Typography;
 
@@ -21,19 +22,33 @@ export interface YeuCauMuon {
 
 export type FilterStatus = 'tat_ca' | YeuCauMuon['trangThai'];
 
-const mockData: YeuCauMuon[] = [
-  { key: '1', maYC: 'YC001', tenSV: 'Nguyễn Văn An', maSV: 'SV001', thietBi: 'Loa JBL PartyBox', soLuong: 1, ngayMuon: '2026-05-10', ngayTraDK: '2026-05-12', trangThai: 'cho_duyet' },
-  { key: '2', maYC: 'YC002', tenSV: 'Trần Thị Bình', maSV: 'SV002', thietBi: 'Máy chiếu Epson', soLuong: 1, ngayMuon: '2026-05-06', ngayTraDK: '2026-05-09', trangThai: 'da_duyet' },
-  { key: '3', maYC: 'YC003', tenSV: 'Lê Văn Cường', maSV: 'SV003', thietBi: 'Micro không dây Shure', soLuong: 2, ngayMuon: '2026-05-05', ngayTraDK: '2026-05-07', trangThai: 'dang_muon' },
-  { key: '4', maYC: 'YC004', tenSV: 'Phạm Thị Dung', maSV: 'SV004', thietBi: 'Bàn ghế sự kiện', soLuong: 5, ngayMuon: '2026-04-25', ngayTraDK: '2026-04-27', trangThai: 'da_tra' },
-  { key: '5', maYC: 'YC005', tenSV: 'Hoàng Văn Em', maSV: 'SV005', thietBi: 'Laptop Dell XPS', soLuong: 1, ngayMuon: '2026-04-20', ngayTraDK: '2026-04-22', trangThai: 'qua_han' },
-  { key: '6', maYC: 'YC006', tenSV: 'Vũ Thị Phương', maSV: 'SV006', thietBi: 'Loa JBL PartyBox', soLuong: 1, ngayMuon: '2026-05-01', ngayTraDK: '2026-05-03', trangThai: 'tu_choi' },
-];
-
 const YCMuonDo: React.FC = () => {
   const [activeFilter, setActiveFilter] = useState<FilterStatus>('tat_ca');
   const [searchText, setSearchText] = useState('');
-  const [data, setData] = useState<YeuCauMuon[]>(mockData);
+  const [data, setData] = useState<YeuCauMuon[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  // Fetch dữ liệu từ BE
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const res = await getDanhSachYeuCauAPI();
+      if (res.data.success) {
+        setData(res.data.data);
+      } else {
+        message.error(res.data.message || 'Lỗi khi tải dữ liệu');
+      }
+    } catch (error) {
+      console.error('Lỗi fetch yêu cầu mượn:', error);
+      message.error('Không thể kết nối đến server');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   const getStatusCount = (status: FilterStatus) => {
     if (status === 'tat_ca') return data.length;
@@ -64,7 +79,9 @@ const YCMuonDo: React.FC = () => {
         getStatusCount={getStatusCount}
       />
 
-      <BangYeuCau data={filteredData} onDataChange={setData} />
+      <Spin spinning={loading}>
+        <BangYeuCau data={filteredData} onRefresh={fetchData} />
+      </Spin>
     </div>
   );
 };

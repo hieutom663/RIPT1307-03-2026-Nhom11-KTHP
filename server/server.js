@@ -11,6 +11,8 @@ const adminHomeRoutes = require('./src/routes/admin.home.route');
 const userProfileRoutes = require('./src/routes/userprofile.route');
 const equipmentRoutes = require('./src/routes/equipments.route');
 const historyRoutes = require('./src/routes/history.routes');
+const yeuCauMuonRoutes = require('./src/routes/yeucaumuon.route');
+const thongKeRoutes = require('./src/routes/thongke.route');
 
 const app = express();
 
@@ -33,6 +35,10 @@ app.use('/api/user', userProfileRoutes);
 app.use('/api', equipmentRoutes);
 
 app.use('/api/lich-su-muon', historyRoutes);
+
+app.use('/api/admin/yeu-cau-muon', yeuCauMuonRoutes);
+
+app.use('/api/admin/thong-ke', thongKeRoutes);
 
 const PORT = process.env.PORT || 3000;
 
