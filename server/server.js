@@ -8,6 +8,7 @@ const dbPool = require('./src/config/db.config');
 // routes
 const authRoutes = require('./src/routes/auth.route');
 const adminHomeRoutes = require('./src/routes/admin.home.route');
+const adminDanhMucRoutes = require('./src/routes/admin.danhmuc.route');
 const userProfileRoutes = require('./src/routes/userprofile.route');
 const equipmentRoutes = require('./src/routes/equipments.route');
 const historyRoutes = require('./src/routes/history.routes');
@@ -27,6 +28,7 @@ app.get('/', (req, res) => {
 app.use('/api/auth', authRoutes);
 
 app.use('/api/admin/trang-chu', adminHomeRoutes);
+app.use('/api/admin/danh-muc', adminDanhMucRoutes);
 
 app.use('/api/user', userProfileRoutes);
 
