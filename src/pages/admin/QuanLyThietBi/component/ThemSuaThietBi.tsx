@@ -1,10 +1,6 @@
 import { Modal, Input, Select, InputNumber } from 'antd';
 
 const ThemSuaThietBi = (props: any) => {
-    if (!props.visible) {
-        return null;
-    }
-
     return (
         <Modal
             title={props.thietBi ? 'Chỉnh sửa thiết bị' : 'Thêm thiết bị mới'}
