@@ -4,7 +4,7 @@ const bcrypt = require('bcryptjs');
 const getProfile = async (req, res) => {
     try {
         const { ma_sv } = req.body;
-        
+
         const [rows] = await pool.query(
             "SELECT ten, email, so_phone AS soPhone, ma_sv AS maSV FROM users WHERE ma_sv = ?",
             [ma_sv]
@@ -14,7 +14,7 @@ const getProfile = async (req, res) => {
 
         res.json({ success: true, data: rows[0] });
     } catch (error) {
-        console.error("Lỗi:", error); 
+        console.error("Lỗi:", error);
         res.status(500).json({ success: false, message: "Lỗi server" });
     }
 };
@@ -37,7 +37,7 @@ const updateProfile = async (req, res) => {
 
         res.json({ success: true, message: "Cập nhật thành công!" });
     } catch (error) {
-        console.error("Lỗi:", error); 
+        console.error("Lỗi:", error);
         res.status(500).json({ success: false, message: "Lỗi server khi cập nhật" });
     }
 };
@@ -61,9 +61,9 @@ const changePassword = async (req, res) => {
 
         const user = users[0];
         const isMatch = await bcrypt.compare(matKhauCu, user.mat_khau);
-        
+
         if (!isMatch) {
-            return res.json({ success: false, message: "Mật khẩu cũ không đúng!" }); 
+            return res.json({ success: false, message: "Mật khẩu cũ không đúng!" });
         }
 
         const salt = await bcrypt.genSalt(10);

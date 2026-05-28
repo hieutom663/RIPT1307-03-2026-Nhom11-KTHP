@@ -6,6 +6,7 @@ interface ThemSuaDanhMucProps {
     form: any;
     onSave: (values: any) => void;
     onCancel: () => void;
+    saving?: boolean;
 }
 
 const ThemSuaDanhMuc = (props: ThemSuaDanhMucProps) => {
@@ -21,12 +22,21 @@ const ThemSuaDanhMuc = (props: ThemSuaDanhMucProps) => {
             onCancel={props.onCancel}
             okText="Lưu"
             cancelText="Hủy"
+            confirmLoading={props.saving}
+            okButtonProps={{ disabled: props.saving }}
         >
             <Form form={props.form} layout="vertical" onFinish={props.onSave}>
-                <Form.Item name="tenDanhMuc" label="Tên danh mục" rules={[{ required: true, message: 'Vui lòng nhập tên danh mục' }]}>
+                <Form.Item
+                    name="tenDanhMuc"
+                    label="Tên danh mục"
+                    rules={[{ required: true, message: 'Vui lòng nhập tên danh mục' }]}
+                >
                     <Input placeholder="Ví dụ: Thiết Bị Điện Tử" />
                 </Form.Item>
-                <Form.Item name="moTa" label="Mô tả" rules={[{ required: true, message: 'Vui lòng nhập mô tả' }]}>
+                <Form.Item
+                    name="moTa"
+                    label="Mô tả"
+                >
                     <Input.TextArea rows={3} placeholder="Mô tả chi tiết về danh mục" />
                 </Form.Item>
                 <Form.Item name="trangThai" label="Trạng thái" initialValue="hoat-dong">
