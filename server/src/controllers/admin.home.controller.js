@@ -26,7 +26,7 @@ const getAdminHome = async (req, res) => {
             pool.query(`
             SELECT 
                 y.ma_yeu_cau AS id, 
-                u.ho_ten AS tenSinhVien, 
+                u.ten AS tenSinhVien, 
                 GROUP_CONCAT(t.ten_thiet_bi SEPARATOR ', ') AS doMuon, 
                 DATE_FORMAT(y.ngay_muon, '%d/%m/%Y') AS ngay
             FROM yeucaumuon y
@@ -34,7 +34,7 @@ const getAdminHome = async (req, res) => {
             JOIN chitietdon c ON y.ma_yeu_cau = c.ma_yeu_cau
             JOIN thietbi t ON c.ma_thiet_bi = t.ma_thiet_bi
             WHERE y.trang_thai = 'Chờ duyệt'
-            GROUP BY y.ma_yeu_cau, u.ho_ten, y.ngay_muon
+            GROUP BY y.ma_yeu_cau, u.ten, y.ngay_muon
             ORDER BY y.ngay_muon DESC 
             LIMIT 5
             `),
@@ -42,7 +42,7 @@ const getAdminHome = async (req, res) => {
             pool.query(`
                 SELECT 
                     y.ma_yeu_cau AS id, 
-                    u.ho_ten AS tenSinhVien, 
+                    u.ten AS tenSinhVien, 
                     GROUP_CONCAT(t.ten_thiet_bi SEPARATOR ', ') AS doMuon, 
                     DATE_FORMAT(COALESCE(y.ngay_duyet, y.ngay_muon), '%d/%m/%Y') AS ngay, 
                     y.trang_thai AS trang_thai
@@ -51,7 +51,7 @@ const getAdminHome = async (req, res) => {
                 JOIN chitietdon c ON y.ma_yeu_cau = c.ma_yeu_cau
                 JOIN thietbi t ON c.ma_thiet_bi = t.ma_thiet_bi
                 WHERE y.trang_thai IN ('Đang mượn', 'Hoàn thành', 'Bị từ chối')
-                GROUP BY y.ma_yeu_cau, u.ho_ten, y.ngay_duyet, y.ngay_muon, y.trang_thai
+                GROUP BY y.ma_yeu_cau, u.ten, y.ngay_duyet, y.ngay_muon, y.trang_thai
                 ORDER BY COALESCE(y.ngay_duyet, y.ngay_muon) DESC 
                 LIMIT 5
             `)
