@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const historyController = require('../controllers/history.controller');
+const historyController = require('../controllers/user.history.controller');
 
 // POST: /api/user/lich-su-muon
 router.post('/thong-ke', historyController.getThongKeCaNhan);

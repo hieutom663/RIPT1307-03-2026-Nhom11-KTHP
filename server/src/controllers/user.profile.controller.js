@@ -27,7 +27,7 @@ const updateProfile = async (req, res) => {
             return res.status(400).json({ success: false, message: "Thiếu mã sinh viên" });
         }
         const [result] = await pool.query(
-            "UPDATE users SET ten = ?, so_phone = ? WHERE ma_sv = ?",
+            "UPDATE users SET ho_ten = ?, so_phone = ? WHERE ma_sv = ?",
             [ten, soPhone, ma_sv]
         );
 

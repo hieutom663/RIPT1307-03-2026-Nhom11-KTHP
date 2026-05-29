@@ -1,6 +1,6 @@
 import api from '../api';
 
-export async function getThongKeCaNhanAPI(ma_sv: string) {
+export async function getLichSuCaNhanAPI(ma_sv: string) {
     return api.post('/lich-su-muon/thong-ke', { ma_sv }); 
 }
 

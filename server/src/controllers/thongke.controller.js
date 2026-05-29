@@ -62,9 +62,9 @@ const getTopThietBi = async (req, res) => {
                 t.ma_thiet_bi,
                 t.ten_thiet_bi AS ten,
                 d.ten_danh_muc AS danhMuc,
-                COALESCE(SUM(c.soluong), 0) AS luot
+                COALESCE(SUM(c.so_luong), 0) AS luot
             FROM thietbi t
-            LEFT JOIN danhmuc d ON t.id_danhmuc = d.ma_danh_muc
+            LEFT JOIN danhmuc d ON t.ma_danh_muc = d.ma_danh_muc
             LEFT JOIN chitietdon c ON t.ma_thiet_bi = c.ma_thiet_bi
             GROUP BY t.ma_thiet_bi, t.ten_thiet_bi, d.ten_danh_muc
             ORDER BY luot DESC, t.ten_thiet_bi ASC

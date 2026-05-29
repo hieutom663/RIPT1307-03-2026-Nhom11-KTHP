@@ -2,7 +2,7 @@ const pool = require('../config/db.config');
 
 const getDanhSachThietBi = async (req, res) => {
     try {
-        const id_danhmuc = req.query.danhMuc || 'tat-ca'; 
+        const ma_danh_muc = req.query.danhMuc || 'tat-ca'; 
         const tuKhoa = req.query.tuKhoa || '';
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 10;
@@ -16,7 +16,7 @@ const getDanhSachThietBi = async (req, res) => {
                 mo_ta AS moTa, 
                 tong_so_luong AS soLuongTong, 
                 so_luong_con_lai AS soLuongConLai, 
-                id_danhmuc, 
+                ma_danh_muc, 
                 tinh_trang
             FROM thietbi
             WHERE 1=1
@@ -24,10 +24,10 @@ const getDanhSachThietBi = async (req, res) => {
         let countQueryStr = "SELECT COUNT(*) as total FROM thietbi WHERE 1=1";
         let queryParams = [];
 
-        if (id_danhmuc !== 'tat-ca') {
-            queryStr += " AND id_danhmuc = ?";
-            countQueryStr += " AND id_danhmuc = ?";
-            queryParams.push(id_danhmuc);
+        if (ma_danh_muc !== 'tat-ca') {
+            queryStr += " AND ma_danh_muc = ?";
+            countQueryStr += " AND ma_danh_muc = ?";
+            queryParams.push(ma_danh_muc);
         }
 
         if (tuKhoa.trim() !== '') {
@@ -160,7 +160,7 @@ const taoYeuCauMuon = async (req, res) => {
 
         const insertYeuCau = `
             INSERT INTO yeucaumuon 
-            (ma_yeu_cau, ma_nguoi_muon, ngay_muon, ngay_tra_du_kien, li_do_muon, trang_thai) 
+            (ma_yeu_cau, ma_nguoi_muon, ngay_muon, ngay_tra_du_kien, ly_do_muon, trang_thai) 
             VALUES (?, ?, ?, ?, ?, 'Chờ duyệt')
         `;
         await connection.query(insertYeuCau, [
@@ -173,7 +173,7 @@ const taoYeuCauMuon = async (req, res) => {
 
         const insertChiTiet = `
             INSERT INTO chitietdon 
-            (ma_don_muon, ma_yeu_cau, ma_thiet_bi, soluong, trang_thai) 
+            (ma_don_muon, ma_yeu_cau, ma_thiet_bi, so_luong, trang_thai) 
             VALUES (?, ?, ?, ?, 'chưa trả')
         `;
         await connection.query(insertChiTiet, [

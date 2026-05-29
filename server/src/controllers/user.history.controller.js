@@ -49,7 +49,7 @@ const getPhieuMuon = async (req, res) => {
                 ma_yeu_cau AS maYeuCau,
                 DATE_FORMAT(ngay_muon, '%Y-%m-%d') AS ngayTao,
                 DATE_FORMAT(ngay_tra_du_kien, '%Y-%m-%d') AS ngayTraDuKien,
-                li_do_muon AS lyDo,
+                ly_do_muon AS lyDo,
                 trang_thai AS trangThai
             FROM yeucaumuon
             WHERE ma_nguoi_muon = ?
@@ -77,7 +77,7 @@ const getChiTietLichSu = async (req, res) => {
                 c.ma_yeu_cau AS maPhieu,
                 c.ma_thiet_bi AS maDoDung,
                 t.ten_thiet_bi AS tenDoDung,
-                c.soluong AS soLuong,
+                c.so_luong AS soLuong,
                 DATE_FORMAT(y.ngay_tra_du_kien, '%Y-%m-%d') AS hanTra,
                 CASE 
                     WHEN c.trang_thai = 'Đã trả' THEN 'Đã trả'

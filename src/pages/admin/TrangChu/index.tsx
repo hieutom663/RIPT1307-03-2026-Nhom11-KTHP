@@ -1,6 +1,6 @@
 import { Row, Col, Card, Divider, Table } from 'antd';
 import { LaptopOutlined, BookOutlined, ClockCircleOutlined, UsergroupAddOutlined } from '@ant-design/icons';
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 
 const AdminDashboard = () => {

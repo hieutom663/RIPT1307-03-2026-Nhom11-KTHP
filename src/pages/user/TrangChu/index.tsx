@@ -3,6 +3,7 @@ import { Row, Col, Image, Button, Card, Spin } from 'antd';
 import { Link } from 'umi';
 import banner from '../../../assets/banner.jpg';
 import { getThietBiPhoBienAPI, getThietBiSanAPI } from '../../../services/ThietBi/api'; 
+import { getLichSuCaNhanAPI } from '../../../services/LichSuMuon/api'; 
 
 import { useFormMuon } from '../../../hooks/useFormMuon'; 
 import ChiTietThietBi from '../ThietBi/component/ChiTietThietBi'; 
@@ -12,24 +13,29 @@ const { Meta } = Card;
 
 const TrangChu = () => {
     const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
-    const ten = userInfo.ho_ten || 'Bạn';
+    const ten = userInfo.ho_ten || userInfo.ten || 'Bạn';
+    const ma_sv = userInfo.ma_sv;
 
     const formMuon = useFormMuon();
 
     const [thietBiPhoBien, setThietBiPhoBien] = useState<any[]>([]);
     const [thietBiSan, setThietBiSan] = useState<any[]>([]);
+    const [thongKe, setThongKe] = useState({ choXuLy: 0, dangMuon: 0, quaHan: 0, daTra: 0 });
     const [loading, setLoading] = useState(true);
 
     const fetchData = async () => {
         setLoading(true);
         try {
-            const [resPhoBien, resSan] = await Promise.all([
+            const [resPhoBien, resSan, resThongKe] = await Promise.all([
                 getThietBiPhoBienAPI(),
-                getThietBiSanAPI()
+                getThietBiSanAPI(),
+                ma_sv ? getLichSuCaNhanAPI(ma_sv) : Promise.resolve({ data: { success: false } })
             ]);
 
-            if (resPhoBien.data.success) setThietBiPhoBien(resPhoBien.data.data);
-            if (resSan.data.success) setThietBiSan(resSan.data.data);
+            if (resPhoBien.data?.success) setThietBiPhoBien(resPhoBien.data.data);
+            if (resSan.data?.success) setThietBiSan(resSan.data.data);
+            if (resThongKe.data?.success) setThongKe(resThongKe.data.data);
+            
         } catch (error) {
             console.error("Lỗi tải dữ liệu trang chủ:", error);
         } finally {
@@ -115,15 +121,24 @@ const TrangChu = () => {
                             )}
                         </div>
                         
+                        {/* THAY ĐỔI DỮ LIỆU ĐỘNG TẠI ĐÂY */}
                         <Card 
                             title="Hoạt động của tôi" 
                             variant='borderless'
                             style={{ width: 300, minWidth: 300, boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}
                         >
-                            <p style={{ margin: 0, padding: '8px 0', borderBottom: '1px solid #f0f0f0' }}>Đang chờ duyệt: <strong>2</strong> yêu cầu</p>
-                            <p style={{ margin: 0, padding: '8px 0', borderBottom: '1px solid #f0f0f0' }}>Đang mượn: <strong>1</strong> thiết bị</p>
-                            <p style={{ margin: 0, padding: '8px 0' }}>Đến hạn trả: <strong>0</strong> thiết bị</p>
-                            <Link to={'/user/lich-su-muon'} style={{marginLeft: '70%', }}><u>Xem tất cả </u></Link>
+                            <p style={{ margin: 0, padding: '8px 0', borderBottom: '1px solid #f0f0f0' }}>
+                                Đang chờ duyệt: <strong style={{ color: '#faad14' }}>{thongKe.choXuLy}</strong> yêu cầu
+                            </p>
+                            <p style={{ margin: 0, padding: '8px 0', borderBottom: '1px solid #f0f0f0' }}>
+                                Đang mượn: <strong style={{ color: '#1677ff' }}>{thongKe.dangMuon}</strong> thiết bị
+                            </p>
+                            <p style={{ margin: 0, padding: '8px 0' }}>
+                                Đến / Quá hạn: <strong style={{ color: thongKe.quaHan > 0 ? '#ff4d4f' : 'inherit' }}>{thongKe.quaHan}</strong> thiết bị
+                            </p>
+                            <Link to={'/user/lich-su-muon'} style={{ display: 'block', textAlign: 'right', marginTop: 8 }}>
+                                <u>Xem tất cả</u>
+                            </Link>
                         </Card>
                     </div>
                 </div>

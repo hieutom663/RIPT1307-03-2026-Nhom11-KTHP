@@ -14,7 +14,7 @@ const getDanhSachDanhMuc = async (req, res) => {
                 dm.trang_thai,
                 COUNT(tb.ma_thiet_bi) AS so_luong_thiet_bi
             FROM danhmuc dm
-            LEFT JOIN thietbi tb ON tb.id_danhmuc = dm.ma_danh_muc
+            LEFT JOIN thietbi tb ON tb.ma_danh_muc = dm.ma_danh_muc
             WHERE 1=1
         `;
         const params = [];

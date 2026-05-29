@@ -10,7 +10,7 @@ const layDanhSachThietBi = async (req, res) => {
         const [rows] = await pool.query(
             `SELECT ma_thiet_bi, ten_thiet_bi, hinh_anh AS img, mo_ta AS moTa, 
              tong_so_luong AS soLuongTong, so_luong_con_lai AS soLuongConLai, 
-             id_danhmuc, tinh_trang
+             ma_danh_muc, tinh_trang
              FROM thietbi LIMIT ? OFFSET ?`,
             [limit, offset]
         );
@@ -27,7 +27,7 @@ const layDanhSachThietBi = async (req, res) => {
 // Thêm thiết bị mới
 const themThietBi = async (req, res) => {
     try {
-        const { ten_thiet_bi, mo_ta, tong_so_luong, id_danhmuc, hinh_anh } = req.body;
+        const { ten_thiet_bi, mo_ta, tong_so_luong, ma_danh_muc, hinh_anh } = req.body;
 
         const [maxRows] = await pool.query("SELECT MAX(ma_thiet_bi) as maxId FROM thietbi");
         let ma_thiet_bi = 'TB0001';
@@ -38,9 +38,9 @@ const themThietBi = async (req, res) => {
         }
 
         await pool.query(
-            `INSERT INTO thietbi (ma_thiet_bi, ten_thiet_bi, mo_ta, tong_so_luong, id_danhmuc, hinh_anh, so_luong_da_cho_muon)
+            `INSERT INTO thietbi (ma_thiet_bi, ten_thiet_bi, mo_ta, tong_so_luong, ma_danh_muc, hinh_anh, so_luong_da_cho_muon)
              VALUES (?, ?, ?, ?, ?, ?, 0)`,
-            [ma_thiet_bi, ten_thiet_bi, mo_ta, tong_so_luong, id_danhmuc, hinh_anh]
+            [ma_thiet_bi, ten_thiet_bi, mo_ta, tong_so_luong, ma_danh_muc, hinh_anh]
         );
 
         res.json({ success: true, message: "Thêm thiết bị thành công", ma_thiet_bi: ma_thiet_bi });
@@ -54,12 +54,12 @@ const themThietBi = async (req, res) => {
 const suaThietBi = async (req, res) => {
     try {
         const id = req.params.id;
-        const { ten_thiet_bi, mo_ta, tong_so_luong, id_danhmuc, hinh_anh } = req.body;
+        const { ten_thiet_bi, mo_ta, tong_so_luong, ma_danh_muc, hinh_anh } = req.body;
 
         await pool.query(
-            `UPDATE thietbi SET ten_thiet_bi = ?, mo_ta = ?, tong_so_luong = ?, id_danhmuc = ?, hinh_anh = ?
+            `UPDATE thietbi SET ten_thiet_bi = ?, mo_ta = ?, tong_so_luong = ?, ma_danh_muc = ?, hinh_anh = ?
              WHERE ma_thiet_bi = ?`,
-            [ten_thiet_bi, mo_ta, tong_so_luong, id_danhmuc, hinh_anh, id]
+            [ten_thiet_bi, mo_ta, tong_so_luong, ma_danh_muc, hinh_anh, id]
         );
 
         res.json({ success: true, message: "Cập nhật thiết bị thành công" });

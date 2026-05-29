@@ -12,7 +12,7 @@ const getDanhSachYeuCau = async (req, res) => {
                 u.ho_ten AS tenSV,
                 y.ma_nguoi_muon AS maSV,
                 GROUP_CONCAT(t.ten_thiet_bi SEPARATOR ', ') AS thietBi,
-                SUM(c.soluong) AS soLuong,
+                SUM(c.so_luong) AS soLuong,
                 DATE_FORMAT(y.ngay_muon, '%Y-%m-%d') AS ngayMuon,
                 DATE_FORMAT(y.ngay_tra_du_kien, '%Y-%m-%d') AS ngayTraDK,
                 CASE 
@@ -89,7 +89,7 @@ const duyetYeuCau = async (req, res) => {
 
         // Lấy chi tiết đơn mượn để cập nhật số lượng thiết bị
         const [chiTietRows] = await connection.query(
-            "SELECT ma_thiet_bi, soluong FROM chitietdon WHERE ma_yeu_cau = ?",
+            "SELECT ma_thiet_bi, so_luong FROM chitietdon WHERE ma_yeu_cau = ?",
             [maYC]
         );
 
@@ -164,7 +164,7 @@ const tuChoiYeuCau = async (req, res) => {
 
         // Hoàn lại số lượng đã cho mượn (nếu đã trừ khi tạo yêu cầu)
         const [chiTietRows] = await pool.query(
-            "SELECT ma_thiet_bi, soluong FROM chitietdon WHERE ma_yeu_cau = ?",
+            "SELECT ma_thiet_bi, so_luong FROM chitietdon WHERE ma_yeu_cau = ?",
             [maYC]
         );
 

@@ -5,7 +5,7 @@ import { ClockCircleOutlined, FileTextOutlined, ExclamationCircleOutlined, Check
 import PhieuMuon from './component/PhieuMuon';
 import TatCaLichSu from './component/TatCaLichSu';
 
-import { getThongKeCaNhanAPI } from '../../../services/LichSuMuon/api'; 
+import { getLichSuCaNhanAPI } from '../../../services/LichSuMuon/api'; 
 
 const items: TabsProps['items'] = [
     { key: '1', label: 'Phiếu mượn', children: <PhieuMuon /> },
@@ -29,7 +29,7 @@ const LichSuMuon = () => {
                     return;
                 }
 
-                const res = await getThongKeCaNhanAPI(ma_sv);
+                const res = await getLichSuCaNhanAPI(ma_sv);
                 
                 if (res.data && res.data.success) {
                     setThongKe(res.data.data);

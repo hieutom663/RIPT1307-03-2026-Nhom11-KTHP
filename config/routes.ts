@@ -53,7 +53,7 @@ export default [
                 component: './admin/DanhMucThietBi',
             },
             {
-                path: '/admin/lich-su-muon-tra',
+                path: '/admin/lich-su',
                 name: 'Lịch sử Mượn/Trả',
                 icon: 'SwapOutlined',
                 component: './admin/LichSuMuon',

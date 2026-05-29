@@ -95,7 +95,7 @@ const TrangCaNhan = () => {
                 <Row align="middle" gutter={24}>
                     <Col><Avatar size={80} icon={<UserOutlined />} /></Col>
                     <Col>
-                        <h2>{userData.ten}</h2>
+                        <h2>{userData.ho_ten}</h2>
                         <Tag color="blue">Sinh viên</Tag>
                     </Col>
                 </Row>

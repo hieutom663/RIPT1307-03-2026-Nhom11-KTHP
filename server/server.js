@@ -12,10 +12,10 @@ const adminDanhMucRoutes = require('./src/routes/admin.danhmuc.route');
 const userProfileRoutes = require('./src/routes/user.profile.route');
 const equipmentRoutes = require('./src/routes/equipments.route');
 const adminEquipmentRoutes = require('./src/routes/admin.equipments.route');
-const historyRoutes = require('./src/routes/history.routes');
+const historyRoutes = require('./src/routes/user.history.routes');
 const yeuCauMuonRoutes = require('./src/routes/yeucaumuon.route');
 const thongKeRoutes = require('./src/routes/thongke.route');
-const adminHistoryRoutes = require('./src/routes/admin.history.route');
+const adminHistoryRoute = require('./src/routes/admin.history.route');
 
 const app = express();
 
@@ -41,7 +41,7 @@ app.use('/api', equipmentRoutes);
 app.use('/api/admin', adminEquipmentRoutes);
 
 app.use('/api/lich-su-muon', historyRoutes);
-app.use('/api/admin/lich-su', adminHistoryRoutes);
+app.use('/api/admin/lich-su-muon', adminHistoryRoute);
 app.use('/api/admin/yeu-cau-muon', yeuCauMuonRoutes);
 app.use('/api/admin/thong-ke', thongKeRoutes);
 
