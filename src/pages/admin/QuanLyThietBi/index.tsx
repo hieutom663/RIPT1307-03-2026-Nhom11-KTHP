@@ -1,213 +1,242 @@
-import { Row, Col, Table, Button, message, Popconfirm } from 'antd';
-import { useState, useEffect } from 'react';
-import BoLocThietBi from './component/BoLocThietBi';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { Table, Button, Input, Select, Space, Popconfirm, message, Tooltip, Image } from 'antd';
+import { PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons';
+import { useModel } from 'umi';
+
+import { getDanhSachThietBiAdminAPI, themThietBiAPI, suaThietBiAPI, xoaThietBiAPI } from '../../../services/QuanLyThietBi/api'; 
 import ThemSuaThietBi from './component/ThemSuaThietBi';
-import { layDanhSachThietBiAdmin, themThietBiAPI, suaThietBiAPI, xoaThietBiAPI } from '../../../services/QuanLyThietBi/api';
 
-const QuanLyThietBi = () => {
-    const [danhSach, setDanhSach] = useState([]);
-    const [modalVisible, setModalVisible] = useState(false);
-    const [dangSua, setDangSua] = useState(null);
+const { Search } = Input;
+
+const QuanLyThietBiAdmin = () => {
+    const { danhSachDanhMuc } = useModel('danhMuc'); 
+
+    const [danhSachThietBi, setDanhSachThietBi] = useState<any[]>([]);
+    const [loading, setLoading] = useState(false);
+    const [actionLoading, setActionLoading] = useState(false);
+    
+    const [tongSoLuong, setTongSoLuong] = useState(0);
+    const [trangHienTai, setTrangHienTai] = useState(1);
     const [boLoc, setBoLoc] = useState('tat-ca');
-    const [dangTai, setDangTai] = useState(false);
+    const [tuKhoa, setTuKhoa] = useState('');
+    const soThietBiMoiTrang = 10;
 
-    const [ten, setTen] = useState('');
-    const [moTa, setMoTa] = useState('');
-    const [soLuongTong, setSoLuongTong] = useState(0);
-    const [soLuongConLai, setSoLuongConLai] = useState(0);
-    const [loai, setLoai] = useState('dien-tu');
-    const [img, setImg] = useState('https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png');
+    const [modalVisible, setModalVisible] = useState(false);
+    const [thietBiDangChon, setThietBiDangChon] = useState<any>(null);
+    const [maMoiTiepTheo, setMaMoiTiepTheo] = useState<string>(''); // STATE LƯU MÃ MỚI
 
-    const layDuLieu = async () => {
-        setDangTai(true);
+    const fetchDanhSachThietBi = useCallback(async () => {
+        setLoading(true);
         try {
-            const response = await layDanhSachThietBiAdmin(1, 100);
+            const response = await getDanhSachThietBiAdminAPI({
+                danhMuc: boLoc === 'tat-ca' ? '' : boLoc, 
+                tuKhoa: tuKhoa, 
+                page: trangHienTai,
+                limit: soThietBiMoiTrang
+            });
+            
             if (response.data.success) {
-                const duLieu = response.data.data.map((tb: any) => ({
-                    key: tb.ma_thiet_bi,
-                    ten: tb.ten_thiet_bi,
-                    moTa: tb.moTa,
-                    soLuongTong: tb.soLuongTong,
-                    soLuongConLai: tb.soLuongConLai,
-                    loai: tb.id_danhmuc,
-                    img: tb.img,
-                }));
-                setDanhSach(duLieu);
+                setDanhSachThietBi(response.data.data);
+                setTongSoLuong(response.data.total);
+                // Gán mã mới lấy từ Backend
+                if (response.data.nextId) setMaMoiTiepTheo(response.data.nextId);
+            } else {
+                message.error('Không thể lấy danh sách thiết bị');
             }
         } catch (error) {
-            console.error('Lỗi lấy dữ liệu:', error);
-            message.error('Không thể lấy dữ liệu từ server');
+            console.error("Lỗi lấy danh sách:", error);
+            message.error('Lỗi kết nối máy chủ!');
+        } finally {
+            setLoading(false);
         }
-        setDangTai(false);
-    };
+    }, [boLoc, tuKhoa, trangHienTai]);
 
     useEffect(() => {
-        layDuLieu();
-    }, []);
+        fetchDanhSachThietBi();
+    }, [fetchDanhSachThietBi]);
 
-    const moModalThem = () => {
-        setDangSua(null);
-        setTen('');
-        setMoTa('');
-        setSoLuongTong(0);
-        setSoLuongConLai(0);
-        setLoai('dien-tu');
-        setImg('https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png');
+    const moModalThemMoi = () => {
+        setThietBiDangChon(null);
         setModalVisible(true);
     };
 
-    const moModalSua = (thietBi: any) => {
-        setDangSua(thietBi);
-        setTen(thietBi.ten);
-        setMoTa(thietBi.moTa);
-        setSoLuongTong(thietBi.soLuongTong);
-        setSoLuongConLai(thietBi.soLuongConLai);
-        setLoai(thietBi.loai);
-        setImg(thietBi.img);
+    const moModalSua = (record: any) => {
+        setThietBiDangChon(record);
         setModalVisible(true);
     };
 
-    const luuThietBi = async (duLieu: any) => {
-        if (!duLieu.ten) {
-            message.error('Vui lòng nhập tên thiết bị');
-            return;
-        }
+    const dongModal = () => {
+        setModalVisible(false);
+        setThietBiDangChon(null);
+    };
+
+    const xuLyLuuThietBi = async (values: any) => {
+        setActionLoading(true);
         try {
-            if (dangSua) {
-                // Sửa thiết bị
-                await suaThietBiAPI((dangSua as any).key, {
-                    ten_thiet_bi: duLieu.ten,
-                    mo_ta: duLieu.moTa,
-                    tong_so_luong: duLieu.soLuongTong,
-                    so_luong_con_lai: duLieu.soLuongConLai,
-                    id_danhmuc: duLieu.loai,
-                    hinh_anh: duLieu.img,
-                });
-                message.success('Đã cập nhật thiết bị');
-            } else {
-                // Thêm thiết bị mới
-                await themThietBiAPI({
-                    ten_thiet_bi: duLieu.ten,
-                    mo_ta: duLieu.moTa,
-                    tong_so_luong: duLieu.soLuongTong,
-                    so_luong_con_lai: duLieu.soLuongConLai,
-                    id_danhmuc: duLieu.loai,
-                    hinh_anh: duLieu.img,
-                });
-                message.success('Đã thêm thiết bị mới');
+            if (!thietBiDangChon) {
+                values.so_luong_con_lai = values.tong_so_luong;
             }
-            setModalVisible(false);
-            layDuLieu(); // Tải lại danh sách
+
+            if (thietBiDangChon) {
+                await suaThietBiAPI(thietBiDangChon.ma_thiet_bi, values);
+                message.success('Cập nhật thiết bị thành công!');
+            } else {
+                await themThietBiAPI(values);
+                message.success('Thêm thiết bị mới thành công!');
+            }
+            dongModal();
+            fetchDanhSachThietBi(); 
         } catch (error) {
-            console.error('Lỗi lưu:', error);
-            message.error('Lỗi khi lưu thiết bị');
+            message.error('Lỗi khi lưu thiết bị!');
+        } finally {
+            setActionLoading(false);
         }
     };
 
-    const xoaThietBi = async (key: any) => {
+    const xuLyXoa = async (maThietBi: string) => {
         try {
-            await xoaThietBiAPI(key);
-            message.success('Đã xóa thiết bị');
-            layDuLieu(); // Tải lại danh sách
+            await xoaThietBiAPI(maThietBi);
+            message.success('Đã xóa thiết bị!');
+            fetchDanhSachThietBi();
         } catch (error) {
-            console.error('Lỗi xóa:', error);
-            message.error('Lỗi khi xóa thiết bị');
+            message.error('Lỗi khi xóa thiết bị!');
         }
     };
 
-    const danhSachLoc = boLoc === 'tat-ca'
-        ? danhSach
-        : danhSach.filter((tb: any) => tb.loai === boLoc);
-
-    const cotBang = [
+    const columns = [
         {
             title: 'STT',
-            render: (_: any, __: any, index: any) => index + 1,
+            key: 'stt',
             width: 60,
+            align: 'center' as const,
+            render: (_: any, __: any, index: number) => (trangHienTai - 1) * soThietBiMoiTrang + index + 1,
         },
         {
             title: 'Hình ảnh',
             dataIndex: 'img',
             width: 80,
-            render: (img: any) => <img src={img} alt="img" style={{ width: 50, height: 50 }} />,
+            align: 'center' as const,
+            render: (img: string) => (
+                <Image src={img} style={{ width: 40, height: 40, objectFit: 'cover', borderRadius: 4 }} />
+            ),
         },
-        { title: 'Tên thiết bị', dataIndex: 'ten' },
-        { title: 'Mô tả', dataIndex: 'moTa' },
         {
-            title: 'Loại',
-            dataIndex: 'loai',
-            render: (loai: any) => {
-                if (loai === 'dien-tu') return 'Điện tử';
-                if (loai === 'hoc-tap') return 'Học tập';
-                if (loai === 'tien-ich') return 'Tiện ích';
-                return loai;
+            title: 'Mã TB',
+            dataIndex: 'ma_thiet_bi',
+            width: 100,
+            sorter: (a: any, b: any) => a.ma_thiet_bi.localeCompare(b.ma_thiet_bi),
+        },
+        {
+            title: 'Tên thiết bị',
+            dataIndex: 'ten_thiet_bi',
+            sorter: (a: any, b: any) => a.ten_thiet_bi.localeCompare(b.ten_thiet_bi),
+        },
+        {
+            title: 'Danh mục',
+            dataIndex: 'ma_danh_muc',
+            width: 150,
+            render: (ma_danh_muc: string) => {
+                const dm = danhSachDanhMuc.find((d: any) => d.ma_danh_muc === ma_danh_muc);
+                return dm ? dm.ten_danh_muc : ma_danh_muc;
             },
         },
-        { title: 'SL Tổng', dataIndex: 'soLuongTong', width: 90 },
-        { title: 'SL Còn lại', dataIndex: 'soLuongConLai', width: 100 },
+        {
+            title: 'Mô tả',
+            dataIndex: 'mo_ta',
+            ellipsis: true,
+        },
+        {
+            title: 'SL Tổng',
+            dataIndex: 'tong_so_luong',
+            width: 100,
+            align: 'center' as const,
+            sorter: (a: any, b: any) => a.soLuongTong - b.soLuongTong,
+        },
+        {
+            title: 'SL Còn lại',
+            dataIndex: 'so_luong_con_lai',
+            width: 100,
+            align: 'center' as const,
+            sorter: (a: any, b: any) => a.soLuongConLai - b.soLuongConLai,
+        },
         {
             title: 'Hành động',
-            width: 180,
+            key: 'action',
+            width: 150,
+            align: 'center' as const,
             render: (_: any, record: any) => (
-                <div>
-                    <Button type="primary" size="small" onClick={() => moModalSua(record)} style={{ marginRight: 8 }}>
-                        Sửa
-                    </Button>
-                    <Popconfirm title="Bạn có chắc muốn xóa?" onConfirm={() => xoaThietBi(record.key)}>
-                        <Button danger size="small">Xóa</Button>
+                <Space size="small">
+                    <Tooltip title="Xem / Sửa">
+                        <Button type="primary" size="small" icon={<EditOutlined />} onClick={() => moModalSua(record)} />
+                    </Tooltip>
+                    <Popconfirm title="Bạn có chắc chắn muốn xóa?" onConfirm={() => xuLyXoa(record.ma_thiet_bi)}>
+                        <Tooltip title="Xóa">
+                            <Button danger size="small" icon={<DeleteOutlined />} />
+                        </Tooltip>
                     </Popconfirm>
-                </div>
+                </Space>
             ),
         },
     ];
 
-    return (
-        <div>
-            <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
-                <Col span={24}>
-                    <div style={{ padding: '24px 68px' }}>
-                        <div style={{ fontSize: 20, marginBottom: 16 }}>
-                            <strong>Quản lý thiết bị</strong>
-                        </div>
-                    </div>
-                </Col>
-            </Row>
+    const danhMucOptions = useMemo(() => [
+        { value: 'tat-ca', label: 'Tất cả danh mục' },
+        ...danhSachDanhMuc.map((dm: any) => ({
+            value: dm.ma_danh_muc,
+            label: dm.ten_danh_muc
+        }))
+    ], [danhSachDanhMuc]);
 
-            <div style={{ padding: '0 36px', marginBottom: 16 }}>
-                <BoLocThietBi boLoc={boLoc} onChangeLoc={(giaTri: any) => setBoLoc(giaTri)} />
-                <Button type="primary" onClick={moModalThem} style={{ marginLeft: 16 }}>
-                    + Thêm thiết bị
+    return (
+        <div style={{ padding: '24px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
+                <h2>Quản lý Thiết bị (Admin)</h2>
+                <Button type="primary" icon={<PlusOutlined />} onClick={moModalThemMoi}>
+                    Thêm thiết bị mới
                 </Button>
             </div>
 
-            <div style={{ padding: '0 36px' }}>
-                <Table
-                    columns={cotBang}
-                    dataSource={danhSachLoc}
-                    pagination={{ pageSize: 10 }}
-                    loading={dangTai}
+            <div style={{ display: 'flex', gap: '16px', marginBottom: 16 }}>
+                <Search
+                    placeholder="Tìm tên hoặc mã thiết bị..."
+                    allowClear
+                    enterButton="Tìm kiếm"
+                    onSearch={(value) => { setTuKhoa(value); setTrangHienTai(1); }}
+                    style={{ maxWidth: 400 }}
+                />
+                <Select
+                    value={boLoc}
+                    onChange={(giaTri) => { setBoLoc(giaTri); setTrangHienTai(1); }}
+                    style={{ width: 250 }}
+                    options={danhMucOptions}
                 />
             </div>
 
+            <Table
+                columns={columns}
+                dataSource={danhSachThietBi}
+                rowKey="ma_thiet_bi"
+                loading={loading}
+                bordered
+                pagination={{
+                    current: trangHienTai,
+                    pageSize: soThietBiMoiTrang,
+                    total: tongSoLuong,
+                    showSizeChanger: false,
+                    onChange: (page) => setTrangHienTai(page),
+                }}
+            />
+
             <ThemSuaThietBi
                 visible={modalVisible}
-                thietBi={dangSua}
-                ten={ten}
-                moTa={moTa}
-                soLuongTong={soLuongTong}
-                soLuongConLai={soLuongConLai}
-                loai={loai}
-                img={img}
-                onChangeTen={(giaTri: any) => setTen(giaTri)}
-                onChangeMoTa={(giaTri: any) => setMoTa(giaTri)}
-                onChangeSoLuongTong={(giaTri: any) => setSoLuongTong(giaTri)}
-                onChangeSoLuongConLai={(giaTri: any) => setSoLuongConLai(giaTri)}
-                onChangeLoai={(giaTri: any) => setLoai(giaTri)}
-                onChangeImg={(giaTri: any) => setImg(giaTri)}
-                onSave={luuThietBi}
-                onCancel={() => setModalVisible(false)}
+                thietBi={thietBiDangChon}
+                maMoi={maMoiTiepTheo}
+                onCancel={dongModal}
+                onSave={xuLyLuuThietBi}
+                loading={actionLoading}
             />
         </div>
     );
-}
-export default QuanLyThietBi;
+};
+
+export default QuanLyThietBiAdmin;

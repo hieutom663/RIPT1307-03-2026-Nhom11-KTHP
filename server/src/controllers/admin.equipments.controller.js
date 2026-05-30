@@ -1,46 +1,78 @@
 const pool = require('../config/db.config');
 
 // Lấy danh sách thiết bị (admin)
-const layDanhSachThietBi = async (req, res) => {
+const getDanhSachThietBi = async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 10;
         const offset = (page - 1) * limit;
+        const danhMuc = req.query.danhMuc;
+        const tuKhoa = req.query.tuKhoa;
 
-        const [rows] = await pool.query(
-            `SELECT ma_thiet_bi, ten_thiet_bi, hinh_anh AS img, mo_ta AS moTa, 
-             tong_so_luong AS soLuongTong, so_luong_con_lai AS soLuongConLai, 
-             ma_danh_muc, tinh_trang
-             FROM thietbi LIMIT ? OFFSET ?`,
-            [limit, offset]
-        );
+        let whereClause = 'WHERE 1=1';
+        let queryParams = [];
 
-        const [countRows] = await pool.query("SELECT COUNT(*) as total FROM thietbi");
+        if (danhMuc && danhMuc !== 'tat-ca') {
+            whereClause += ' AND ma_danh_muc = ?';
+            queryParams.push(danhMuc);
+        }
 
-        res.json({ success: true, data: rows, total: countRows[0].total });
+        if (tuKhoa) {
+            whereClause += ' AND (ten_thiet_bi LIKE ? OR ma_thiet_bi LIKE ?)';
+            queryParams.push(`%${tuKhoa}%`, `%${tuKhoa}%`);
+        }
+
+        const countQuery = `SELECT COUNT(*) as total FROM thietbi ${whereClause}`;
+        const [countRows] = await pool.query(countQuery, queryParams);
+        const [maxRows] = await pool.query(`
+            SELECT MAX(CAST(SUBSTRING(ma_thiet_bi, 3) AS UNSIGNED)) as maxNum 
+            FROM thietbi 
+            WHERE ma_thiet_bi LIKE 'TB%'
+        `);
+        let nextId = 'TB0001';
+        if (maxRows[0].maxNum) {
+            nextId = 'TB' + (maxRows[0].maxNum + 1).toString().padStart(4, '0');
+        }
+
+        const dataQuery = `
+            SELECT ma_thiet_bi, ten_thiet_bi, hinh_anh AS img, mo_ta, 
+                   tong_so_luong, so_luong_con_lai, 
+                   ma_danh_muc, tinh_trang
+            FROM thietbi 
+            ${whereClause} 
+            ORDER BY ma_thiet_bi DESC 
+            LIMIT ? OFFSET ?
+        `;
+        const [rows] = await pool.query(dataQuery, [...queryParams, limit, offset]);
+
+        res.json({ success: true, data: rows, total: countRows[0].total, nextId: nextId });
     } catch (error) {
         console.error("Lỗi lấy danh sách:", error);
         res.status(500).json({ success: false, message: "Lỗi server" });
     }
 };
 
-// Thêm thiết bị mới
+// Thêm
 const themThietBi = async (req, res) => {
     try {
-        const { ten_thiet_bi, mo_ta, tong_so_luong, ma_danh_muc, hinh_anh } = req.body;
+        const { ten_thiet_bi, mo_ta, tong_so_luong, ma_danh_muc, img } = req.body;
 
-        const [maxRows] = await pool.query("SELECT MAX(ma_thiet_bi) as maxId FROM thietbi");
+        const [rows] = await pool.query(`
+            SELECT MAX(CAST(SUBSTRING(ma_thiet_bi, 3) AS UNSIGNED)) as maxNum 
+            FROM thietbi 
+            WHERE ma_thiet_bi LIKE 'TB%'
+        `);
+        
         let ma_thiet_bi = 'TB0001';
-        if (maxRows[0].maxId) {
-            const currentNum = parseInt(maxRows[0].maxId.replace('TB', ''), 10);
-            const nextNum = currentNum + 1;
+        if (rows[0].maxNum) {
+            const nextNum = rows[0].maxNum + 1;
             ma_thiet_bi = 'TB' + nextNum.toString().padStart(4, '0');
         }
 
         await pool.query(
             `INSERT INTO thietbi (ma_thiet_bi, ten_thiet_bi, mo_ta, tong_so_luong, ma_danh_muc, hinh_anh, so_luong_da_cho_muon)
              VALUES (?, ?, ?, ?, ?, ?, 0)`,
-            [ma_thiet_bi, ten_thiet_bi, mo_ta, tong_so_luong, ma_danh_muc, hinh_anh]
+            [ma_thiet_bi, ten_thiet_bi, mo_ta, tong_so_luong, ma_danh_muc, img]
         );
 
         res.json({ success: true, message: "Thêm thiết bị thành công", ma_thiet_bi: ma_thiet_bi });
@@ -50,16 +82,16 @@ const themThietBi = async (req, res) => {
     }
 };
 
-// Sửa thiết bị
+// Sửa
 const suaThietBi = async (req, res) => {
     try {
         const id = req.params.id;
-        const { ten_thiet_bi, mo_ta, tong_so_luong, ma_danh_muc, hinh_anh } = req.body;
-
+        const { ten_thiet_bi, mo_ta, tong_so_luong, ma_danh_muc, img } = req.body;
         await pool.query(
-            `UPDATE thietbi SET ten_thiet_bi = ?, mo_ta = ?, tong_so_luong = ?, ma_danh_muc = ?, hinh_anh = ?
+            `UPDATE thietbi 
+             SET ten_thiet_bi = ?, mo_ta = ?, tong_so_luong = ?, ma_danh_muc = ?, hinh_anh = ?
              WHERE ma_thiet_bi = ?`,
-            [ten_thiet_bi, mo_ta, tong_so_luong, ma_danh_muc, hinh_anh, id]
+            [ten_thiet_bi, mo_ta, tong_so_luong, ma_danh_muc, img, id]
         );
 
         res.json({ success: true, message: "Cập nhật thiết bị thành công" });
@@ -69,7 +101,6 @@ const suaThietBi = async (req, res) => {
     }
 };
 
-// Xóa thiết bị
 const xoaThietBi = async (req, res) => {
     try {
         const id = req.params.id;
@@ -83,4 +114,4 @@ const xoaThietBi = async (req, res) => {
     }
 };
 
-module.exports = { layDanhSachThietBi, themThietBi, suaThietBi, xoaThietBi };
+module.exports = { getDanhSachThietBi, themThietBi, suaThietBi, xoaThietBi };

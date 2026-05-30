@@ -1,10 +1,10 @@
 import api from '../api';
 
-export async function getDanhSachThietBi(params: { danhMuc: string, tuKhoa:string, page: number, limit: number }) {
+export async function getDanhSachThietBiAPI(params: { danhMuc: string, tuKhoa:string, page: number, limit: number }) {
     return api.get('/thiet-bi', { params });
 }
 
-export async function getDanhSachDanhMuc() {
+export async function getDanhSachDanhMucAPI() {
     return api.get('/danh-muc');
 }
 

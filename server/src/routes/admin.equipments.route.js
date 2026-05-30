@@ -3,7 +3,7 @@ const router = express.Router();
 const adminEquipmentController = require('../controllers/admin.equipments.controller');
 
 // GET: Lấy danh sách thiết bị
-router.get('/thiet-bi', adminEquipmentController.layDanhSachThietBi);
+router.get('/thiet-bi', adminEquipmentController.getDanhSachThietBi);
 
 // POST: Thêm thiết bị mới
 router.post('/thiet-bi', adminEquipmentController.themThietBi);

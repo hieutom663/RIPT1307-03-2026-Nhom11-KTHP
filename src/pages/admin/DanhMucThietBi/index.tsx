@@ -224,7 +224,7 @@ const DanhMucThietBiAdmin: React.FC = () => {
             {/* Lỗi */}
             {error && (
                 <Alert
-                    message={error}
+                    title={error}
                     type="error"
                     showIcon
                     closable

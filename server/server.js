@@ -10,7 +10,7 @@ const authRoutes = require('./src/routes/auth.route');
 const adminHomeRoutes = require('./src/routes/admin.home.route');
 const adminDanhMucRoutes = require('./src/routes/admin.danhmuc.route');
 const userProfileRoutes = require('./src/routes/user.profile.route');
-const equipmentRoutes = require('./src/routes/equipments.route');
+const userEquipmentRoutes = require('./src/routes/user.equipments.route');
 const adminEquipmentRoutes = require('./src/routes/admin.equipments.route');
 const historyRoutes = require('./src/routes/user.history.routes');
 const yeuCauMuonRoutes = require('./src/routes/yeucaumuon.route');
@@ -36,7 +36,7 @@ app.use('/api/admin/danh-muc', adminDanhMucRoutes);
 
 app.use('/api/user', userProfileRoutes);
 
-app.use('/api', equipmentRoutes);
+app.use('/api', userEquipmentRoutes);
 
 app.use('/api/admin', adminEquipmentRoutes);
 

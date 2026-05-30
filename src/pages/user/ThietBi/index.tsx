@@ -6,7 +6,7 @@ import { useFormMuon } from '../../../hooks/useFormMuon';
 
 import ChiTietThietBi from './component/ChiTietThietBi';
 import GuiYeuCauMuon from './component/GuiYeuCauMuon';
-import { getDanhSachThietBi } from '../../../services/ThietBi/api'; 
+import { getDanhSachThietBiAPI } from '../../../services/ThietBi/api'; 
 
 const { Meta } = Card;
 const { Search } = Input; 
@@ -48,7 +48,7 @@ const ThietBi = () => {
     const fetchDanhSachThietBi = useCallback(async () => {
         setLoading(true);
         try {
-            const response = await getDanhSachThietBi({
+            const response = await getDanhSachThietBiAPI({
                 danhMuc: boLoc, 
                 tuKhoa: tuKhoa, 
                 page: trangHienTai,

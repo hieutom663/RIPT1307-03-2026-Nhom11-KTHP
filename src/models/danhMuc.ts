@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getDanhSachDanhMuc } from '@/services/ThietBi/api';
+import { getDanhSachDanhMucAPI } from '@/services/ThietBi/api';
 
 export default function useDanhMucModel() {
     const [danhSachDanhMuc, setDanhSachDanhMuc] = useState<any[]>([]);
@@ -8,7 +8,7 @@ export default function useDanhMucModel() {
         if (danhSachDanhMuc.length > 0) return; 
 
         try {
-            const response = await getDanhSachDanhMuc();
+            const response = await getDanhSachDanhMucAPI();
             if (response.data.success) {
                 setDanhSachDanhMuc(response.data.data);
             }

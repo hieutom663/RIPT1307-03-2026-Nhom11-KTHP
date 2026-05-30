@@ -1,21 +1,21 @@
-import apiClient from '../api';
+import api from '../api';
 
 // Lấy danh sách thiết bị (admin)
-export async function layDanhSachThietBiAdmin(page: any, limit: any) {
-    return apiClient.get('/admin/thiet-bi', { params: { page, limit } });
+export async function getDanhSachThietBiAdminAPI(params: { page: any; limit: any; danhMuc?: any; tuKhoa?: any }) {
+    return api.get('/admin/thiet-bi', { params });
 }
 
-// Thêm thiết bị mới
+// Thêm
 export async function themThietBiAPI(duLieu: any) {
-    return apiClient.post('/admin/thiet-bi', duLieu);
+    return api.post('/admin/thiet-bi', duLieu);
 }
 
-// Sửa thiết bị
+// Sửa
 export async function suaThietBiAPI(id: any, duLieu: any) {
-    return apiClient.put('/admin/thiet-bi/' + id, duLieu);
+    return api.put('/admin/thiet-bi/' + id, duLieu);
 }
 
-// Xóa thiết bị
+// Xóa
 export async function xoaThietBiAPI(id: any) {
-    return apiClient.delete('/admin/thiet-bi/' + id);
+    return api.delete('/admin/thiet-bi/' + id);
 }
