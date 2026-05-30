@@ -65,6 +65,87 @@ const getDanhSachYeuCau = async (req, res) => {
 };
 
 /**
+ * Xem chi tiết yêu cầu mượn
+ * GET /api/admin/yeu-cau-muon/:maYC/chi-tiet
+ */
+const getChiTietYeuCau = async (req, res) => {
+    try {
+        const { maYC } = req.params;
+
+        // Lấy thông tin yêu cầu + sinh viên
+        const [ycRows] = await pool.query(`
+            SELECT 
+                y.ma_yeu_cau AS maYC,
+                y.ma_nguoi_muon AS maSV,
+                u.ten AS tenSV,
+                u.email AS emailSV,
+                u.so_phone AS sdtSV,
+                DATE_FORMAT(y.ngay_muon, '%Y-%m-%d') AS ngayMuon,
+                DATE_FORMAT(y.ngay_tra_du_kien, '%Y-%m-%d') AS ngayTraDK,
+                DATE_FORMAT(y.ngay_duyet, '%Y-%m-%d') AS ngayDuyet,
+                y.li_do_muon AS lyDoMuon,
+                y.li_do_tu_choi AS lyDoTuChoi,
+                y.trang_thai AS trangThaiGoc,
+                CASE 
+                    WHEN y.trang_thai = 'Chờ duyệt' THEN 'cho_duyet'
+                    WHEN y.trang_thai = 'Đã duyệt' THEN 'da_duyet'
+                    WHEN y.trang_thai = 'Đang mượn' THEN 'dang_muon'
+                    WHEN y.trang_thai = 'Hoàn thành' THEN 'da_tra'
+                    WHEN y.trang_thai = 'Bị từ chối' THEN 'tu_choi'
+                    ELSE 'cho_duyet'
+                END AS trangThai
+            FROM yeucaumuon y
+            JOIN users u ON y.ma_nguoi_muon = u.ma_sv
+            WHERE y.ma_yeu_cau = ?
+        `, [maYC]);
+
+        if (ycRows.length === 0) {
+            return res.json({ success: false, message: "Không tìm thấy yêu cầu" });
+        }
+
+        const yeuCau = ycRows[0];
+
+        // Xử lý quá hạn
+        if (yeuCau.trangThai === 'dang_muon') {
+            const ngayTraDK = new Date(yeuCau.ngayTraDK);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            if (ngayTraDK < today) {
+                yeuCau.trangThai = 'qua_han';
+            }
+        }
+
+        // Lấy danh sách chi tiết thiết bị mượn
+        const [ctRows] = await pool.query(`
+            SELECT 
+                c.ma_don_muon AS maDonMuon,
+                c.ma_thiet_bi AS maThietBi,
+                t.ten_thiet_bi AS tenThietBi,
+                d.ten_danh_muc AS danhMuc,
+                c.soluong AS soLuong,
+                DATE_FORMAT(c.ngay_tra, '%Y-%m-%d') AS ngayTraThucTe,
+                c.trang_thai AS trangThaiThietBi
+            FROM chitietdon c
+            JOIN thietbi t ON c.ma_thiet_bi = t.ma_thiet_bi
+            LEFT JOIN danhmuc d ON t.id_danhmuc = d.ma_danh_muc
+            WHERE c.ma_yeu_cau = ?
+        `, [maYC]);
+
+        res.json({
+            success: true,
+            data: {
+                ...yeuCau,
+                chiTietThietBi: ctRows
+            }
+        });
+
+    } catch (error) {
+        console.error("Lỗi getChiTietYeuCau:", error);
+        res.status(500).json({ success: false, message: "Lỗi server khi lấy chi tiết yêu cầu" });
+    }
+};
+
+/**
  * Duyệt yêu cầu mượn
  * PUT /api/admin/yeu-cau-muon/:maYC/duyet
  */
@@ -139,12 +220,13 @@ const duyetYeuCau = async (req, res) => {
 };
 
 /**
- * Từ chối yêu cầu mượn
+ * Từ chối yêu cầu mượn (có lý do)
  * PUT /api/admin/yeu-cau-muon/:maYC/tu-choi
  */
 const tuChoiYeuCau = async (req, res) => {
     try {
         const { maYC } = req.params;
+        const { lyDoTuChoi } = req.body;
 
         // Kiểm tra yêu cầu tồn tại và đang ở trạng thái "Chờ duyệt"
         const [yeuCauRows] = await pool.query(
@@ -156,10 +238,10 @@ const tuChoiYeuCau = async (req, res) => {
             return res.json({ success: false, message: "Yêu cầu không tồn tại hoặc không ở trạng thái chờ duyệt" });
         }
 
-        // Cập nhật trạng thái yêu cầu thành "Bị từ chối"
+        // Cập nhật trạng thái yêu cầu thành "Bị từ chối" + lưu lý do
         await pool.query(
-            "UPDATE yeucaumuon SET trang_thai = 'Bị từ chối', ngay_duyet = NOW() WHERE ma_yeu_cau = ?",
-            [maYC]
+            "UPDATE yeucaumuon SET trang_thai = 'Bị từ chối', ngay_duyet = NOW(), li_do_tu_choi = ? WHERE ma_yeu_cau = ?",
+            [lyDoTuChoi || null, maYC]
         );
 
         // Hoàn lại số lượng đã cho mượn (nếu đã trừ khi tạo yêu cầu)
@@ -185,4 +267,4 @@ const tuChoiYeuCau = async (req, res) => {
     }
 };
 
-module.exports = { getDanhSachYeuCau, duyetYeuCau, tuChoiYeuCau };
+module.exports = { getDanhSachYeuCau, getChiTietYeuCau, duyetYeuCau, tuChoiYeuCau };
