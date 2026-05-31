@@ -31,15 +31,17 @@ const PhieuMuon = () => {
 
     const columns = [
         {
+            title: 'STT',
+            key: 'stt',
+            width: 60,
+            align: 'center' as const,
+            render: (_text: any, _record: any, index: number) => index + 1,
+        },
+        {
             title: 'Mã SV', 
             dataIndex: 'ma_sv',
             key: 'ma_sv',
             width: 120, 
-        },
-        {
-            title: 'Mã Phiếu', 
-            dataIndex: 'maYeuCau', 
-            key: 'maYeuCau',
         },
         {
             title: 'Mã Phiếu', 

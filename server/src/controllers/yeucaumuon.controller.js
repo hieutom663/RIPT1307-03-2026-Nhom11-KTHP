@@ -36,8 +36,6 @@ const getDanhSachYeuCau = async (req, res) => {
         `;
 
         const [rows] = await pool.query(queryStr);
-
-        // Xử lý thêm trạng thái quá hạn (cho đang mượn mà quá ngày trả)
         const data = rows.map((row, index) => {
             let trangThai = row.trangThai;
             if (row.trangThai === 'dang_muon') {
@@ -72,19 +70,18 @@ const getChiTietYeuCau = async (req, res) => {
     try {
         const { maYC } = req.params;
 
-        // Lấy thông tin yêu cầu + sinh viên
         const [ycRows] = await pool.query(`
             SELECT 
                 y.ma_yeu_cau AS maYC,
                 y.ma_nguoi_muon AS maSV,
-                u.ten AS tenSV,
+                u.ho_ten AS tenSV,
                 u.email AS emailSV,
                 u.so_phone AS sdtSV,
                 DATE_FORMAT(y.ngay_muon, '%Y-%m-%d') AS ngayMuon,
                 DATE_FORMAT(y.ngay_tra_du_kien, '%Y-%m-%d') AS ngayTraDK,
                 DATE_FORMAT(y.ngay_duyet, '%Y-%m-%d') AS ngayDuyet,
-                y.li_do_muon AS lyDoMuon,
-                y.li_do_tu_choi AS lyDoTuChoi,
+                y.ly_do_muon AS lyDoMuon,
+                y.ly_do_tu_choi AS lyDoTuChoi,
                 y.trang_thai AS trangThaiGoc,
                 CASE 
                     WHEN y.trang_thai = 'Chờ duyệt' THEN 'cho_duyet'
@@ -105,7 +102,6 @@ const getChiTietYeuCau = async (req, res) => {
 
         const yeuCau = ycRows[0];
 
-        // Xử lý quá hạn
         if (yeuCau.trangThai === 'dang_muon') {
             const ngayTraDK = new Date(yeuCau.ngayTraDK);
             const today = new Date();
@@ -115,19 +111,18 @@ const getChiTietYeuCau = async (req, res) => {
             }
         }
 
-        // Lấy danh sách chi tiết thiết bị mượn
         const [ctRows] = await pool.query(`
             SELECT 
                 c.ma_don_muon AS maDonMuon,
                 c.ma_thiet_bi AS maThietBi,
                 t.ten_thiet_bi AS tenThietBi,
                 d.ten_danh_muc AS danhMuc,
-                c.soluong AS soLuong,
+                c.so_luong AS soLuong,
                 DATE_FORMAT(c.ngay_tra, '%Y-%m-%d') AS ngayTraThucTe,
                 c.trang_thai AS trangThaiThietBi
             FROM chitietdon c
             JOIN thietbi t ON c.ma_thiet_bi = t.ma_thiet_bi
-            LEFT JOIN danhmuc d ON t.id_danhmuc = d.ma_danh_muc
+            LEFT JOIN danhmuc d ON t.ma_danh_muc = d.ma_danh_muc
             WHERE c.ma_yeu_cau = ?
         `, [maYC]);
 
@@ -156,7 +151,6 @@ const duyetYeuCau = async (req, res) => {
 
         await connection.beginTransaction();
 
-        // Kiểm tra yêu cầu tồn tại và đang ở trạng thái "Chờ duyệt"
         const [yeuCauRows] = await connection.query(
             "SELECT * FROM yeucaumuon WHERE ma_yeu_cau = ? AND trang_thai = 'Chờ duyệt'",
             [maYC]
@@ -168,19 +162,19 @@ const duyetYeuCau = async (req, res) => {
             return res.json({ success: false, message: "Yêu cầu không tồn tại hoặc không ở trạng thái chờ duyệt" });
         }
 
-        // Lấy chi tiết đơn mượn để cập nhật số lượng thiết bị
+        const maNguoiMuon = yeuCauRows[0].ma_nguoi_muon;
+
         const [chiTietRows] = await connection.query(
             "SELECT ma_thiet_bi, so_luong FROM chitietdon WHERE ma_yeu_cau = ?",
             [maYC]
         );
 
-        // Kiểm tra số lượng còn lại đủ không
         for (const ct of chiTietRows) {
             const [tbRows] = await connection.query(
                 "SELECT so_luong_con_lai FROM thietbi WHERE ma_thiet_bi = ?",
                 [ct.ma_thiet_bi]
             );
-            if (tbRows.length > 0 && tbRows[0].so_luong_con_lai < ct.soluong) {
+            if (tbRows.length > 0 && tbRows[0].so_luong_con_lai < ct.so_luong) {
                 await connection.rollback();
                 connection.release();
                 return res.json({ 
@@ -190,21 +184,28 @@ const duyetYeuCau = async (req, res) => {
             }
         }
 
-        // Cập nhật trạng thái yêu cầu
         await connection.query(
-            "UPDATE yeucaumuon SET trang_thai = 'Đã duyệt', ngay_duyet = NOW() WHERE ma_yeu_cau = ?",
+            "UPDATE yeucaumuon SET trang_thai = 'Đang mượn', ngay_duyet = NOW() WHERE ma_yeu_cau = ?",
             [maYC]
         );
 
-        // Cập nhật số lượng thiết bị (tăng so_luong_da_cho_muon, so_luong_con_lai là generated column sẽ tự cập nhật)
         for (const ct of chiTietRows) {
             await connection.query(
                 `UPDATE thietbi 
                  SET so_luong_da_cho_muon = so_luong_da_cho_muon + ? 
                  WHERE ma_thiet_bi = ?`,
-                [ct.soluong, ct.ma_thiet_bi]
+                [ct.so_luong, ct.ma_thiet_bi] 
             );
         }
+
+        const tieuDe = 'Đã duyệt đơn';
+        const noiDung = `Đơn mượn ${maYC} của bạn đã được duyệt thành công.`;
+        
+        await connection.query(
+            `INSERT INTO thongbao (tieu_de, noi_dung, ngay, nguoinhan_id, loai, trang_thai) 
+             VALUES (?, ?, NOW(), ?, 'duyệt', 'chua_doc')`,
+            [tieuDe, noiDung, maNguoiMuon]
+        );
 
         await connection.commit();
         connection.release();
@@ -224,44 +225,63 @@ const duyetYeuCau = async (req, res) => {
  * PUT /api/admin/yeu-cau-muon/:maYC/tu-choi
  */
 const tuChoiYeuCau = async (req, res) => {
+    const connection = await pool.getConnection();
     try {
         const { maYC } = req.params;
         const { lyDoTuChoi } = req.body;
 
-        // Kiểm tra yêu cầu tồn tại và đang ở trạng thái "Chờ duyệt"
-        const [yeuCauRows] = await pool.query(
+        await connection.beginTransaction();
+
+        const [yeuCauRows] = await connection.query(
             "SELECT * FROM yeucaumuon WHERE ma_yeu_cau = ? AND trang_thai = 'Chờ duyệt'",
             [maYC]
         );
 
         if (yeuCauRows.length === 0) {
+            await connection.rollback();
+            connection.release();
             return res.json({ success: false, message: "Yêu cầu không tồn tại hoặc không ở trạng thái chờ duyệt" });
         }
 
-        // Cập nhật trạng thái yêu cầu thành "Bị từ chối" + lưu lý do
-        await pool.query(
-            "UPDATE yeucaumuon SET trang_thai = 'Bị từ chối', ngay_duyet = NOW(), li_do_tu_choi = ? WHERE ma_yeu_cau = ?",
+        const maNguoiMuon = yeuCauRows[0].ma_nguoi_muon;
+
+        await connection.query(
+            "UPDATE yeucaumuon SET trang_thai = 'Bị từ chối', ngay_duyet = NOW(), ly_do_tu_choi = ? WHERE ma_yeu_cau = ?",
             [lyDoTuChoi || null, maYC]
         );
 
-        // Hoàn lại số lượng đã cho mượn (nếu đã trừ khi tạo yêu cầu)
-        const [chiTietRows] = await pool.query(
+        const [chiTietRows] = await connection.query(
             "SELECT ma_thiet_bi, so_luong FROM chitietdon WHERE ma_yeu_cau = ?",
             [maYC]
         );
 
         for (const ct of chiTietRows) {
-            await pool.query(
+            await connection.query(
                 `UPDATE thietbi 
                  SET so_luong_da_cho_muon = GREATEST(so_luong_da_cho_muon - ?, 0) 
                  WHERE ma_thiet_bi = ?`,
-                [ct.soluong, ct.ma_thiet_bi]
+                [ct.so_luong, ct.ma_thiet_bi] 
             );
         }
+
+        const tieuDe = 'YC bị từ chối';
+        const lyDoNgan = lyDoTuChoi ? (lyDoTuChoi.length > 100 ? lyDoTuChoi.substring(0, 100) + '...' : lyDoTuChoi) : 'Không rõ lý do';
+        const noiDung = `Đơn ${maYC} bị từ chối. Lý do: ${lyDoNgan}`;
+        
+        await connection.query(
+            `INSERT INTO thongbao (tieu_de, noi_dung, ngay, nguoinhan_id, loai, trang_thai) 
+             VALUES (?, ?, NOW(), ?, 'từ chối', 'chua_doc')`,
+            [tieuDe, noiDung, maNguoiMuon]
+        );
+
+        await connection.commit();
+        connection.release();
 
         res.json({ success: true, message: `Đã từ chối yêu cầu ${maYC}` });
 
     } catch (error) {
+        await connection.rollback();
+        connection.release();
         console.error("Lỗi tuChoiYeuCau:", error);
         res.status(500).json({ success: false, message: "Lỗi server khi từ chối yêu cầu" });
     }

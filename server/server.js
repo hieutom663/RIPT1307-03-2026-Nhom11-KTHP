@@ -14,8 +14,9 @@ const userEquipmentRoutes = require('./src/routes/user.equipments.route');
 const adminEquipmentRoutes = require('./src/routes/admin.equipments.route');
 const historyRoutes = require('./src/routes/user.history.routes');
 const yeuCauMuonRoutes = require('./src/routes/yeucaumuon.route');
-const thongKeRoutes = require('./src/routes/thongke.route');
-const adminHistoryRoute = require('./src/routes/admin.history.route');
+const thongKeRoutes = require('./src/routes/admin.thongke.route');
+const adminHistoryRoutes = require('./src/routes/admin.history.route');
+const adminNotificationRoutes = require('./src/routes/notification.route');
 
 const app = express();
 
@@ -41,9 +42,10 @@ app.use('/api', userEquipmentRoutes);
 app.use('/api/admin', adminEquipmentRoutes);
 
 app.use('/api/lich-su-muon', historyRoutes);
-app.use('/api/admin/lich-su-muon', adminHistoryRoute);
+app.use('/api/admin/lich-su-muon', adminHistoryRoutes);
 app.use('/api/admin/yeu-cau-muon', yeuCauMuonRoutes);
 app.use('/api/admin/thong-ke', thongKeRoutes);
+app.use('/api/admin/thong-bao',adminNotificationRoutes);
 
 const PORT = process.env.PORT || 3000;
 

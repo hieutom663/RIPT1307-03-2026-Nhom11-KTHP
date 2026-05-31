@@ -47,6 +47,7 @@ const TatCaLichSu = () => {
     }, [pageTable, dataSourceRaw, searchText]);
 
     const columns = [
+        { title: 'STT', key: 'stt', width: 60, render:(_text: any, _record: any, index: number) => index + 1, },
         { title: 'Mã SV', dataIndex: 'ma_sv', key: 'ma_sv', width: 100 },
         { title: 'Mã Phiếu', dataIndex: 'maPhieu', key: 'maPhieu' },
         { title: 'Mã Thiết bị', dataIndex: 'maDoDung', key: 'maDoDung' },

@@ -17,7 +17,6 @@ interface TopThietBiItem {
 /* Màu tag danh mục — dùng chung 1 style thống nhất */
 const defaultTagStyle = { color: '#595959', bg: '#fafafa', border: '#d9d9d9' };
 
-
 const topColumns = [
   {
     title: 'Hạng', key: 'rank', width: 70, align: 'center' as const,
@@ -77,7 +76,11 @@ const TopEquipment: React.FC = () => {
         <Table
           columns={topColumns}
           dataSource={data}
-          pagination={false}
+          pagination={{ 
+            pageSize: 10, 
+            showSizeChanger: false, 
+            position: ['bottomCenter'] 
+          }} 
           size="small"
           rowKey="key"
         />

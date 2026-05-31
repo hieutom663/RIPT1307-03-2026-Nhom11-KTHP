@@ -1,6 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Image, Button, Card, Spin } from 'antd';
+import { Row, Col, Image, Button, Card, Spin, Typography } from 'antd';
 import { Link } from 'umi';
+import { 
+    FireTwoTone, 
+    AppstoreTwoTone, 
+    ClockCircleOutlined, 
+    SyncOutlined, 
+    WarningOutlined,
+    ArrowRightOutlined
+} from '@ant-design/icons';
 import banner from '../../../assets/banner.jpg';
 import { getThietBiPhoBienAPI, getThietBiSanAPI } from '../../../services/ThietBi/api'; 
 import { getLichSuCaNhanAPI } from '../../../services/LichSuMuon/api'; 
@@ -10,6 +18,7 @@ import ChiTietThietBi from '../ThietBi/component/ChiTietThietBi';
 import GuiYeuCauMuon from '../ThietBi/component/GuiYeuCauMuon';
 
 const { Meta } = Card;
+const { Title, Text } = Typography;
 
 const TrangChu = () => {
     const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
@@ -49,9 +58,11 @@ const TrangChu = () => {
 
     const scrollContainerStyle: React.CSSProperties = {
         display: 'flex',
-        gap: '16px',
+        gap: '20px',
         overflowX: 'auto',
         paddingBottom: '16px', 
+        paddingTop: '8px',
+        paddingLeft: '4px',
         scrollBehavior: 'smooth',
         scrollbarWidth: 'thin', 
     };
@@ -60,84 +71,142 @@ const TrangChu = () => {
         <Card
             hoverable
             onClick={() => formMuon.moChiTiet(item)}
-            style={{ width: 160, minWidth: 160, transform: 'translateZ(0)' }} 
+            style={{ 
+                width: 180, 
+                minWidth: 180, 
+                borderRadius: '12px',
+                border: 'none',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.06)'
+            }} 
+            styles={{ body: { padding: '12px 16px' } }}
             cover={
-                <img
-                    draggable={false}
-                    alt={item.ten_thiet_bi}
-                    src={item.img}
-                    loading="lazy"
-                    style={{ height: 140, objectFit: 'cover', backgroundColor: '#f0f0f0' }}
-                />
+                <div style={{ padding: '12px 12px 0 12px' }}>
+                    <img
+                        draggable={false}
+                        alt={item.ten_thiet_bi}
+                        src={item.img}
+                        loading="lazy"
+                        style={{ 
+                            height: 140, 
+                            width: '100%', 
+                            objectFit: 'cover', 
+                            backgroundColor: '#f5f5f5',
+                            borderRadius: '8px'
+                        }}
+                    />
+                </div>
             }
         >
-            <Meta title={item.ten_thiet_bi} />
+            <Meta 
+                title={<span style={{ fontSize: '15px', fontWeight: 600, color: '#262626' }}>{item.ten_thiet_bi}</span>} 
+            />
         </Card>
     );
 
     return (
-        <Spin spinning={loading} description="Đang tải dữ liệu...">
-            <div>
-                <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
-                    <Col span={12}>
-                        <div className="banner" style={{ padding: '24px 68px' }}>
-                            <div style={{ fontSize: 20, marginBottom: 16 }}>
-                                <strong>Chào mừng {ten} đến với</strong><br />
-                                <strong> PTIT Borrow! </strong>
+        <Spin spinning={loading} description="Đang chuẩn bị không gian của bạn...">
+            <div style={{ padding: '24px 36px', backgroundColor: '#f5f7fa', minHeight: 'calc(100vh - 64px)' }}>
+                
+                <div style={{ 
+                    background: 'linear-gradient(135deg, #fff1f0 0%, #ffffff 100%)', 
+                    borderRadius: '20px', 
+                    overflow: 'hidden',
+                    boxShadow: '0 8px 24px rgba(0,0,0,0.04)',
+                    marginBottom: '40px'
+                }}>
+                    <Row align="middle">
+                        <Col xs={24} md={12}>
+                            <div className="banner" style={{ padding: '40px 68px' }}>
+                                <Title level={2} style={{ color: '#cf1322', marginBottom: 16, lineHeight: 1.3 }}>
+                                    Chào mừng {ten} <br/>đến với PTIT Borrow!
+                                </Title>
+                                <Text style={{ fontSize: '16px', color: '#595959', display: 'block', marginBottom: '24px' }}>
+                                    Hệ thống mượn đồ dùng nhanh chóng, dễ dàng cho các hoạt động và sự kiện của bạn tại trường.
+                                </Text>
+                                <Link to={'/user/thiet-bi'}>
+                                    <Button type="primary" size="large" icon={<ArrowRightOutlined />} style={{ backgroundColor: '#cf1322', borderColor: '#cf1322', borderRadius: 8, fontWeight: 500 }}>
+                                        Khám phá đồ dùng ngay
+                                    </Button>
+                                </Link>
                             </div>
-                            <div>Hệ thống mượn đồ dùng nhanh chóng, dễ dàng cho các hoạt động của bạn.</div>
-                            <Link to={'/user/thiet-bi'}>
-                                <Button type="primary" style={{ borderRadius: 8, marginTop: 16 }}>
-                                    Xem Danh mục Đồ dùng
-                                </Button>
-                            </Link>
-                        </div>
-                    </Col>
-                    <Col span={12}>
-                        <Image src={banner} preview={false} style={{ objectFit: 'cover', width: '100%', borderRadius: '0 0 0 16px' }} />
-                    </Col>
-                </Row>
+                        </Col>
+                        <Col xs={24} md={12} style={{ textAlign: 'right' }}>
+                            <Image 
+                                src={banner} 
+                                preview={false} 
+                                style={{ 
+                                    objectFit: 'cover', 
+                                    width: '100%', 
+                                    height: '100%', 
+                                    maxHeight: '350px',
+                                    borderTopLeftRadius: '100px'
+                                }} 
+                            />
+                        </Col>
+                    </Row>
+                </div>
 
-                <div style={{ padding: '16px 36px' }}>
-                    <h3 style={{ fontSize: 18, fontWeight: 600, marginBottom: 16 }}>Danh mục phổ biến</h3>
+                <div style={{ marginBottom: '40px' }}>
+                    <Title level={4} style={{ marginBottom: '16px', display: 'flex', alignItems: 'center' }}>
+                        <FireTwoTone twoToneColor="#ff7875" style={{ fontSize: '24px', marginRight: '8px' }} /> 
+                        Đang được mượn nhiều nhất
+                    </Title>
                     <div style={scrollContainerStyle}>
                         {thietBiPhoBien.length > 0 ? (
                             thietBiPhoBien.map(tb => <HomeCard key={tb.ma_thiet_bi} item={tb} />)
                         ) : (
-                            <div style={{ color: '#888' }}>Chưa có dữ liệu thiết bị phổ biến.</div>
+                            <Text type="secondary">Chưa có dữ liệu thiết bị phổ biến.</Text>
                         )}
                     </div>
                 </div>
 
-                <div style={{ padding: '16px 36px' }}>
-                    <h3 style={{ fontSize: 18, fontWeight: 600, marginBottom: 16 }}>Đồ dùng sẵn trong kho</h3>
+                <div>
+                    <Title level={4} style={{ marginBottom: '16px', display: 'flex', alignItems: 'center' }}>
+                        <AppstoreTwoTone twoToneColor="#52c41a" style={{ fontSize: '24px', marginRight: '8px' }} />
+                        Sẵn sàng cho mượn
+                    </Title>
                     
-                    <div style={{ display: 'flex', gap: '24px', alignItems: 'flex-start' }}>
-                        <div style={{ ...scrollContainerStyle, flex: 1 }}>
+                    <div style={{ display: 'flex', gap: '24px', alignItems: 'flex-start', flexWrap: 'wrap' }}>
+                        <div style={{ ...scrollContainerStyle, flex: 1, minWidth: '60%' }}>
                             {thietBiSan.length > 0 ? (
                                 thietBiSan.map(tb => <HomeCard key={tb.ma_thiet_bi} item={tb} />)
                             ) : (
-                                <div style={{ color: '#888' }}>Hiện tại không có thiết bị nào sẵn sàng.</div>
+                                <Text type="secondary">Hiện tại không có thiết bị nào sẵn sàng.</Text>
                             )}
                         </div>
                         
-                        {/* THAY ĐỔI DỮ LIỆU ĐỘNG TẠI ĐÂY */}
                         <Card 
-                            title="Hoạt động của tôi" 
-                            variant='borderless'
-                            style={{ width: 300, minWidth: 300, boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}
+                            title={<span style={{ fontWeight: 600, fontSize: '16px' }}>Hoạt động của tôi</span>} 
+                            style={{ 
+                                width: 320, 
+                                borderRadius: '12px',
+                                border: 'none',
+                                boxShadow: '0 4px 12px rgba(0,0,0,0.06)'
+                            }}
+                            styles={{ header: { borderBottom: '1px solid #f0f0f0' }, body: { padding: '16px 24px' } }}
                         >
-                            <p style={{ margin: 0, padding: '8px 0', borderBottom: '1px solid #f0f0f0' }}>
-                                Đang chờ duyệt: <strong style={{ color: '#faad14' }}>{thongKe.choXuLy}</strong> yêu cầu
-                            </p>
-                            <p style={{ margin: 0, padding: '8px 0', borderBottom: '1px solid #f0f0f0' }}>
-                                Đang mượn: <strong style={{ color: '#1677ff' }}>{thongKe.dangMuon}</strong> thiết bị
-                            </p>
-                            <p style={{ margin: 0, padding: '8px 0' }}>
-                                Đến / Quá hạn: <strong style={{ color: thongKe.quaHan > 0 ? '#ff4d4f' : 'inherit' }}>{thongKe.quaHan}</strong> thiết bị
-                            </p>
-                            <Link to={'/user/lich-su-muon'} style={{ display: 'block', textAlign: 'right', marginTop: 8 }}>
-                                <u>Xem tất cả</u>
+                            <div style={{ display: 'flex', alignItems: 'center', marginBottom: 16 }}>
+                                <ClockCircleOutlined style={{ fontSize: 20, color: '#faad14', marginRight: 12 }} />
+                                <Text style={{ flex: 1, fontSize: '15px' }}>Đang chờ duyệt:</Text>
+                                <strong style={{ fontSize: '16px', color: '#faad14' }}>{thongKe.choXuLy}</strong>
+                            </div>
+                            
+                            <div style={{ display: 'flex', alignItems: 'center', marginBottom: 16 }}>
+                                <SyncOutlined spin style={{ fontSize: 20, color: '#1677ff', marginRight: 12 }} />
+                                <Text style={{ flex: 1, fontSize: '15px' }}>Đang mượn:</Text>
+                                <strong style={{ fontSize: '16px', color: '#1677ff' }}>{thongKe.dangMuon}</strong>
+                            </div>
+
+                            <div style={{ display: 'flex', alignItems: 'center', marginBottom: 24 }}>
+                                <WarningOutlined style={{ fontSize: 20, color: thongKe.quaHan > 0 ? '#ff7875' : '#d9d9d9', marginRight: 12 }} />
+                                <Text style={{ flex: 1, fontSize: '15px' }}>Đến / Quá hạn:</Text>
+                                <strong style={{ fontSize: '16px', color: thongKe.quaHan > 0 ? '#ff7875' : '#8c8c8c' }}>{thongKe.quaHan}</strong>
+                            </div>
+
+                            <Link to={'/user/lich-su-muon'}>
+                                <Button block type="dashed" danger style={{ borderRadius: '8px' }}>
+                                    Quản lý chi tiết
+                                </Button>
                             </Link>
                         </Card>
                     </div>

@@ -28,7 +28,6 @@ const YCMuonDo: React.FC = () => {
   const [data, setData] = useState<YeuCauMuon[]>([]);
   const [loading, setLoading] = useState(false);
 
-  // Fetch dữ liệu từ BE
   const fetchData = async () => {
     setLoading(true);
     try {

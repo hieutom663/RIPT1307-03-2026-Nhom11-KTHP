@@ -1,6 +1,5 @@
 const pool = require('../config/db.config');
-
-// Lấy danh sách thiết bị (admin)
+// Lay danh sach
 const getDanhSachThietBi = async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;

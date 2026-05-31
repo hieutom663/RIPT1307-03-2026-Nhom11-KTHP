@@ -54,6 +54,13 @@ const TatCaLichSu = () => {
     }, [pageTable, dataSourceRaw, searchText]);
 
     const columns = [
+        {
+            title: 'STT',
+            key: 'stt',
+            width: 60,
+            align: 'center' as const,
+            render: (_text: any, _record: any, index: number) => index + 1,
+        },
         { title: 'Mã Phiếu', dataIndex: 'maPhieu', key: 'maPhieu' },
         { title: 'Mã Thiết bị', dataIndex: 'maDoDung', key: 'maDoDung' },
         { title: 'Tên thiết bị', dataIndex: 'tenDoDung', key: 'tenDoDung' },

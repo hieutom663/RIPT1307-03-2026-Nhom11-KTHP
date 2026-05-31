@@ -1,16 +1,62 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Card, Tabs, Spin, message } from 'antd';
+import { Row, Col, Card, Tabs, Spin, message, Typography } from 'antd';
 import type { TabsProps } from 'antd';
-import { ClockCircleOutlined, FileTextOutlined, ExclamationCircleOutlined, CheckCircleOutlined } from '@ant-design/icons';
+import { 
+    ClockCircleOutlined, 
+    FileTextOutlined, 
+    ExclamationCircleOutlined, 
+    CheckCircleOutlined,
+    HistoryOutlined
+} from '@ant-design/icons';
 import PhieuMuon from './component/PhieuMuon';
 import TatCaLichSu from './component/TatCaLichSu';
 
 import { getLichSuCaNhanAPI } from '../../../services/LichSuMuon/api'; 
 
+const { Title } = Typography;
+
 const items: TabsProps['items'] = [
     { key: '1', label: 'Phiếu mượn', children: <PhieuMuon /> },
     { key: '2', label: 'Tất cả lịch sử', children: <TatCaLichSu /> },
 ];
+
+const StatCard = ({ title, count, icon, color, bgColor }: { title: string, count: number | string, icon: React.ReactNode, color: string, bgColor: string }) => {
+    const [isHover, setIsHover] = useState(false);
+
+    return (
+        <Card 
+            variant='borderless'
+            onMouseEnter={() => setIsHover(true)}
+            onMouseLeave={() => setIsHover(false)}
+            style={{ 
+                borderRadius: '12px', 
+                boxShadow: isHover ? '0 8px 24px rgba(0,0,0,0.12)' : '0 4px 12px rgba(0,0,0,0.05)',
+                transform: isHover ? 'translateY(-5px)' : 'none',
+                transition: 'all 0.3s ease',
+                cursor: 'pointer'
+            }} 
+            styles={{ body: { padding: '20px 24px' } }}
+        >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                    <div style={{ color: '#8c8c8c', fontSize: '14px', marginBottom: '8px', fontWeight: 500 }}>
+                        {title}
+                    </div>
+                    <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#1f1f1f', lineHeight: 1 }}>
+                        {count}
+                    </div>
+                </div>
+                <div style={{ 
+                    width: '56px', height: '56px', borderRadius: '50%', 
+                    backgroundColor: bgColor, color: color, 
+                    display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '24px' 
+                }}>
+                    {icon}
+                </div>
+            </div>
+        </Card>
+    );
+};
 
 const LichSuMuon = () => {
     const [loading, setLoading] = useState(false);
@@ -49,49 +95,56 @@ const LichSuMuon = () => {
 
     return (
         <Spin spinning={loading}>
-            <div style={{ padding: 8 }}>
-                <h3 style={{ marginBottom: 16 }}>Thống Kê Mượn/Trả đồ dùng</h3>
-                <div className="thongKe">
-                    <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} >
-                        <Col span={6}> 
-                            <Card hoverable style={{ backgroundColor: '#f0f5ff', borderRadius: '8px' }} styles={{ body: { padding: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' } }}>
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                                    <div style={{ color: '#2f54eb', fontSize: '18px' }}><ClockCircleOutlined /></div>
-                                    <span style={{ fontWeight: 500, fontSize: '14px' }}>Chờ xử lý</span>
-                                </div>
-                                <div style={{ color: '#2f54eb', fontSize: '28px', fontWeight: 'bold' }}>{thongKe.choXuLy}</div>
-                            </Card>
-                        </Col>
-                        <Col span={6}> 
-                            <Card hoverable style={{ backgroundColor: '#fff7e6', borderRadius: '8px' }} styles={{ body: { padding: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' } }}>
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                                    <div style={{ color: '#fa8c16', fontSize: '18px' }}><FileTextOutlined /></div>
-                                    <span style={{ fontWeight: 500, fontSize: '14px' }}>Đang mượn</span>
-                                </div>
-                                <div style={{ color: '#fa8c16', fontSize: '28px', fontWeight: 'bold' }}>{thongKe.dangMuon}</div>
-                            </Card>
-                        </Col>
-                        <Col span={6}> 
-                            <Card hoverable style={{ backgroundColor: '#fff1f0', borderRadius: '8px' }} styles={{ body: { padding: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' } }}>
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                                    <div style={{ color: '#f5222d', fontSize: '18px' }}><ExclamationCircleOutlined /></div>
-                                    <span style={{ fontWeight: 500, fontSize: '14px' }}>Quá hạn mượn</span>
-                                </div>
-                                <div style={{ color: '#f5222d', fontSize: '28px', fontWeight: 'bold' }}>{thongKe.quaHan}</div>
-                            </Card>
-                        </Col>
-                        <Col span={6}> 
-                            <Card hoverable style={{ backgroundColor: '#f6ffed', borderRadius: '8px' }} styles={{ body: { padding: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' } }}>
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                                    <div style={{ color: '#52c41a', fontSize: '18px' }}><CheckCircleOutlined /></div>
-                                    <span style={{ fontWeight: 500, fontSize: '14px' }}>Đã trả</span>
-                                </div>
-                                <div style={{ color: '#52c41a', fontSize: '28px', fontWeight: 'bold' }}>{thongKe.daTra}</div>
-                            </Card>
-                        </Col>
-                    </Row>
+            <div style={{ padding: '24px', backgroundColor: '#f5f5f5', minHeight: 'calc(100vh - 120px)' }}>
+                
+                <Title level={3} style={{ marginBottom: 24, marginTop: 0, display: 'flex', alignItems: 'center' }}>
+                    <HistoryOutlined style={{ marginRight: 12, color: '#1677ff' }} />
+                    Lịch sử Mượn/Trả đồ dùng
+                </Title>
+                
+                <Row gutter={[24, 24]} style={{ marginBottom: 32 }}>
+                    <Col xs={24} sm={12} lg={6}>
+                        <StatCard 
+                            title="Chờ xử lý" 
+                            count={thongKe.choXuLy} 
+                            icon={<ClockCircleOutlined />} 
+                            color="#1677ff" 
+                            bgColor="#e6f4ff" 
+                        />
+                    </Col>
+                    <Col xs={24} sm={12} lg={6}>
+                        <StatCard 
+                            title="Đang mượn" 
+                            count={thongKe.dangMuon} 
+                            icon={<FileTextOutlined />} 
+                            color="#fa8c16" 
+                            bgColor="#fff7e6" 
+                        />
+                    </Col>
+                    <Col xs={24} sm={12} lg={6}>
+                        <StatCard 
+                            title="Quá hạn mượn" 
+                            count={thongKe.quaHan} 
+                            icon={<ExclamationCircleOutlined />} 
+                            color="#f5222d" 
+                            bgColor="#fff1f0" 
+                        />
+                    </Col>
+                    <Col xs={24} sm={12} lg={6}>
+                        <StatCard 
+                            title="Đã trả" 
+                            count={thongKe.daTra} 
+                            icon={<CheckCircleOutlined />} 
+                            color="#52c41a" 
+                            bgColor="#f6ffed" 
+                        />
+                    </Col>
+                </Row>
+
+                <div style={{ backgroundColor: '#fff', padding: '24px', borderRadius: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
+                    <Tabs defaultActiveKey="1" items={items} size="large" />
                 </div>
-                <Tabs defaultActiveKey="1" items={items} style={{ marginTop: 24 }} />
+
             </div>
         </Spin>
     );  

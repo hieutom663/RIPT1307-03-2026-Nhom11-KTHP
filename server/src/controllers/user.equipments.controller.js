@@ -141,7 +141,6 @@ const taoYeuCauMuon = async (req, res) => {
             return res.json({ success: false, message: "Số lượng thiết bị không đủ đáp ứng!" });
         }
 
-
         const [maxYCM] = await connection.query("SELECT MAX(ma_yeu_cau) as maxId FROM yeucaumuon");
         let ma_yeu_cau = 'YCM0001'; 
         if (maxYCM[0].maxId) {
@@ -168,7 +167,7 @@ const taoYeuCauMuon = async (req, res) => {
             ma_sv, 
             ngay_muon, 
             ngay_tra, 
-            ly_do     
+            ly_do    
         ]);
 
         const insertChiTiet = `
@@ -190,6 +189,19 @@ const taoYeuCauMuon = async (req, res) => {
             [so_luong_muon, ma_thiet_bi]
         );
 
+        const tieuDeThongBao = 'Yêu cầu mới';
+        const noiDungThongBao = `Có đơn chờ xử lý từ ${ma_sv} (${ma_yeu_cau}).`;
+        const nguoiNhanId = 'AD0001'; 
+        const loaiThongBao = 'duyệt';
+        
+
+        const insertThongBao = `
+            INSERT INTO thongbao (tieu_de, noi_dung, ngay, nguoinhan_id, loai, trang_thai) 
+            VALUES (?, ?, NOW(), ?, ?, 'chua_doc')
+        `;
+        
+        await connection.query(insertThongBao, [tieuDeThongBao, noiDungThongBao, nguoiNhanId, loaiThongBao]);
+
         await connection.commit();
         connection.release(); 
 
@@ -202,6 +214,5 @@ const taoYeuCauMuon = async (req, res) => {
         res.status(500).json({ success: false, message: "Lỗi server xử lý mượn" });
     }
 };
-
 
 module.exports = { getDanhSachThietBi, getThietBiPhoBien, getThietBiSan, getTatCaDanhMuc, taoYeuCauMuon };

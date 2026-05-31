@@ -142,7 +142,7 @@ const ModalChiTiet: React.FC<Props> = ({ maYC, open, onClose }) => {
             </div>
 
             {/* Thông tin sinh viên */}
-            <Divider orientation="left" style={{ fontSize: 14, color: '#1677ff' }}>
+            <Divider orientation="horizontal" style={{ fontSize: 14, color: '#1677ff' }}>
               <UserOutlined /> Thông tin sinh viên
             </Divider>
             <Descriptions column={2} size="small" bordered style={{ marginBottom: 16 }}>
@@ -153,7 +153,7 @@ const ModalChiTiet: React.FC<Props> = ({ maYC, open, onClose }) => {
             </Descriptions>
 
             {/* Thông tin yêu cầu */}
-            <Divider orientation="left" style={{ fontSize: 14, color: '#1677ff' }}>
+            <Divider orientation="horizontal" style={{ fontSize: 14, color: '#1677ff' }}>
               <CalendarOutlined /> Thông tin yêu cầu
             </Divider>
             <Descriptions column={2} size="small" bordered style={{ marginBottom: 16 }}>
@@ -173,7 +173,7 @@ const ModalChiTiet: React.FC<Props> = ({ maYC, open, onClose }) => {
             </Descriptions>
 
             {/* Chi tiết thiết bị */}
-            <Divider orientation="left" style={{ fontSize: 14, color: '#1677ff' }}>
+            <Divider orientation="horizontal" style={{ fontSize: 14, color: '#1677ff' }}>
               <ToolOutlined /> Chi tiết thiết bị ({data.chiTietThietBi.length})
             </Divider>
             <Table

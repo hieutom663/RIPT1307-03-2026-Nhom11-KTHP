@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { Link, Outlet, useAppData, useLocation, history } from 'umi';
-import { Layout, Menu, Avatar, Button, Input, Badge, Dropdown, message } from 'antd';
+import { Layout, Menu, Avatar, Input, Dropdown, message, ConfigProvider} from 'antd';
 import type { MenuProps } from 'antd';
 import styles from './index.less';
 import { 
   HomeOutlined, 
-  BellOutlined, 
   UserOutlined, 
   LogoutOutlined, 
   SearchOutlined, 
   HistoryOutlined, 
   LaptopOutlined 
 } from '@ant-design/icons';
+import ThongBao from './component/ThongBao';
 
 const { Header, Sider, Content, Footer } = Layout;
 
@@ -96,11 +96,9 @@ export default function UserLayout() {
           prefix={<SearchOutlined />}
         />
         <div className={styles.headerRight}>
-          <Badge count={3}>
-            <Button type="text" icon={<BellOutlined />} className={styles.iconBtn} />
-          </Badge>
+          <ThongBao />
           <Dropdown menu={{ items: userMenuItems, onClick: onMenuClick }} placement="bottomRight">
-            <div className={styles.userInfo} style={{ cursor: 'pointer' }}>
+            <div className={styles.userInfo} style={{ cursor: 'pointer', marginLeft: 16 }}>
               <Avatar icon={<UserOutlined />} />
               <span style={{ marginLeft: 8 }}>{userName}</span>
             </div>
@@ -110,12 +108,24 @@ export default function UserLayout() {
 
       <Layout>
         <Sider width={220} className={styles.sider} theme="light">
-          <Menu
-            mode="inline"
-            selectedKeys={[location.pathname]}
-            items={siderItems}
-            style={{ height: '100%', borderRight: 0 }}
-          />
+          <ConfigProvider
+            theme={{
+              components: {
+                Menu: {
+                  itemSelectedColor: '#cf1322', 
+                  itemSelectedBg: '#fff1f0',    
+                  itemHoverColor: '#cf1322',   
+                },
+              },
+            }}
+          >
+            <Menu
+              mode="inline"
+              selectedKeys={[location.pathname]}
+              items={siderItems}
+              style={{ height: '100%', borderRight: 0 }}
+            />
+          </ConfigProvider>
         </Sider>
 
         <Layout style={{ padding: 12 }}>

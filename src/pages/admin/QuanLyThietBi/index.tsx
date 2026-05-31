@@ -23,7 +23,7 @@ const QuanLyThietBiAdmin = () => {
 
     const [modalVisible, setModalVisible] = useState(false);
     const [thietBiDangChon, setThietBiDangChon] = useState<any>(null);
-    const [maMoiTiepTheo, setMaMoiTiepTheo] = useState<string>(''); // STATE LƯU MÃ MỚI
+    const [maMoiTiepTheo, setMaMoiTiepTheo] = useState<string>('');
 
     const fetchDanhSachThietBi = useCallback(async () => {
         setLoading(true);
@@ -38,7 +38,6 @@ const QuanLyThietBiAdmin = () => {
             if (response.data.success) {
                 setDanhSachThietBi(response.data.data);
                 setTongSoLuong(response.data.total);
-                // Gán mã mới lấy từ Backend
                 if (response.data.nextId) setMaMoiTiepTheo(response.data.nextId);
             } else {
                 message.error('Không thể lấy danh sách thiết bị');

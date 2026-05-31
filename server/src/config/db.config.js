@@ -1,5 +1,5 @@
-const mysql = require('mysql2/promise'); // Bắt buộc dùng '/promise' để hỗ trợ async/await
-require('dotenv').config(); // Load biến môi trường
+const mysql = require('mysql2/promise');
+require('dotenv').config();
 
 // Tạo Connection Pool (Hồ chứa kết nối)
 const pool = mysql.createPool({

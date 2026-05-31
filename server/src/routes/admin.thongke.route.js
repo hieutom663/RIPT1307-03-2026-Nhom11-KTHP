@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const thongKeController = require('../controllers/thongke.controller');
+const thongKeController = require('../controllers/admin.thongke.controller');
 
 // GET: /api/admin/thong-ke/tong-quan - Thống kê tổng quan
 router.get('/tong-quan', thongKeController.getThongKeTongQuan);

@@ -24,11 +24,9 @@ interface Props {
 }
 
 const BangYeuCau: React.FC<Props> = ({ data, onRefresh }) => {
-  // State cho modal chi tiết
   const [chiTietMaYC, setChiTietMaYC] = useState<string | null>(null);
   const [chiTietOpen, setChiTietOpen] = useState(false);
 
-  // State cho modal từ chối
   const [tuChoiOpen, setTuChoiOpen] = useState(false);
   const [tuChoiRecord, setTuChoiRecord] = useState<YeuCauMuon | null>(null);
   const [lyDoTuChoi, setLyDoTuChoi] = useState('');
@@ -148,7 +146,7 @@ const BangYeuCau: React.FC<Props> = ({ data, onRefresh }) => {
         <Table
           columns={columns}
           dataSource={data}
-          pagination={{ pageSize: 5, showTotal: (total) => `Tổng ${total} yêu cầu`, style: { marginRight: 16 } }}
+          pagination={{ pageSize: 10, showTotal: (total) => `Tổng ${total} yêu cầu`, style: { marginRight: 16 } }}
           size="middle"
           rowKey="key"
         />

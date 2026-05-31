@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, Outlet, useAppData, useLocation, history } from 'umi';
-import { Layout, Menu, Avatar, Button, Badge, Dropdown, message } from 'antd';
+import { Layout, Menu, Avatar, Button, Badge, Dropdown, message, Typography, ConfigProvider } from 'antd';
 import type { MenuProps } from 'antd';
 import styles from './index.less';
 import {
@@ -15,8 +15,10 @@ import {
   BarChartOutlined,
   SettingOutlined,
 } from '@ant-design/icons';
+import ThongBao from './component/ThongBao';
 
 const { Header, Sider, Content, Footer } = Layout;
+const { Text } = Typography;
 
 const iconMap: Record<string, React.ReactNode> = {
   HomeOutlined: <HomeOutlined />,
@@ -88,6 +90,7 @@ export default function AdminLayout() {
     { type: 'divider' },
     { key: 'logout', icon: <LogoutOutlined />, label: 'Đăng xuất', danger: true },
   ];
+;
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
@@ -95,12 +98,9 @@ export default function AdminLayout() {
         <div className={styles.logo}>Hệ thống mượn đồ dùng Sinh viên PTIT (Admin)</div>
         <div style={{ flex: 1 }} />
         <div className={styles.headerRight}>
-          <Badge count={3}>
-            <Button type="text" icon={<BellOutlined />} className={styles.iconBtn} />
-          </Badge>
-          
+          <ThongBao />
           <Dropdown menu={{ items: userMenuItems, onClick: onUserMenuClick }} placement="bottomRight">
-            <div className={styles.userInfo} style={{ cursor: 'pointer' }}>
+            <div className={styles.userInfo} style={{ cursor: 'pointer', marginLeft: 16 }}>
               <Avatar icon={<UserOutlined />} />
               <span style={{ marginLeft: 8 }}>{userName}</span>
             </div>
@@ -109,13 +109,25 @@ export default function AdminLayout() {
       </Header>
 
       <Layout>
-        <Sider width={220} className={styles.sider}>
-          <Menu
-            mode="inline"
-            selectedKeys={[location.pathname]}
-            items={siderItems}
-            style={{ height: '100%', borderRight: 0 }}
-          />
+        <Sider width={220} className={styles.sider} theme="light">
+          <ConfigProvider
+            theme={{
+              components: {
+                Menu: {
+                  itemSelectedColor: '#cf1322', 
+                  itemSelectedBg: '#fff1f0', 
+                  itemHoverColor: '#cf1322',
+                },
+              },
+            }}
+          >
+            <Menu
+              mode="inline"
+              selectedKeys={[location.pathname]}
+              items={siderItems}
+              style={{ height: '100%', borderRight: 0 }}
+            />
+          </ConfigProvider>
         </Sider>
 
         <Layout style={{ padding: '12px' }}>
@@ -123,7 +135,7 @@ export default function AdminLayout() {
             <Outlet />
           </Content>
 
-          <Footer className={styles.footer}>
+          <Footer className={styles.footer} style={{ textAlign: 'center' }}>
             © 2026 Nhóm X-KTHP
           </Footer>
         </Layout>

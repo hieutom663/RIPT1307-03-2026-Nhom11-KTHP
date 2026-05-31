@@ -1,6 +1,8 @@
-import { Modal, InputNumber, DatePicker, Input, Button, message } from 'antd';
+import { Modal, InputNumber, DatePicker, Input, Button, message, Typography, Row, Col } from 'antd';
 import { useState } from 'react';
 import { guiDonMuonThietBi } from '../../../../services/YeuCauMuon/api'; 
+
+const { Text } = Typography;
 
 const GuiYeuCauMuon = (props: any) => {
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -8,6 +10,8 @@ const GuiYeuCauMuon = (props: any) => {
     if (!props.thietBi) {
         return null;
     }
+
+    const soLuongConLai = props.thietBi.soLuongConLai !== undefined ? props.thietBi.soLuongConLai : (props.thietBi.so_luong_con_lai || 0);
 
     const xuLyGuiYeuCau = async () => {
         if (!props.soLuongMuon || props.soLuongMuon <= 0) {
@@ -33,7 +37,6 @@ const GuiYeuCauMuon = (props: any) => {
 
         setIsSubmitting(true);
         try {
-
             const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
             const ma_sv = userInfo.ma_sv; 
 
@@ -68,69 +71,93 @@ const GuiYeuCauMuon = (props: any) => {
 
     return (
         <Modal
-            title={'Yêu cầu mượn: ' + props.thietBi.ten_thiet_bi}
+            title={<span style={{ fontSize: '18px' }}>Lập phiếu mượn thiết bị</span>}
             open={props.visible}
             onCancel={props.onClose}
             footer={null}
-            width={500}
+            width={550}
+            centered 
         >
-            <div style={{ marginBottom: 12 }}>
-                <strong>Thiết bị:</strong> {props.thietBi.ten_thiet_bi}
+            <div style={{ 
+                backgroundColor: '#f0f5ff', 
+                border: '1px solid #adc6ff', 
+                padding: '12px 16px', 
+                borderRadius: '8px', 
+                marginBottom: '24px',
+                marginTop: '12px'
+            }}>
+                <div style={{ fontSize: '15px', fontWeight: 600, color: '#1d39c4', marginBottom: 6 }}>
+                    {props.thietBi.ten_thiet_bi}
+                </div>
+                <div>
+                    <Text type="secondary">Số lượng sẵn sàng: </Text>
+                    <Text strong style={{ color: soLuongConLai > 0 ? '#52c41a' : '#f5222d', fontSize: '16px' }}>
+                        {soLuongConLai}
+                    </Text>
+                </div>
             </div>
-            <div style={{ marginBottom: 12 }}>
-                <strong>Số lượng còn lại:</strong> {props.thietBi.soLuongConLai}
-            </div>
-            <div style={{ marginBottom: 12 }}>
-                <div>Số lượng mượn:</div>
+
+            <div style={{ marginBottom: 16 }}>
+                <div style={{ marginBottom: 8, fontWeight: 500 }}>Số lượng mượn: <span style={{ color: '#f5222d' }}>*</span></div>
                 <InputNumber
+                    size="large" 
                     value={props.soLuongMuon}
                     onChange={(giaTri) => props.onChangeSoLuongMuon(giaTri)}
                     min={1}
-                    max={props.thietBi.soLuongConLai}
-                    style={{ width: '100%' }}
+                    max={soLuongConLai}
+                    style={{ width: '100%', borderRadius: '6px' }}
                 />
             </div>
-            <div style={{ marginBottom: 12 }}>
-                <div>Ngày mượn:</div>
-                <DatePicker
-                    value={props.ngayMuon}
-                    onChange={(ngay) => props.onChangeNgayMuon(ngay)}
-                    style={{ width: '100%' }}
-                    format="DD/MM/YYYY"
-                />
-            </div>
-            <div style={{ marginBottom: 12 }}>
-                <div>Ngày trả:</div>
-                <DatePicker
-                    value={props.ngayTra}
-                    onChange={(ngay) => props.onChangeNgayTra(ngay)}
-                    style={{ width: '100%' }}
-                    format="DD/MM/YYYY"
-                />
-            </div>
-            <div style={{ marginBottom: 16 }}>
-                <div>Lý do mượn / Mục đích sử dụng:</div>
+
+            <Row gutter={16} style={{ marginBottom: 16 }}>
+                <Col span={12}>
+                    <div style={{ marginBottom: 8, fontWeight: 500 }}>Ngày mượn: <span style={{ color: '#f5222d' }}>*</span></div>
+                    <DatePicker
+                        size="large"
+                        value={props.ngayMuon}
+                        onChange={(ngay) => props.onChangeNgayMuon(ngay)}
+                        style={{ width: '100%', borderRadius: '6px' }}
+                        format="DD/MM/YYYY"
+                    />
+                </Col>
+                <Col span={12}>
+                    <div style={{ marginBottom: 8, fontWeight: 500 }}>Ngày trả: <span style={{ color: '#f5222d' }}>*</span></div>
+                    <DatePicker
+                        size="large"
+                        value={props.ngayTra}
+                        onChange={(ngay) => props.onChangeNgayTra(ngay)}
+                        style={{ width: '100%', borderRadius: '6px' }}
+                        format="DD/MM/YYYY"
+                    />
+                </Col>
+            </Row>
+
+            <div style={{ marginBottom: 24 }}>
+                <div style={{ marginBottom: 8, fontWeight: 500 }}>Lý do mượn / Mục đích sử dụng: <span style={{ color: '#f5222d' }}>*</span></div>
                 <Input.TextArea
                     value={props.lyDo}
                     onChange={(e) => props.onChangeLyDo(e.target.value)}
-                    rows={3}
-                    placeholder="Nhập chi tiết mục đích sử dụng..."
+                    rows={4}
+                    placeholder="Vui lòng mô tả chi tiết mục đích sử dụng để hệ thống phê duyệt nhanh hơn..."
+                    style={{ borderRadius: '6px' }}
                 />
             </div>
-            <div style={{ textAlign: 'right' }}>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
                 <Button 
+                    size="large"
                     onClick={props.onClose} 
-                    style={{ marginRight: 8 }}
                     disabled={isSubmitting}
                 >
-                    Hủy
+                    Hủy bỏ
                 </Button>
                 <Button 
                     type="primary" 
+                    size="large"
                     onClick={xuLyGuiYeuCau} 
                     loading={isSubmitting}
                 >
-                    Xác nhận gửi
+                    Xác nhận gửi yêu cầu
                 </Button>
             </div>
         </Modal>
