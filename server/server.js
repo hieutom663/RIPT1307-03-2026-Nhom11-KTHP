@@ -1,6 +1,8 @@
 const express = require('express');
 const cors = require('cors');
+const cron = require('node-cron');
 require('dotenv').config();
+const thongBaoController = require('./src/controllers/notification.controller');
 
 // db
 const dbPool = require('./src/config/db.config'); 
@@ -46,6 +48,14 @@ app.use('/api/admin/lich-su-muon', adminHistoryRoutes);
 app.use('/api/admin/yeu-cau-muon', yeuCauMuonRoutes);
 app.use('/api/admin/thong-ke', thongKeRoutes);
 app.use('/api/admin/thong-bao',adminNotificationRoutes);
+
+cron.schedule('0 8 * * *', async () => {
+    console.log('Bắt đầu chạy Cron Job kiểm tra hạn trả đồ lúc 8h sáng...');
+    await thongBaoController.kiemTraVaGuiThongBaoHanTra();
+}, {
+    scheduled: true,
+    timezone: "Asia/Ho_Chi_Minh" 
+});
 
 const PORT = process.env.PORT || 3000;
 

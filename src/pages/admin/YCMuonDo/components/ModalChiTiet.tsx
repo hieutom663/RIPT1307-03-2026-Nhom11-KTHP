@@ -117,7 +117,7 @@ const ModalChiTiet: React.FC<Props> = ({ maYC, open, onClose }) => {
       onCancel={onClose}
       footer={null}
       width={720}
-      destroyOnClose
+      destroyOnHidden
     >
       <Spin spinning={loading}>
         {data && (

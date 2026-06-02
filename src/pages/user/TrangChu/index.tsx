@@ -104,7 +104,7 @@ const TrangChu = () => {
     );
 
     return (
-        <Spin spinning={loading} description="Đang chuẩn bị không gian của bạn...">
+        <Spin spinning={loading} description="Đang tải...">
             <div style={{ padding: '24px 36px', backgroundColor: '#f5f7fa', minHeight: 'calc(100vh - 64px)' }}>
                 
                 <div style={{ 

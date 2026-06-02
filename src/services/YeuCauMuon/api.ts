@@ -24,3 +24,7 @@ export async function tuChoiYeuCauAPI(maYC: string, lyDoTuChoi?: string) {
 export async function guiDonMuonThietBi(data: any) {
     return api.post('/yeu-cau-muon', data);
 }
+
+export async function xacNhanTraThietBiAPI(maYC: string) {
+  return api.put(`/admin/yeu-cau-muon/${maYC}/tra-thiet-bi`);
+}

@@ -25,7 +25,7 @@ const AdminDashboard = () => {
                     setRecentActivities(response.data.data.recentActivities);
                 }
             } catch (error) {
-                console.error("Lỗi lấy dữ liệu Dashboard:", error);
+                console.error("Lỗi:", error);
             } finally {
                 setLoading(false);
             }

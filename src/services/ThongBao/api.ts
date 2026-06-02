@@ -5,7 +5,6 @@ export async function getDanhSachThongBaoAdminAPI() {
     return api.get('/admin/thong-bao'); 
 }
 
-
 export async function danhDauDaDocAPI(id: string | number) {
     return api.put(`/admin/thong-bao/${id}/da-doc`);
 }

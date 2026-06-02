@@ -46,7 +46,6 @@ const themDanhMuc = async (req, res) => {
             return res.status(400).json({ success: false, message: 'Tên danh mục không được để trống' });
         }
 
-        // Tự sinh mã danh mục
         const [maxRow] = await pool.query('SELECT MAX(ma_danh_muc) AS maxId FROM danhmuc');
         let ma_danh_muc = 'DM0001';
         if (maxRow[0].maxId) {
@@ -113,7 +112,6 @@ const xoaDanhMuc = async (req, res) => {
             return res.status(404).json({ success: false, message: 'Không tìm thấy danh mục này' });
         }
 
-        // Kiểm tra còn thiết bị thuộc danh mục này không
         const [thietBiRows] = await pool.query(
             'SELECT COUNT(*) AS so_luong FROM thietbi WHERE id_danhmuc = ?',
             [id]

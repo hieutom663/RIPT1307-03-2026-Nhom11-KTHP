@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Table, Tag, Button, Space, Typography, Card, Tooltip, Modal, Input, message } from 'antd';
-import { EyeOutlined, CheckOutlined, CloseOutlined } from '@ant-design/icons';
+import { EyeOutlined, CheckOutlined, CloseOutlined, RollbackOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import type { YeuCauMuon } from '../index';
-import { duyetYeuCauAPI, tuChoiYeuCauAPI } from '@/services/YeuCauMuon/api';
+import { duyetYeuCauAPI, tuChoiYeuCauAPI, xacNhanTraThietBiAPI } from '@/services/YeuCauMuon/api';
 import ModalChiTiet from './ModalChiTiet';
 
 const { Text } = Typography;
@@ -55,6 +55,30 @@ const BangYeuCau: React.FC<Props> = ({ data, onRefresh }) => {
         } catch (error) {
           console.error('Lỗi duyệt:', error);
           message.error('Lỗi khi duyệt yêu cầu');
+        }
+      },
+    });
+  };
+
+  // HÀM MỚI: Xử lý xác nhận trả thiết bị
+  const handleTraThietBi = (record: YeuCauMuon) => {
+    Modal.confirm({
+      title: 'Xác nhận thu hồi thiết bị',
+      content: `Xác nhận sinh viên ${record.tenSV} đã trả thiết bị cho phiếu mượn ${record.maYC}?`,
+      okText: 'Xác nhận đã trả',
+      cancelText: 'Hủy',
+      onOk: async () => {
+        try {
+          const res = await xacNhanTraThietBiAPI(record.maYC);
+          if (res.data.success) {
+            message.success(res.data.message || 'Đã xác nhận trả thiết bị thành công');
+            onRefresh();
+          } else {
+            message.error(res.data.message);
+          }
+        } catch (error) {
+          console.error('Lỗi trả thiết bị:', error);
+          message.error('Lỗi kết nối khi xác nhận trả');
         }
       },
     });
@@ -125,6 +149,8 @@ const BangYeuCau: React.FC<Props> = ({ data, onRefresh }) => {
           <Tooltip title="Xem chi tiết">
             <Button size="small" icon={<EyeOutlined />} style={{ borderColor: '#d9d9d9' }} onClick={() => handleXemChiTiet(record)}>Xem</Button>
           </Tooltip>
+          
+          {/* Nút cho trạng thái Chờ duyệt */}
           {record.trangThai === 'cho_duyet' && (
             <>
               <Tooltip title="Duyệt yêu cầu">
@@ -134,6 +160,15 @@ const BangYeuCau: React.FC<Props> = ({ data, onRefresh }) => {
                 <Button size="small" danger icon={<CloseOutlined />} onClick={() => handleOpenTuChoi(record)}>Từ chối</Button>
               </Tooltip>
             </>
+          )}
+
+          {/* Nút cho trạng thái Đang mượn hoặc Quá hạn */}
+          {(record.trangThai === 'dang_muon' || record.trangThai === 'qua_han') && (
+            <Tooltip title="Xác nhận sinh viên đã trả đồ">
+              <Button size="small" type="primary" icon={<RollbackOutlined />} onClick={() => handleTraThietBi(record)}>
+                Xác nhận trả
+              </Button>
+            </Tooltip>
           )}
         </Space>
       ),
@@ -152,14 +187,12 @@ const BangYeuCau: React.FC<Props> = ({ data, onRefresh }) => {
         />
       </Card>
 
-      {/* Modal xem chi tiết */}
       <ModalChiTiet
         maYC={chiTietMaYC}
         open={chiTietOpen}
         onClose={() => { setChiTietOpen(false); setChiTietMaYC(null); }}
       />
 
-      {/* Modal từ chối có lý do */}
       <Modal
         title={
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -173,7 +206,7 @@ const BangYeuCau: React.FC<Props> = ({ data, onRefresh }) => {
         okText="Xác nhận từ chối"
         okButtonProps={{ danger: true, loading: tuChoiLoading }}
         cancelText="Hủy"
-        destroyOnClose
+        destroyOnHidden
       >
         {tuChoiRecord && (
           <div style={{ marginBottom: 16 }}>

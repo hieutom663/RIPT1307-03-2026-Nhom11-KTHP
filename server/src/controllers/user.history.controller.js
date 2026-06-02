@@ -2,7 +2,6 @@ const pool = require('../config/db.config');
 
 const getThongKeCaNhan = async (req, res) => {
     try {
-
         const ma_sv = req.body.ma_sv;
         
         if (!ma_sv) return res.json({ success: false, message: "Thiếu mã sinh viên" });
@@ -14,8 +13,8 @@ const getThongKeCaNhan = async (req, res) => {
 
         const [[{ dangMuon, quaHan, daTra }]] = await pool.query(
             `SELECT 
-                SUM(CASE WHEN c.trang_thai = 'Chưa trả' AND y.ngay_tra_du_kien >= CURDATE() THEN 1 ELSE 0 END) AS dangMuon,
-                SUM(CASE WHEN c.trang_thai = 'Chưa trả' AND y.ngay_tra_du_kien < CURDATE() THEN 1 ELSE 0 END) AS quaHan,
+                SUM(CASE WHEN c.trang_thai = 'Chưa trả' AND y.trang_thai = 'Đang mượn' AND y.ngay_tra_du_kien >= CURDATE() THEN 1 ELSE 0 END) AS dangMuon,
+                SUM(CASE WHEN c.trang_thai = 'Chưa trả' AND y.trang_thai = 'Đang mượn' AND y.ngay_tra_du_kien < CURDATE() THEN 1 ELSE 0 END) AS quaHan,
                 SUM(CASE WHEN c.trang_thai = 'Đã trả' THEN 1 ELSE 0 END) AS daTra
             FROM chitietdon c
             JOIN yeucaumuon y ON c.ma_yeu_cau = y.ma_yeu_cau
@@ -80,9 +79,12 @@ const getChiTietLichSu = async (req, res) => {
                 c.so_luong AS soLuong,
                 DATE_FORMAT(y.ngay_tra_du_kien, '%Y-%m-%d') AS hanTra,
                 CASE 
+                    WHEN y.trang_thai = 'Chờ duyệt' THEN 'Chờ duyệt'
+                    WHEN y.trang_thai = 'Bị từ chối' THEN 'Từ chối'
                     WHEN c.trang_thai = 'Đã trả' THEN 'Đã trả'
-                    WHEN y.ngay_tra_du_kien < CURDATE() THEN 'Quá hạn'
-                    ELSE 'Chưa trả'
+                    WHEN y.trang_thai = 'Đang mượn' AND y.ngay_tra_du_kien < CURDATE() THEN 'Quá hạn'
+                    WHEN y.trang_thai = 'Đang mượn' THEN 'Đang mượn'
+                    ELSE c.trang_thai
                 END AS trangThai
             FROM chitietdon c
             JOIN yeucaumuon y ON c.ma_yeu_cau = y.ma_yeu_cau

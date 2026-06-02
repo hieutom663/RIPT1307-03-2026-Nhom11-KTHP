@@ -76,7 +76,7 @@ const TatCaLichSu = () => {
             dataIndex: 'trangThai', 
             key: 'trangThai',
             render: (text: string) => {
-                const colors: any = { 'Chưa trả': 'orange', 'Đã trả': 'green', 'Quá hạn': 'red' };
+                const colors: any = { 'Chờ duyệt': 'gold', 'Đã duyệt': 'cyan', 'Đang mượn': 'geekblue', 'Hoàn thành': 'green', 'Bị từ chối': 'red' };
                 return <Tag color={colors[text] || 'default'}>{text}</Tag>;
             },
         },

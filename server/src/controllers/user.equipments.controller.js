@@ -182,13 +182,6 @@ const taoYeuCauMuon = async (req, res) => {
             so_luong_muon
         ]);
 
-        await connection.query(
-            `UPDATE thietbi 
-             SET so_luong_da_cho_muon = so_luong_da_cho_muon + ? 
-             WHERE ma_thiet_bi = ?`,
-            [so_luong_muon, ma_thiet_bi]
-        );
-
         const tieuDeThongBao = 'Yêu cầu mới';
         const noiDungThongBao = `Có đơn chờ xử lý từ ${ma_sv} (${ma_yeu_cau}).`;
         const nguoiNhanId = 'AD0001'; 

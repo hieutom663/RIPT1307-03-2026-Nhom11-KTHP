@@ -14,4 +14,6 @@ router.put('/:maYC/duyet', yeuCauMuonController.duyetYeuCau);
 // PUT: /api/admin/yeu-cau-muon/:maYC/tu-choi - Từ chối yêu cầu
 router.put('/:maYC/tu-choi', yeuCauMuonController.tuChoiYeuCau);
 
+router.put('/:maYC/tra-thiet-bi', yeuCauMuonController.xacNhanTraThietBi);
+
 module.exports = router;

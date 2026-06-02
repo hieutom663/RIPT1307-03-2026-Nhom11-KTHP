@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, Outlet, useAppData, useLocation, history } from 'umi';
-import { Layout, Menu, Avatar, Button, Badge, Dropdown, message, Typography, ConfigProvider } from 'antd';
+import { Layout, Menu, Avatar, Dropdown, message, Typography, ConfigProvider } from 'antd';
 import type { MenuProps } from 'antd';
 import styles from './index.less';
 import {
@@ -86,8 +86,6 @@ export default function AdminLayout() {
   };
 
   const userMenuItems: MenuProps['items'] = [
-    { key: 'profile', icon: <UserOutlined />, label: 'Hồ sơ' },
-    { type: 'divider' },
     { key: 'logout', icon: <LogoutOutlined />, label: 'Đăng xuất', danger: true },
   ];
 ;

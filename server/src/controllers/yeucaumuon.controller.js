@@ -148,6 +148,7 @@ const duyetYeuCau = async (req, res) => {
     const connection = await pool.getConnection();
     try {
         const { maYC } = req.params;
+        const maAdminDuyet = req.user?.ma_admin || 'AD0001'; 
 
         await connection.beginTransaction();
 
@@ -185,8 +186,12 @@ const duyetYeuCau = async (req, res) => {
         }
 
         await connection.query(
-            "UPDATE yeucaumuon SET trang_thai = 'Đang mượn', ngay_duyet = NOW() WHERE ma_yeu_cau = ?",
-            [maYC]
+            `UPDATE yeucaumuon 
+             SET trang_thai = 'Đang mượn', 
+                 ngay_duyet = NOW(), 
+                 ma_nguoi_duyet = ? 
+             WHERE ma_yeu_cau = ?`,
+            [maAdminDuyet, maYC]
         );
 
         for (const ct of chiTietRows) {
@@ -229,6 +234,8 @@ const tuChoiYeuCau = async (req, res) => {
     try {
         const { maYC } = req.params;
         const { lyDoTuChoi } = req.body;
+        
+        const maAdminTuChoi = req.user?.ma_admin || 'AD0001';
 
         await connection.beginTransaction();
 
@@ -246,8 +253,13 @@ const tuChoiYeuCau = async (req, res) => {
         const maNguoiMuon = yeuCauRows[0].ma_nguoi_muon;
 
         await connection.query(
-            "UPDATE yeucaumuon SET trang_thai = 'Bị từ chối', ngay_duyet = NOW(), ly_do_tu_choi = ? WHERE ma_yeu_cau = ?",
-            [lyDoTuChoi || null, maYC]
+            `UPDATE yeucaumuon 
+             SET trang_thai = 'Bị từ chối', 
+                 ngay_duyet = NOW(), 
+                 ma_nguoi_duyet = ?, 
+                 ly_do_tu_choi = ? 
+             WHERE ma_yeu_cau = ?`,
+            [maAdminTuChoi, lyDoTuChoi || null, maYC]
         );
 
         const [chiTietRows] = await connection.query(
@@ -287,4 +299,69 @@ const tuChoiYeuCau = async (req, res) => {
     }
 };
 
-module.exports = { getDanhSachYeuCau, getChiTietYeuCau, duyetYeuCau, tuChoiYeuCau };
+const xacNhanTraThietBi = async (req, res) => {
+    const connection = await pool.getConnection();
+    try {
+        const { maYC } = req.params;
+        await connection.beginTransaction();
+
+        const [yeuCauRows] = await connection.query(
+            "SELECT * FROM yeucaumuon WHERE ma_yeu_cau = ? AND trang_thai = 'Đang mượn'",
+            [maYC]
+        );
+
+        if (yeuCauRows.length === 0) {
+            await connection.rollback();
+            connection.release();
+            return res.json({ success: false, message: "Yêu cầu không tồn tại hoặc không ở trạng thái Đang mượn" });
+        }
+
+        const maNguoiMuon = yeuCauRows[0].ma_nguoi_muon;
+
+        await connection.query(
+            "UPDATE yeucaumuon SET trang_thai = 'Hoàn thành' WHERE ma_yeu_cau = ?",
+            [maYC]
+        );
+
+        const [chiTietRows] = await connection.query(
+            "SELECT ma_thiet_bi, so_luong FROM chitietdon WHERE ma_yeu_cau = ?",
+            [maYC]
+        );
+
+        await connection.query(
+            "UPDATE chitietdon SET ngay_tra = NOW(), trang_thai = 'Đã trả' WHERE ma_yeu_cau = ?",
+            [maYC]
+        );
+
+        for (const ct of chiTietRows) {
+            await connection.query(
+                `UPDATE thietbi 
+                 SET so_luong_da_cho_muon = GREATEST(so_luong_da_cho_muon - ?, 0) 
+                 WHERE ma_thiet_bi = ?`,
+                [ct.so_luong, ct.ma_thiet_bi]
+            );
+        }
+
+        const tieuDe = 'Xác nhận trả đồ';
+        const noiDung = `Đơn mượn ${maYC} của bạn đã được Admin xác nhận thu hồi thành công. Cảm ơn bạn!`;
+        
+        await connection.query(
+            `INSERT INTO thongbao (tieu_de, noi_dung, ngay, nguoinhan_id, loai, trang_thai) 
+             VALUES (?, ?, NOW(), ?, 'duyệt', 'chua_doc')`,
+            [tieuDe, noiDung, maNguoiMuon]
+        );
+
+        await connection.commit();
+        connection.release();
+
+        res.json({ success: true, message: `Đã xác nhận trả thiết bị cho phiếu ${maYC}` });
+
+    } catch (error) {
+        await connection.rollback();
+        connection.release();
+        console.error("Lỗi xacNhanTraThietBi:", error);
+        res.status(500).json({ success: false, message: "Lỗi server khi xác nhận trả thiết bị" });
+    }
+};
+
+module.exports = { getDanhSachYeuCau, getChiTietYeuCau, duyetYeuCau, tuChoiYeuCau, xacNhanTraThietBi };

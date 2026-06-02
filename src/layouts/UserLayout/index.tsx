@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, Outlet, useAppData, useLocation, history } from 'umi';
-import { Layout, Menu, Avatar, Input, Dropdown, message, ConfigProvider} from 'antd';
+import { Layout, Menu, Avatar, Dropdown, message, ConfigProvider} from 'antd';
 import type { MenuProps } from 'antd';
 import styles from './index.less';
 import { 
@@ -90,11 +90,6 @@ export default function UserLayout() {
       <Header className={styles.header}>
         <div className={styles.logo}>Hệ thống mượn đồ dùng Sinh viên PTIT</div>
         <div style={{ flex: 1 }} />
-        <Input
-          className={styles.searchBar}
-          placeholder="Tìm kiếm đồ dùng... (vd: máy ảnh, mic, áo phông...)"
-          prefix={<SearchOutlined />}
-        />
         <div className={styles.headerRight}>
           <ThongBao />
           <Dropdown menu={{ items: userMenuItems, onClick: onMenuClick }} placement="bottomRight">

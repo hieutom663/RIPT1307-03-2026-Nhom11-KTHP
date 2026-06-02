@@ -6,7 +6,7 @@ const getProfile = async (req, res) => {
         const { ma_sv } = req.body;
 
         const [rows] = await pool.query(
-            "SELECT ho_ten, email, so_phone AS soPhone, ma_sv AS maSV FROM users WHERE ma_sv = ?",
+            "SELECT ho_ten AS ten, email, so_phone AS soPhone, ma_sv AS maSV FROM users WHERE ma_sv = ?",
             [ma_sv]
         );
 
@@ -39,6 +39,7 @@ const updateProfile = async (req, res) => {
     } catch (error) {
         console.error("Lỗi:", error);
         res.status(500).json({ success: false, message: "Lỗi server khi cập nhật" });
+        console.log(ten);
     }
 };
 

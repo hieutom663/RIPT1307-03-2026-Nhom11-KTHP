@@ -22,7 +22,7 @@ const Login = () => {
                 message.info('Chào mừng Admin quay trở lại!');
                 history.push('/admin/trang-chu'); 
             } else {
-                message.info(`Chào mừng bạn ${result.user.ten}!`);
+                message.info(`Chào mừng bạn ${result.user.ho_ten}!`);
                 history.push('/user/trang-chu');  
             }
         }
