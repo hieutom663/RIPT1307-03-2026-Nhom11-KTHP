@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { Table, Button, Input, Select, Space, Popconfirm, message, Tooltip, Image } from 'antd';
-import { PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons';
+import { Table, Button, Input, Select, Space, Popconfirm, message, Tooltip, Image, Card, Typography, ConfigProvider, Tag } from 'antd';
+import { PlusOutlined, EditOutlined, DeleteOutlined, DatabaseOutlined, SearchOutlined } from '@ant-design/icons';
 import { useModel } from 'umi';
 
 import { getDanhSachThietBiAdminAPI, themThietBiAPI, suaThietBiAPI, xoaThietBiAPI } from '../../../services/QuanLyThietBi/api'; 
 import ThemSuaThietBi from './component/ThemSuaThietBi';
 
 const { Search } = Input;
+const { Title, Text } = Typography;
 
 const QuanLyThietBiAdmin = () => {
     const { danhSachDanhMuc } = useModel('danhMuc'); 
@@ -108,15 +109,17 @@ const QuanLyThietBiAdmin = () => {
             key: 'stt',
             width: 60,
             align: 'center' as const,
-            render: (_: any, __: any, index: number) => (trangHienTai - 1) * soThietBiMoiTrang + index + 1,
+            render: (_: any, __: any, index: number) => <Text type="secondary">{(trangHienTai - 1) * soThietBiMoiTrang + index + 1}</Text>,
         },
         {
             title: 'Hình ảnh',
             dataIndex: 'img',
-            width: 80,
+            width: 90,
             align: 'center' as const,
             render: (img: string) => (
-                <Image src={img} style={{ width: 40, height: 40, objectFit: 'cover', borderRadius: 4 }} />
+                <div style={{ padding: '4px', border: '1px solid #f0f0f0', borderRadius: '8px', display: 'inline-block', backgroundColor: '#fff' }}>
+                    <Image src={img} style={{ width: 44, height: 44, objectFit: 'contain' }} fallback="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg" />
+                </div>
             ),
         },
         {
@@ -124,53 +127,58 @@ const QuanLyThietBiAdmin = () => {
             dataIndex: 'ma_thiet_bi',
             width: 100,
             sorter: (a: any, b: any) => a.ma_thiet_bi.localeCompare(b.ma_thiet_bi),
+            render: (text: string) => <Text strong style={{ color: '#cf1322' }}>{text}</Text>
         },
         {
             title: 'Tên thiết bị',
             dataIndex: 'ten_thiet_bi',
             sorter: (a: any, b: any) => a.ten_thiet_bi.localeCompare(b.ten_thiet_bi),
+            render: (text: string) => <Text strong style={{ fontSize: '14px' }}>{text}</Text>
         },
         {
             title: 'Danh mục',
             dataIndex: 'ma_danh_muc',
-            width: 150,
+            width: 180,
             render: (ma_danh_muc: string) => {
                 const dm = danhSachDanhMuc.find((d: any) => d.ma_danh_muc === ma_danh_muc);
-                return dm ? dm.ten_danh_muc : ma_danh_muc;
+                return <Tag color="blue" style={{ borderRadius: '4px' }}>{dm ? dm.ten_danh_muc : ma_danh_muc}</Tag>;
             },
         },
         {
             title: 'Mô tả',
             dataIndex: 'mo_ta',
             ellipsis: true,
+            render: (text: string) => <Text type="secondary">{text}</Text>
         },
         {
-            title: 'SL Tổng',
+            title: 'Tổng',
             dataIndex: 'tong_so_luong',
-            width: 100,
+            width: 80,
             align: 'center' as const,
-            sorter: (a: any, b: any) => a.soLuongTong - b.soLuongTong,
+            sorter: (a: any, b: any) => a.tong_so_luong - b.tong_so_luong,
+            render: (val: number) => <Text strong>{val}</Text>
         },
         {
-            title: 'SL Còn lại',
+            title: 'Còn lại',
             dataIndex: 'so_luong_con_lai',
-            width: 100,
+            width: 90,
             align: 'center' as const,
-            sorter: (a: any, b: any) => a.soLuongConLai - b.soLuongConLai,
+            sorter: (a: any, b: any) => a.so_luong_con_lai - b.so_luong_con_lai,
+            render: (val: number) => <Text strong style={{ color: val > 0 ? '#52c41a' : '#f5222d' }}>{val}</Text>
         },
         {
             title: 'Hành động',
             key: 'action',
-            width: 150,
+            width: 120,
             align: 'center' as const,
             render: (_: any, record: any) => (
-                <Space size="small">
-                    <Tooltip title="Xem / Sửa">
-                        <Button type="primary" size="small" icon={<EditOutlined />} onClick={() => moModalSua(record)} />
+                <Space size="middle">
+                    <Tooltip title="Sửa thiết bị">
+                        <Button type="text" style={{ color: '#1677ff', padding: 4 }} icon={<EditOutlined style={{ fontSize: '16px' }}/>} onClick={() => moModalSua(record)} />
                     </Tooltip>
-                    <Popconfirm title="Bạn có chắc chắn muốn xóa?" onConfirm={() => xuLyXoa(record.ma_thiet_bi)}>
+                    <Popconfirm title="Xóa thiết bị" description="Bạn có chắc chắn muốn xóa thiết bị này không?" onConfirm={() => xuLyXoa(record.ma_thiet_bi)} okButtonProps={{ danger: true }}>
                         <Tooltip title="Xóa">
-                            <Button danger size="small" icon={<DeleteOutlined />} />
+                            <Button type="text" danger style={{ padding: 4 }} icon={<DeleteOutlined style={{ fontSize: '16px' }}/>} />
                         </Tooltip>
                     </Popconfirm>
                 </Space>
@@ -187,54 +195,66 @@ const QuanLyThietBiAdmin = () => {
     ], [danhSachDanhMuc]);
 
     return (
-        <div style={{ padding: '24px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
-                <h2>Quản lý Thiết bị (Admin)</h2>
-                <Button type="primary" icon={<PlusOutlined />} onClick={moModalThemMoi}>
-                    Thêm thiết bị mới
-                </Button>
-            </div>
+        <ConfigProvider theme={{ token: { colorPrimary: '#cf1322' } }}>
+            <div style={{ minHeight: 'calc(100vh - 64px)' }}>
+                
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
+                        <div>
+                            <Title level={3} style={{ margin: 0, marginBottom: 8, color: '#262626', display: 'flex', alignItems: 'center' }}>
+                                <DatabaseOutlined style={{ color: '#cf1322', marginRight: 12 }} />
+                                Quản lý Kho Thiết bị
+                            </Title>
+                            <Text type="secondary">Quản lý thêm, sửa, xóa và kiểm tra số lượng thiết bị trong kho</Text>
+                        </div>
+                        <Button type="primary" size="large" icon={<PlusOutlined />} onClick={moModalThemMoi} style={{ borderRadius: '8px', fontWeight: 500 }}>
+                            Thêm thiết bị mới
+                        </Button>
+                    </div>
 
-            <div style={{ display: 'flex', gap: '16px', marginBottom: 16 }}>
-                <Search
-                    placeholder="Tìm tên hoặc mã thiết bị..."
-                    allowClear
-                    enterButton="Tìm kiếm"
-                    onSearch={(value) => { setTuKhoa(value); setTrangHienTai(1); }}
-                    style={{ maxWidth: 400 }}
+                    <div style={{ display: 'flex', gap: '16px', marginBottom: 24 }}>
+                        <Search
+                            placeholder="Tìm tên hoặc mã thiết bị..."
+                            allowClear
+                            enterButton={<Button type="primary" icon={<SearchOutlined />}>Tìm kiếm</Button>}
+                            onSearch={(value) => { setTuKhoa(value); setTrangHienTai(1); }}
+                            size="large"
+                            style={{ maxWidth: 400 }}
+                        />
+                        <Select
+                            value={boLoc}
+                            onChange={(giaTri) => { setBoLoc(giaTri); setTrangHienTai(1); }}
+                            style={{ width: 250 }}
+                            size="large"
+                            options={danhMucOptions}
+                        />
+                    </div>
+
+                    <Table
+                        columns={columns}
+                        dataSource={danhSachThietBi}
+                        rowKey="ma_thiet_bi"
+                        loading={loading}
+                        pagination={{
+                            current: trangHienTai,
+                            pageSize: soThietBiMoiTrang,
+                            total: tongSoLuong,
+                            showSizeChanger: false,
+                            onChange: (page) => setTrangHienTai(page),
+                            style: { marginTop: '24px' }
+                        }}
+                    />
+                
+
+                <ThemSuaThietBi
+                    visible={modalVisible}
+                    thietBi={thietBiDangChon}
+                    maMoi={maMoiTiepTheo}
+                    onCancel={dongModal}
+                    onSave={xuLyLuuThietBi}
+                    loading={actionLoading}
                 />
-                <Select
-                    value={boLoc}
-                    onChange={(giaTri) => { setBoLoc(giaTri); setTrangHienTai(1); }}
-                    style={{ width: 250 }}
-                    options={danhMucOptions}
-                />
             </div>
-
-            <Table
-                columns={columns}
-                dataSource={danhSachThietBi}
-                rowKey="ma_thiet_bi"
-                loading={loading}
-                bordered
-                pagination={{
-                    current: trangHienTai,
-                    pageSize: soThietBiMoiTrang,
-                    total: tongSoLuong,
-                    showSizeChanger: false,
-                    onChange: (page) => setTrangHienTai(page),
-                }}
-            />
-
-            <ThemSuaThietBi
-                visible={modalVisible}
-                thietBi={thietBiDangChon}
-                maMoi={maMoiTiepTheo}
-                onCancel={dongModal}
-                onSave={xuLyLuuThietBi}
-                loading={actionLoading}
-            />
-        </div>
+        </ConfigProvider>
     );
 };
 

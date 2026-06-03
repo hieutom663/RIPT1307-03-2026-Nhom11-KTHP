@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Card, Tabs, Spin, message, Typography } from 'antd';
+import { Row, Col, Card, Tabs, Spin, message, Typography, ConfigProvider } from 'antd';
 import type { TabsProps } from 'antd';
 import { 
     ClockCircleOutlined, 
@@ -13,11 +13,11 @@ import TatCaLichSu from './component/TatCaLichSu';
 
 import { getLichSuCaNhanAPI } from '../../../services/LichSuMuon/api'; 
 
-const { Title } = Typography;
+const { Title, Text } = Typography;
 
 const items: TabsProps['items'] = [
-    { key: '1', label: 'Phiếu mượn', children: <PhieuMuon /> },
-    { key: '2', label: 'Tất cả lịch sử', children: <TatCaLichSu /> },
+    { key: '1', label: <span style={{ fontSize: '15px', fontWeight: 500 }}>Phiếu mượn</span>, children: <PhieuMuon /> },
+    { key: '2', label: <span style={{ fontSize: '15px', fontWeight: 500 }}>Tất cả lịch sử</span>, children: <TatCaLichSu /> },
 ];
 
 const StatCard = ({ title, count, icon, color, bgColor }: { title: string, count: number | string, icon: React.ReactNode, color: string, bgColor: string }) => {
@@ -29,27 +29,27 @@ const StatCard = ({ title, count, icon, color, bgColor }: { title: string, count
             onMouseEnter={() => setIsHover(true)}
             onMouseLeave={() => setIsHover(false)}
             style={{ 
-                borderRadius: '12px', 
-                boxShadow: isHover ? '0 8px 24px rgba(0,0,0,0.12)' : '0 4px 12px rgba(0,0,0,0.05)',
-                transform: isHover ? 'translateY(-5px)' : 'none',
-                transition: 'all 0.3s ease',
+                borderRadius: '16px', 
+                boxShadow: isHover ? '0 8px 24px rgba(0,0,0,0.1)' : '0 4px 12px rgba(0,0,0,0.03)',
+                transform: isHover ? 'translateY(-4px)' : 'none',
+                transition: 'all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)',
                 cursor: 'pointer'
             }} 
-            styles={{ body: { padding: '20px 24px' } }}
+            styles={{ body: { padding: '24px' } }}
         >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div>
-                    <div style={{ color: '#8c8c8c', fontSize: '14px', marginBottom: '8px', fontWeight: 500 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                    <Text type="secondary" style={{ fontSize: '15px', fontWeight: 500 }}>
                         {title}
-                    </div>
-                    <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#1f1f1f', lineHeight: 1 }}>
+                    </Text>
+                    <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#262626', lineHeight: 1 }}>
                         {count}
                     </div>
                 </div>
                 <div style={{ 
-                    width: '56px', height: '56px', borderRadius: '50%', 
+                    width: '60px', height: '60px', borderRadius: '50%', 
                     backgroundColor: bgColor, color: color, 
-                    display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '24px' 
+                    display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '28px' 
                 }}>
                     {icon}
                 </div>
@@ -94,13 +94,16 @@ const LichSuMuon = () => {
     }, []);
 
     return (
-        <Spin spinning={loading}>
-            <div style={{ padding: '24px', backgroundColor: '#f5f5f5', minHeight: 'calc(100vh - 120px)' }}>
+        <Spin spinning={loading} description="Đang tải dữ liệu...">
+            <div style={{ padding: '24px 20px', backgroundColor: '#f5f7fa', minHeight: 'calc(100vh - 120px)' }}>
                 
-                <Title level={3} style={{ marginBottom: 24, marginTop: 0, display: 'flex', alignItems: 'center' }}>
-                    <HistoryOutlined style={{ marginRight: 12, color: '#1677ff' }} />
-                    Lịch sử Mượn/Trả đồ dùng
-                </Title>
+                <div style={{ marginBottom: 32 }}>
+                    <Title level={3} style={{ margin: 0, color: '#262626', display: 'flex', alignItems: 'center' }}>
+                        <HistoryOutlined style={{ marginRight: 12, color: '#cf1322' }} />
+                        Lịch sử Mượn/Trả đồ dùng
+                    </Title>
+                    <Text type="secondary">Theo dõi trạng thái các phiếu mượn và lịch sử sử dụng thiết bị của bạn.</Text>
+                </div>
                 
                 <Row gutter={[24, 24]} style={{ marginBottom: 32 }}>
                     <Col xs={24} sm={12} lg={6}>
@@ -141,8 +144,16 @@ const LichSuMuon = () => {
                     </Col>
                 </Row>
 
-                <div style={{ backgroundColor: '#fff', padding: '24px', borderRadius: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
-                    <Tabs defaultActiveKey="1" items={items} size="large" />
+                <div style={{ backgroundColor: '#fff', padding: '16px 24px 24px', borderRadius: '16px', boxShadow: '0 4px 12px rgba(0,0,0,0.03)' }}>
+                    <ConfigProvider
+                        theme={{
+                            token: {
+                                colorPrimary: '#cf1322',
+                            },
+                        }}
+                    >
+                        <Tabs defaultActiveKey="1" items={items} size="large" tabBarGutter={32} />
+                    </ConfigProvider>
                 </div>
 
             </div>

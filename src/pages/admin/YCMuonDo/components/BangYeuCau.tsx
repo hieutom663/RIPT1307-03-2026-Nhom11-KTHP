@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Table, Tag, Button, Space, Typography, Card, Tooltip, Modal, Input, message } from 'antd';
+import { Table, Tag, Button, Space, Typography, Tooltip, Modal, Input, message } from 'antd';
 import { EyeOutlined, CheckOutlined, CloseOutlined, RollbackOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import type { YeuCauMuon } from '../index';
@@ -39,10 +39,11 @@ const BangYeuCau: React.FC<Props> = ({ data, onRefresh }) => {
 
   const handleDuyet = (record: YeuCauMuon) => {
     Modal.confirm({
-      title: 'Xác nhận duyệt',
-      content: `Duyệt yêu cầu ${record.maYC} của ${record.tenSV}?`,
-      okText: 'Duyệt',
+      title: 'Xác nhận phê duyệt phiếu mượn',
+      content: `Bạn có chắc chắn muốn duyệt yêu cầu mượn đồ ${record.maYC} của sinh viên ${record.tenSV}?`,
+      okText: 'Phê duyệt',
       cancelText: 'Hủy',
+      okButtonProps: { style: { backgroundColor: '#52c41a', borderColor: '#52c41a' } },
       onOk: async () => {
         try {
           const res = await duyetYeuCauAPI(record.maYC);
@@ -60,11 +61,10 @@ const BangYeuCau: React.FC<Props> = ({ data, onRefresh }) => {
     });
   };
 
-  // HÀM MỚI: Xử lý xác nhận trả thiết bị
   const handleTraThietBi = (record: YeuCauMuon) => {
     Modal.confirm({
       title: 'Xác nhận thu hồi thiết bị',
-      content: `Xác nhận sinh viên ${record.tenSV} đã trả thiết bị cho phiếu mượn ${record.maYC}?`,
+      content: `Xác nhận sinh viên ${record.tenSV} đã hoàn trả đầy đủ thiết bị của phiếu mượn ${record.maYC}?`,
       okText: 'Xác nhận đã trả',
       cancelText: 'Hủy',
       onOk: async () => {
@@ -118,55 +118,73 @@ const BangYeuCau: React.FC<Props> = ({ data, onRefresh }) => {
 
   const columns: ColumnsType<YeuCauMuon> = [
     {
-      title: 'Mã YC', dataIndex: 'maYC', key: 'maYC', width: 100,
-      render: (v: string) => <Text strong style={{ color: '#1677ff' }}>{v}</Text>,
+      title: 'Mã YC', 
+      dataIndex: 'maYC', 
+      key: 'maYC', 
+      width: 100,
+      render: (v: string) => <Text strong style={{ color: '#cf1322', fontFamily: 'monospace' }}>{v}</Text>,
     },
     {
-      title: 'Sinh viên', key: 'sinhVien', width: 170,
+      title: 'Sinh viên', 
+      key: 'sinhVien', 
+      width: 180,
       render: (_: unknown, r: YeuCauMuon) => (
-        <div><Text strong>{r.tenSV}</Text><br /><Text type="secondary" style={{ fontSize: 12 }}>{r.maSV}</Text></div>
+        <div>
+          <Text strong style={{ fontSize: '14px' }}>{r.tenSV}</Text>
+          <br />
+          <Text type="secondary" style={{ fontSize: 12 }}>{r.maSV}</Text>
+        </div>
       ),
     },
-    { title: 'Thiết bị', dataIndex: 'thietBi', key: 'thietBi', width: 200 },
-    { title: 'SL', dataIndex: 'soLuong', key: 'soLuong', width: 60, align: 'center' as const },
-    { title: 'Ngày mượn', dataIndex: 'ngayMuon', key: 'ngayMuon', width: 120 },
-    { title: 'Ngày trả DK', dataIndex: 'ngayTraDK', key: 'ngayTraDK', width: 120 },
+    { 
+      title: 'Thiết bị đăng ký mượn', 
+      dataIndex: 'thietBi', 
+      key: 'thietBi',
+      render: (text: string) => <Text strong>{text}</Text>
+    },
+    { title: 'SL', dataIndex: 'soLuong', key: 'soLuong', width: 60, align: 'center' as const, render: (val) => <Text strong>{val}</Text> },
+    { title: 'Ngày mượn', dataIndex: 'ngayMuon', key: 'ngayMuon', width: 120, render: (val) => <Text type="secondary">{val}</Text> },
+    { title: 'Ngày trả DK', dataIndex: 'ngayTraDK', key: 'ngayTraDK', width: 120, render: (val) => <Text type="secondary">{val}</Text> },
     {
-      title: 'Trạng thái', key: 'trangThai', width: 130, align: 'center' as const,
+      title: 'Trạng thái', 
+      key: 'trangThai', 
+      width: 130, 
+      align: 'center' as const,
       render: (_: unknown, r: YeuCauMuon) => {
         const cfg = statusConfig[r.trangThai];
         return (
-          <Tag style={{ color: cfg.color, backgroundColor: cfg.bg, border: `1px solid ${cfg.color}30`, borderRadius: 6, fontWeight: 600, fontSize: 12, padding: '2px 12px' }}>
+          <Tag style={{ color: cfg.color, backgroundColor: cfg.bg, border: `1px solid ${cfg.color}25`, borderRadius: 4, fontWeight: 500, padding: '2px 10px' }}>
             {cfg.label}
           </Tag>
         );
       },
     },
     {
-      title: 'Hành động', key: 'action', width: 220, align: 'center' as const,
+      title: 'Hành động', 
+      key: 'action', 
+      width: 200, 
+      align: 'center' as const,
       render: (_: unknown, record: YeuCauMuon) => (
-        <Space size={4}>
-          <Tooltip title="Xem chi tiết">
-            <Button size="small" icon={<EyeOutlined />} style={{ borderColor: '#d9d9d9' }} onClick={() => handleXemChiTiet(record)}>Xem</Button>
+        <Space size="middle">
+          <Tooltip title="Xem chi tiết phiếu">
+            <Button size="small" type="text" icon={<EyeOutlined />} style={{ color: '#595959', padding: '0 4px' }} onClick={() => handleXemChiTiet(record)}>Xem</Button>
           </Tooltip>
           
-          {/* Nút cho trạng thái Chờ duyệt */}
           {record.trangThai === 'cho_duyet' && (
             <>
-              <Tooltip title="Duyệt yêu cầu">
-                <Button size="small" type="primary" icon={<CheckOutlined />} style={{ background: '#52c41a', borderColor: '#52c41a' }} onClick={() => handleDuyet(record)}>Duyệt</Button>
+              <Tooltip title="Phê duyệt phiếu mượn">
+                <Button size="small" type="text" icon={<CheckOutlined />} style={{ color: '#52c41a', fontWeight: 500, padding: '0 4px' }} onClick={() => handleDuyet(record)}>Duyệt</Button>
               </Tooltip>
-              <Tooltip title="Từ chối">
-                <Button size="small" danger icon={<CloseOutlined />} onClick={() => handleOpenTuChoi(record)}>Từ chối</Button>
+              <Tooltip title="Từ chối phiếu mượn">
+                <Button size="small" type="text" danger icon={<CloseOutlined />} style={{ fontWeight: 500, padding: '0 4px' }} onClick={() => handleOpenTuChoi(record)}>Từ chối</Button>
               </Tooltip>
             </>
           )}
 
-          {/* Nút cho trạng thái Đang mượn hoặc Quá hạn */}
           {(record.trangThai === 'dang_muon' || record.trangThai === 'qua_han') && (
-            <Tooltip title="Xác nhận sinh viên đã trả đồ">
-              <Button size="small" type="primary" icon={<RollbackOutlined />} onClick={() => handleTraThietBi(record)}>
-                Xác nhận trả
+            <Tooltip title="Xác nhận sinh viên đã hoàn trả đồ dùng">
+              <Button size="small" type="link" icon={<RollbackOutlined />} style={{ color: '#cf1322', fontWeight: 500, padding: 0 }} onClick={() => handleTraThietBi(record)}>
+                Xác nhận trả đồ
               </Button>
             </Tooltip>
           )}
@@ -177,15 +195,20 @@ const BangYeuCau: React.FC<Props> = ({ data, onRefresh }) => {
 
   return (
     <>
-      <Card styles={{ body: { padding: 0 } }} style={{ borderRadius: 12, overflow: 'hidden', boxShadow: '0 1px 4px rgba(0,0,0,.06)' }}>
-        <Table
-          columns={columns}
-          dataSource={data}
-          pagination={{ pageSize: 10, showTotal: (total) => `Tổng ${total} yêu cầu`, style: { marginRight: 16 } }}
-          size="middle"
-          rowKey="key"
-        />
-      </Card>
+      {/* ĐÃ SỬA: Loại bỏ lớp Card bọc thừa để Table phẳng lì và thoáng đãng trên trang cha */}
+      <Table
+        columns={columns}
+        dataSource={data}
+        pagination={{ 
+          pageSize: 10, 
+          showTotal: (total) => `Tổng số ${total} yêu cầu`,
+          showSizeChanger: false,
+          style: { marginTop: '24px' } 
+        }}
+        size="middle"
+        rowKey="key"
+        locale={{ emptyText: 'Không tìm thấy phiếu mượn nào phù hợp' }}
+      />
 
       <ModalChiTiet
         maYC={chiTietMaYC}
@@ -197,7 +220,7 @@ const BangYeuCau: React.FC<Props> = ({ data, onRefresh }) => {
         title={
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <CloseOutlined style={{ color: '#ff4d4f', fontSize: 18 }} />
-            <span>Từ chối yêu cầu {tuChoiRecord?.maYC}</span>
+            <span style={{ fontWeight: 600 }}>Từ chối yêu cầu mượn đồ</span>
           </div>
         }
         open={tuChoiOpen}
@@ -206,24 +229,26 @@ const BangYeuCau: React.FC<Props> = ({ data, onRefresh }) => {
         okText="Xác nhận từ chối"
         okButtonProps={{ danger: true, loading: tuChoiLoading }}
         cancelText="Hủy"
-        destroyOnHidden
+        destroyOnClose // Đã sửa từ destroyOnHidden thành đúng tiêu chuẩn AntD v5
+        centered
       >
         {tuChoiRecord && (
-          <div style={{ marginBottom: 16 }}>
-            <Text>Từ chối yêu cầu <Text strong style={{ color: '#1677ff' }}>{tuChoiRecord.maYC}</Text> của <Text strong>{tuChoiRecord.tenSV}</Text></Text>
-            <br />
-            <Text type="secondary" style={{ fontSize: 13 }}>Thiết bị: {tuChoiRecord.thietBi}</Text>
+          <div style={{ marginBottom: 16, marginTop: 16, padding: '12px', backgroundColor: '#fafafa', borderRadius: '8px' }}>
+            <Text style={{ display: 'block', marginBottom: 4 }}>Phiếu mượn: <Text strong style={{ color: '#cf1322' }}>{tuChoiRecord.maYC}</Text></Text>
+            <Text style={{ display: 'block', marginBottom: 4 }}>Sinh viên: <Text strong>{tuChoiRecord.tenSV}</Text> ({tuChoiRecord.maSV})</Text>
+            <Text style={{ display: 'block' }}>Thiết bị mượn: <Text type="secondary">{tuChoiRecord.thietBi}</Text></Text>
           </div>
         )}
         <div>
-          <Text strong style={{ display: 'block', marginBottom: 6 }}>
-            Lý do từ chối <Text type="danger">*</Text>
+          <Text strong style={{ display: 'block', marginBottom: 8 }}>
+            Lý do từ chối phiếu mượn <Text type="danger">*</Text>
           </Text>
           <TextArea
-            rows={3}
-            placeholder="Nhập lý do từ chối yêu cầu mượn..."
+            rows={4}
+            placeholder="Nhập cụ thể lý do từ chối để sinh viên nhận được thông báo rõ ràng..."
             value={lyDoTuChoi}
             onChange={(e) => setLyDoTuChoi(e.target.value)}
+            style={{ borderRadius: '6px' }}
           />
         </div>
       </Modal>

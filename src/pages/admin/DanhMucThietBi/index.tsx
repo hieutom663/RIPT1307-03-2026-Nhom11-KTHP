@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Button, Table, Tag, Popconfirm, Form, message, Spin, Alert, Typography, Space } from 'antd';
+import { Button, Table, Tag, Popconfirm, Form, message, Spin, Alert, Typography, Space, Card, ConfigProvider } from 'antd';
 import { EditOutlined, DeleteOutlined, PlusOutlined, ReloadOutlined, AppstoreOutlined } from '@ant-design/icons';
 import BoLocDanhMuc from './component/BoLocDanhMuc';
 import ThemSuaDanhMuc from './component/ThemSuaDanhMuc';
@@ -24,7 +24,6 @@ const DanhMucThietBiAdmin: React.FC = () => {
     const [form] = Form.useForm();
     const [boLoc, setBoLoc] = useState('tat-ca');
 
-    // ── Tải dữ liệu từ API ──
     const fetchData = useCallback(async () => {
         setLoading(true);
         setError(null);
@@ -43,7 +42,6 @@ const DanhMucThietBiAdmin: React.FC = () => {
         fetchData();
     }, [fetchData]);
 
-    // ── Handlers ──
     const handleAdd = () => {
         setEditingDanhMuc(null);
         form.resetFields();
@@ -106,7 +104,6 @@ const DanhMucThietBiAdmin: React.FC = () => {
         }
     };
 
-    // ── Columns ──
     const columns = [
         {
             title: 'Mã DM',
@@ -114,13 +111,14 @@ const DanhMucThietBiAdmin: React.FC = () => {
             key: 'ma_danh_muc',
             width: 100,
             render: (val: string) => (
-                <Text strong style={{ color: '#1677ff', fontFamily: 'monospace' }}>{val}</Text>
+                <Text strong style={{ color: '#cf1322', fontFamily: 'monospace' }}>{val}</Text>
             ),
         },
         {
             title: 'Tên danh mục',
             dataIndex: 'ten_danh_muc',
             key: 'ten_danh_muc',
+            render: (text: string) => <Text strong style={{ fontSize: '14px' }}>{text}</Text>
         },
         {
             title: 'Mô tả',
@@ -132,20 +130,22 @@ const DanhMucThietBiAdmin: React.FC = () => {
             title: 'Số thiết bị',
             dataIndex: 'so_luong_thiet_bi',
             key: 'so_luong_thiet_bi',
-            width: 110,
+            width: 120,
             align: 'center' as const,
             render: (val: number) => (
-                <Tag color={val > 0 ? 'blue' : 'default'}>{val ?? 0} thiết bị</Tag>
+                <Tag color={val > 0 ? 'processing' : 'default'} style={{ borderRadius: '4px' }}>
+                    {val ?? 0} thiết bị
+                </Tag>
             ),
         },
         {
             title: 'Trạng thái',
             dataIndex: 'trang_thai',
             key: 'trang_thai',
-            width: 150,
+            width: 160,
             align: 'center' as const,
             render: (val: string) => (
-                <Tag color={val === 'hoat-dong' ? 'success' : 'error'}>
+                <Tag color={val === 'hoat-dong' ? 'success' : 'error'} style={{ borderRadius: '4px', padding: '2px 8px' }}>
                     {val === 'hoat-dong' ? 'Đang hoạt động' : 'Ngừng hoạt động'}
                 </Tag>
             ),
@@ -153,15 +153,15 @@ const DanhMucThietBiAdmin: React.FC = () => {
         {
             title: 'Thao tác',
             key: 'action',
-            width: 110,
+            width: 120,
             align: 'center' as const,
             render: (_: any, record: DanhMuc) => (
-                <Space>
+                <Space size="middle">
                     <Button
                         type="text"
-                        icon={<EditOutlined />}
+                        icon={<EditOutlined style={{ fontSize: '16px' }} />}
                         onClick={() => handleEdit(record)}
-                        style={{ color: '#1677ff' }}
+                        style={{ color: '#cf1322', padding: 4 }}
                         title="Chỉnh sửa"
                     />
                     <Popconfirm
@@ -183,7 +183,8 @@ const DanhMucThietBiAdmin: React.FC = () => {
                         <Button
                             type="text"
                             danger
-                            icon={<DeleteOutlined />}
+                            icon={<DeleteOutlined style={{ fontSize: '16px' }} />}
+                            style={{ padding: 4 }}
                             title="Xóa"
                         />
                     </Popconfirm>
@@ -193,71 +194,70 @@ const DanhMucThietBiAdmin: React.FC = () => {
     ];
 
     return (
-        <div>
-            {/* Header */}
-            <div style={{ marginBottom: 20, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                    <AppstoreOutlined style={{ fontSize: 22, color: '#1677ff' }} />
-                    <div>
-                        <Title level={4} style={{ margin: 0 }}>Quản Lý Danh Mục Thiết Bị</Title>
-                        <Text type="secondary">Quản lý danh mục thiết bị và dụng cụ hỗ trợ học tập</Text>
+        <ConfigProvider theme={{ token: { colorPrimary: '#cf1322' } }}>
+            <div style={{ minHeight: 'calc(100vh - 64px)' }}>
+                
+                    {/* Header */}
+                    <div style={{ marginBottom: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                            <AppstoreOutlined style={{ fontSize: 24, color: '#cf1322', marginRight: 12 }} />
+                            <div>
+                                <Title level={3} style={{ margin: 0, marginBottom: 8, color: '#262626' }}>Quản Lý Danh Mục Thiết Bị</Title>
+                                <Text type="secondary">Quản lý danh mục thiết bị và dụng cụ hỗ trợ học tập</Text>
+                            </div>
+                        </div>
+                        <Button type="primary" size="large" icon={<PlusOutlined />} onClick={handleAdd} style={{ borderRadius: '8px', fontWeight: 500 }}>
+                            Thêm danh mục
+                        </Button>
                     </div>
-                </div>
-                <Space>
-                    <Button
-                        icon={<ReloadOutlined />}
-                        onClick={fetchData}
+
+                    {/* Bộ lọc */}
+                    <div style={{ marginBottom: 24 }}>
+                        <BoLocDanhMuc boLoc={boLoc} onChangeLoc={(giaTri: any) => setBoLoc(giaTri)} />
+                    </div>
+
+                    {/* Lỗi */}
+                    {error && (
+                        <Alert
+                            title={error}
+                            type="error"
+                            showIcon
+                            closable
+                            style={{ marginBottom: 24, borderRadius: '8px' }}
+                            onClose={() => setError(null)}
+                        />
+                    )}
+
+                    {/* Bảng dữ liệu */}
+                    <Table
+                        dataSource={danhSachDanhMuc}
+                        columns={columns}
+                        rowKey="ma_danh_muc"
                         loading={loading}
-                        title="Tải lại"
+                        pagination={{ 
+                            pageSize: 10, 
+                            showTotal: (total) => `Tổng ${total} danh mục`,
+                            showSizeChanger: false,
+                            style: { marginTop: '24px' }
+                        }}
+                        locale={{ emptyText: 'Chưa có danh mục nào' }}
                     />
-                    <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
-                        Thêm danh mục
-                    </Button>
-                </Space>
-            </div>
+            
 
-            {/* Bộ lọc */}
-            <div style={{ marginBottom: 16 }}>
-                <BoLocDanhMuc boLoc={boLoc} onChangeLoc={(giaTri: any) => setBoLoc(giaTri)} />
-            </div>
-
-            {/* Lỗi */}
-            {error && (
-                <Alert
-                    title={error}
-                    type="error"
-                    showIcon
-                    closable
-                    style={{ marginBottom: 16 }}
-                    onClose={() => setError(null)}
+                {/* Modal Thêm / Sửa */}
+                <ThemSuaDanhMuc
+                    visible={isModalVisible}
+                    danhMuc={editingDanhMuc}
+                    form={form}
+                    onSave={handleSave}
+                    onCancel={() => {
+                        setIsModalVisible(false);
+                        form.resetFields();
+                    }}
+                    saving={saving}
                 />
-            )}
-
-            {/* Bảng dữ liệu */}
-            <Spin spinning={loading}>
-                <Table
-                    dataSource={danhSachDanhMuc}
-                    columns={columns}
-                    rowKey="ma_danh_muc"
-                    pagination={{ pageSize: 10, showTotal: (total) => `Tổng ${total} danh mục` }}
-                    style={{ borderRadius: 12, overflow: 'hidden' }}
-                    locale={{ emptyText: 'Chưa có danh mục nào' }}
-                />
-            </Spin>
-
-            {/* Modal Thêm / Sửa */}
-            <ThemSuaDanhMuc
-                visible={isModalVisible}
-                danhMuc={editingDanhMuc}
-                form={form}
-                onSave={handleSave}
-                onCancel={() => {
-                    setIsModalVisible(false);
-                    form.resetFields();
-                }}
-                saving={saving}
-            />
-        </div>
+            </div>
+        </ConfigProvider>
     );
 };
 

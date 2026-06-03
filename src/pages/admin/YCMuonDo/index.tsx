@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { Typography, message, Spin } from 'antd';
+import React, { useState, useEffect, useMemo } from 'react';
+import { Typography, message, Spin, Card, ConfigProvider } from 'antd';
 import { FileTextOutlined } from '@ant-design/icons';
 import ThanhTimKiem from './components/ThanhTimKiem';
 import BoLocTrangThai from './components/BoLocTrangThai';
 import BangYeuCau from './components/BangYeuCau';
 import { getDanhSachYeuCauAPI } from '@/services/YeuCauMuon/api';
 
-const { Title } = Typography;
+const { Title, Text } = Typography;
 
 export interface YeuCauMuon {
   key: string;
@@ -54,34 +54,43 @@ const YCMuonDo: React.FC = () => {
     return data.filter((r) => r.trangThai === status).length;
   };
 
-  const filteredData = data
-    .filter((r) => activeFilter === 'tat_ca' || r.trangThai === activeFilter)
-    .filter((r) =>
-      searchText === '' ||
-      r.tenSV.toLowerCase().includes(searchText.toLowerCase()) ||
-      r.thietBi.toLowerCase().includes(searchText.toLowerCase()) ||
-      r.maYC.toLowerCase().includes(searchText.toLowerCase()),
-    );
+  const filteredData = useMemo(() => {
+    return data
+      .filter((r) => activeFilter === 'tat_ca' || r.trangThai === activeFilter)
+      .filter((r) =>
+        searchText === '' ||
+        r.tenSV.toLowerCase().includes(searchText.toLowerCase()) ||
+        r.thietBi.toLowerCase().includes(searchText.toLowerCase()) ||
+        r.maYC.toLowerCase().includes(searchText.toLowerCase()),
+      );
+  }, [data, activeFilter, searchText]);
 
   return (
-    <div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>
-        <FileTextOutlined style={{ fontSize: 22, color: '#1677ff' }} />
-        <Title level={4} style={{ margin: 0 }}>Quản Lý Yêu Cầu Mượn</Title>
+    <ConfigProvider theme={{ token: { colorPrimary: '#cf1322' } }}>
+      <div style={{minHeight: 'calc(100vh - 64px)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 28 }}>
+            <FileTextOutlined style={{ fontSize: 24, color: '#cf1322' }} />
+            <div>
+              <Title level={3} style={{ margin: 0, color: '#262626' }}>Quản Lý Phiếu Mượn & Trả Thiết Bị</Title>
+              <Text type="secondary">Phê duyệt các yêu cầu đăng ký mới, theo dõi thiết bị đang cho sinh viên mượn và thu hồi đồ dùng</Text>
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: 24 }}>
+            <ThanhTimKiem searchText={searchText} onChange={setSearchText} />
+            
+            <BoLocTrangThai
+              activeFilter={activeFilter}
+              onFilterChange={setActiveFilter}
+              getStatusCount={getStatusCount}
+            />
+          </div>
+
+          <Spin spinning={loading} description="Đang tải dữ liệu phiếu mượn...">
+            <BangYeuCau data={filteredData} onRefresh={fetchData} />
+          </Spin>
       </div>
-
-      <ThanhTimKiem searchText={searchText} onChange={setSearchText} />
-
-      <BoLocTrangThai
-        activeFilter={activeFilter}
-        onFilterChange={setActiveFilter}
-        getStatusCount={getStatusCount}
-      />
-
-      <Spin spinning={loading}>
-        <BangYeuCau data={filteredData} onRefresh={fetchData} />
-      </Spin>
-    </div>
+    </ConfigProvider>
   );
 };
 

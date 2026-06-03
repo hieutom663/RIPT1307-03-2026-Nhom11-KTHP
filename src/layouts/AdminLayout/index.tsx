@@ -74,10 +74,11 @@ export default function AdminLayout() {
     });
 
   const handleLogout = () => {
-    localStorage.clear();
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('userInfo');
     message.success('Bạn đã đăng xuất thành công!');
     history.push('/login');
-  };
+};
 
   const onUserMenuClick: MenuProps['onClick'] = (e) => {
     if (e.key === 'logout') {
