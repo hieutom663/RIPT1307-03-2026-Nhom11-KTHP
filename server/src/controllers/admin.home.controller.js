@@ -20,7 +20,7 @@ const getAdminHome = async (req, res) => {
             pool.query("SELECT COUNT(*) AS total FROM yeucaumuon WHERE trang_thai = 'Chờ duyệt'"),
             
             // Quá hạn
-            pool.query("SELECT COUNT(*) AS total FROM yeucaumuon WHERE trang_thai = 'Đang mượn' AND ngay_tra_du_kien < NOW()"),
+            pool.query("SELECT COUNT(*) AS total FROM yeucaumuon WHERE trang_thai = 'Đang mượn' AND ngay_tra_du_kien < CURDATE()"),
             
             // Đang chờ duyệt
             pool.query(`

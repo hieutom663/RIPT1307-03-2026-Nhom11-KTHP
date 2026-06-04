@@ -76,7 +76,7 @@ const PhieuMuon = () => {
             ],
             onFilter: (value: any, record: any) => record.trangThai === value,
             render: (text: string) => {
-                const colors: any = { 'Chờ duyệt': 'gold', 'Đã duyệt': 'cyan', 'Đang mượn': 'geekblue', 'Hoàn thành': 'green', 'Bị từ chối': 'red' };
+                const colors: any = { 'Chờ duyệt': 'blue', 'Đang mượn': 'orange', 'Hoàn thành': 'green', 'Bị từ chối': 'red' };
                 return <Tag color={colors[text] || 'default'}>{text}</Tag>;
             },
         },

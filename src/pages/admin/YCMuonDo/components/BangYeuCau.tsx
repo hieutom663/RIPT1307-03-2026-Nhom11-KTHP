@@ -229,7 +229,7 @@ const BangYeuCau: React.FC<Props> = ({ data, onRefresh }) => {
         okText="Xác nhận từ chối"
         okButtonProps={{ danger: true, loading: tuChoiLoading }}
         cancelText="Hủy"
-        destroyOnClose // Đã sửa từ destroyOnHidden thành đúng tiêu chuẩn AntD v5
+        destroyOnHidden
         centered
       >
         {tuChoiRecord && (

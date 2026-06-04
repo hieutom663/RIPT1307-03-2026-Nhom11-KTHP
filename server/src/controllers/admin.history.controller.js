@@ -10,7 +10,7 @@ const getThongKeAdmin = async (req, res) => {
         ] = await Promise.all([
             pool.query("SELECT COUNT(*) AS total FROM yeucaumuon WHERE trang_thai = 'Chờ duyệt'"),
             pool.query("SELECT COUNT(*) AS total FROM yeucaumuon WHERE trang_thai = 'Đang mượn'"),
-            pool.query("SELECT COUNT(*) AS total FROM yeucaumuon WHERE trang_thai = 'Đang mượn' AND ngay_tra_du_kien < NOW()"),
+            pool.query("SELECT COUNT(*) AS total FROM yeucaumuon WHERE trang_thai = 'Đang mượn' AND ngay_tra_du_kien < CURDATE()"),
             pool.query("SELECT COUNT(*) AS total FROM yeucaumuon WHERE trang_thai = 'Hoàn thành'")
         ]);
 
@@ -56,13 +56,16 @@ const getAllChiTietLichSu = async (req, res) => {
                    DATE_FORMAT(y.ngay_tra_du_kien, '%Y-%m-%d') AS hanTra,
                    CASE 
                        WHEN y.trang_thai = 'Hoàn thành' THEN 'Đã trả'
-                       WHEN y.ngay_tra_du_kien < NOW() AND y.trang_thai = 'Đang mượn' THEN 'Quá hạn'
-                       ELSE 'Chưa trả'
+                       -- ĐÃ SỬA: Đổi NOW() thành CURDATE() để đồng bộ với hàm getThongKeAdmin
+                       WHEN y.trang_thai = 'Đang mượn' AND y.ngay_tra_du_kien < CURDATE() THEN 'Quá hạn'
+                       WHEN y.trang_thai = 'Đang mượn' THEN 'Đang mượn'
+                       -- ĐÃ SỬA: Trả về trạng thái gốc của phiếu (Chờ duyệt, Từ chối...) thay vì ép thành 'Chưa trả'
+                       ELSE y.trang_thai
                    END AS trangThai
             FROM chitietdon c
             JOIN yeucaumuon y ON c.ma_yeu_cau = y.ma_yeu_cau
             JOIN thietbi t ON c.ma_thiet_bi = t.ma_thiet_bi
-            ORDER BY y.ngay_tra_du_kien DESC
+            ORDER BY y.ngay_muon DESC, c.ma_don_muon DESC
         `;
         const [rows] = await pool.query(query);
         res.status(200).json({ success: true, data: rows });

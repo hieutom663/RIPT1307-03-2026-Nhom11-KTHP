@@ -87,8 +87,6 @@ const LichSuMuon = () => {
     return (
         <Spin spinning={loading} description="Đang tải dữ liệu...">
             <div style={{ minHeight: 'calc(100vh - 64px)' }}>
-                
-                {/* ── HEADER ── */}
                 <div style={{ marginBottom: 32 }}>
                     <Title level={3} style={{ margin: 0, color: '#262626', display: 'flex', alignItems: 'center' }}>
                         <HistoryOutlined style={{ marginRight: 12, color: '#cf1322' }} />
@@ -97,7 +95,6 @@ const LichSuMuon = () => {
                     <Text type="secondary">Quản lý và theo dõi toàn bộ lịch sử giao dịch thiết bị của sinh viên</Text>
                 </div>
                 
-                {/* ── THỐNG KÊ ── */}
                 <Row gutter={[24, 24]} style={{ marginBottom: 32 }}>
                     <Col xs={24} sm={12} lg={6}>
                         <StatCard 
@@ -137,7 +134,6 @@ const LichSuMuon = () => {
                     </Col>
                 </Row>
 
-                {/* ── TABS HIỂN THỊ DỮ LIỆU ── */}
                 <div style={{ backgroundColor: '#fff', padding: '16px 24px 24px', borderRadius: '16px', boxShadow: '0 4px 12px rgba(0,0,0,0.03)' }}>
                     <ConfigProvider
                         theme={{

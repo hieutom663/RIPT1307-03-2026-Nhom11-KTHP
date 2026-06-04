@@ -62,7 +62,7 @@ const AdminDashboard = () => {
             width: 100,
             align: 'center' as const,
             render: () => (
-                <Link to="/admin/yeu-cau-muon">
+                <Link to="/admin/yeu-cau-muon-tra">
                     <span style={{ color: '#cf1322', fontWeight: 500, cursor: 'pointer' }}>Xử lý</span>
                 </Link>
             ) 
