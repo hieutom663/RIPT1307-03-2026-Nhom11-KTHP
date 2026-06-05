@@ -59,7 +59,7 @@ const StatusDistribution: React.FC = () => {
                 percent={s.pct}
                 showInfo={false}
                 strokeColor={s.color}
-                trailColor="#f5f5f5"
+                railColor="#f5f5f5"
                 style={{ flex: 1, margin: 0 }}
                 size="small"
               />

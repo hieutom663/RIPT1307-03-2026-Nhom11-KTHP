@@ -20,10 +20,10 @@ interface ThongKeData {
 const iconMap = [
   { key: 'tongThietBi', label: 'Tổng thiết bị', icon: <LaptopOutlined />, color: '#1677ff', bg: '#e6f4ff' },
   { key: 'tongYeuCau', label: 'Tổng yêu cầu', icon: <FileTextOutlined />, color: '#722ed1', bg: '#f9f0ff' },
-  { key: 'choDuyet', label: 'Chờ duyệt', icon: <CheckCircleOutlined />, color: '#fa8c16', bg: '#fff7e6' },
-  { key: 'dangMuon', label: 'Đang mượn', icon: <SwapOutlined />, color: '#52c41a', bg: '#f6ffed' },
+  { key: 'choDuyet', label: 'Chờ duyệt', icon: <CheckCircleOutlined />, color: '#1677ff', bg: '#e6f4ff' },
+  { key: 'dangMuon', label: 'Đang mượn', icon: <SwapOutlined />, color: '#fa8c16', bg: '#fff7e6' },
   { key: 'quaHan', label: 'Quá hạn', icon: <WarningOutlined />, color: '#f5222d', bg: '#fff1f0' },
-  { key: 'daHoanThanh', label: 'Đã hoàn thành', icon: <TrophyOutlined />, color: '#13c2c2', bg: '#e6fffb' },
+  { key: 'daHoanThanh', label: 'Đã hoàn thành', icon: <TrophyOutlined />, color: '#52c41a', bg: '#f6ffed' },
 ];
 
 const SummaryCards: React.FC = () => {

@@ -10,10 +10,10 @@ const { Text } = Typography;
 const { TextArea } = Input;
 
 const statusConfig: Record<YeuCauMuon['trangThai'], { label: string; color: string; bg: string }> = {
-  cho_duyet: { label: 'Chờ duyệt', color: '#fa8c16', bg: '#fff7e6' },
+  cho_duyet: { label: 'Chờ duyệt', color: '#1677ff', bg: '#e6f4ff' },
   da_duyet: { label: 'Đã duyệt', color: '#1677ff', bg: '#e6f4ff' },
-  dang_muon: { label: 'Đang mượn', color: '#52c41a', bg: '#f6ffed' },
-  da_tra: { label: 'Đã trả', color: '#8c8c8c', bg: '#fafafa' },
+  dang_muon: { label: 'Đang mượn', color: '#fa8c16', bg: '#fff7e6' },
+  da_tra: { label: 'Đã trả', color: '#52c41a', bg: '#f6ffed' },
   qua_han: { label: 'Quá hạn', color: '#f5222d', bg: '#fff1f0' },
   tu_choi: { label: 'Từ chối', color: '#ff4d4f', bg: '#fff1f0' },
 };

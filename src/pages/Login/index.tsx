@@ -6,16 +6,13 @@ import hocVien from '../../assets/HocVien.png';
 import { Link, history } from 'umi';
 
 const Login = () => {
-  // Khởi tạo form instance để có thể set giá trị mặc định
   const [form] = Form.useForm();
 
-  // Kiểm tra localStorage khi trang vừa load xong
   useEffect(() => {
     const savedEmail = localStorage.getItem('rememberEmail');
     const savedPassword = localStorage.getItem('rememberPassword');
     
     if (savedEmail && savedPassword) {
-      // Tự động điền dữ liệu vào form
       form.setFieldsValue({
         email: savedEmail,
         password: savedPassword,
@@ -31,7 +28,6 @@ const Login = () => {
       const result = await loginAPI(email, password);
 
       if (result.success) {
-        // Xử lý chức năng Ghi nhớ
         if (remember) {
           localStorage.setItem('rememberEmail', email);
           localStorage.setItem('rememberPassword', password);
@@ -40,7 +36,6 @@ const Login = () => {
           localStorage.removeItem('rememberPassword');
         }
 
-        // Lưu thông tin phiên đăng nhập
         localStorage.setItem('accessToken', result.token ?? '');
         localStorage.setItem('userInfo', JSON.stringify(result.user));
 
@@ -83,7 +78,7 @@ const Login = () => {
             style={{ flex: 1 }}
           >
             <Form
-              form={form} // Gắn form instance vào Form component
+              form={form}
               name="basic"
               onFinish={onFinish}
               wrapperCol={{ span: 24 }}

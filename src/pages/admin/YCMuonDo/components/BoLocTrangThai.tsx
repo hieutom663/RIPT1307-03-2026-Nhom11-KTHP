@@ -4,11 +4,10 @@ import type { FilterStatus } from '../index';
 
 const filterTabs: { key: FilterStatus; label: string; color: string }[] = [
   { key: 'tat_ca', label: 'Tất cả', color: '#1677ff' },
-  { key: 'cho_duyet', label: 'Chờ duyệt', color: '#fa8c16' },
-  { key: 'da_duyet', label: 'Đã duyệt', color: '#1677ff' },
-  { key: 'dang_muon', label: 'Đang mượn', color: '#52c41a' },
+  { key: 'cho_duyet', label: 'Chờ duyệt', color:'#1677ff'  },
+  { key: 'dang_muon', label: 'Đang mượn', color: 'orange' },
   { key: 'qua_han', label: 'Quá hạn', color: '#f5222d' },
-  { key: 'da_tra', label: 'Đã trả', color: '#8c8c8c' },
+  { key: 'da_tra', label: 'Đã trả', color: '#52c41a' },
   { key: 'tu_choi', label: 'Từ chối', color: '#ff4d4f' },
 ];
 

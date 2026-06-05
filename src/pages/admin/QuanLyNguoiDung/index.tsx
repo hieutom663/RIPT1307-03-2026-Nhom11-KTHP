@@ -1,4 +1,4 @@
-import { Row, Col, Card, Table, Button, Input, Tag, message, Popconfirm, Space, Tooltip, Typography } from 'antd';
+import { Row, Col, Card, Table, Button, Input, Tag, message, Popconfirm, Space, Tooltip, Typography, ConfigProvider } from 'antd';
 import { UserOutlined, PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined, TeamOutlined, SearchOutlined, ReloadOutlined } from '@ant-design/icons';
 import { useState, useEffect, useCallback } from 'react';
 import ChiTietNguoiDung from './component/ChiTietNguoiDung';
@@ -140,7 +140,7 @@ const QuanLyNguoiDung = () => {
             dataIndex: 'ma_sv',
             width: 140,
             sorter: (a: any, b: any) => a.ma_sv.localeCompare(b.ma_sv),
-            render: (text: string) => <Tag color="blue">{text}</Tag>,
+            render: (text: string) => <Text strong style={{ color: '#cf1322', fontFamily: 'monospace' }}>{text}</Text>,
         },
         {
             title: 'Họ tên',
@@ -194,6 +194,7 @@ const QuanLyNguoiDung = () => {
     ];
 
     return (
+        <ConfigProvider theme={{ token: { colorPrimary: '#cf1322' } }}>
         <div style={{ padding: 8 }}>
             {/* Header */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
@@ -264,6 +265,7 @@ const QuanLyNguoiDung = () => {
                 loading={actionLoading}
             />
         </div>
+        </ConfigProvider>
     );
 };
 

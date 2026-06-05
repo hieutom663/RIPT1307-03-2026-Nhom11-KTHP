@@ -56,7 +56,6 @@ app.use('/api/admin/yeu-cau-muon', yeuCauMuonRoutes);
 
 app.use('/api/thong-bao', notificationRoutes);
 
-// Cron job: Kiểm tra đơn quá hạn mỗi ngày lúc 8h sáng
 cron.schedule('0 8 * * *', () => {
     console.log('[Cron] Đang quét đơn sắp đến hạn & quá hạn...');
     thongBaoController.thongBaoQuaHan();

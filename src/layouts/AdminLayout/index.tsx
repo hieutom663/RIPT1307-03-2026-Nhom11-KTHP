@@ -14,6 +14,7 @@ import {
   FormOutlined,
   BarChartOutlined,
   SettingOutlined,
+  TeamOutlined
 } from '@ant-design/icons';
 import ThongBao from './component/ThongBao';
 
@@ -28,6 +29,7 @@ const iconMap: Record<string, React.ReactNode> = {
   FormOutlined: <FormOutlined />,
   BarChartOutlined: <BarChartOutlined />,
   SettingOutlined: <SettingOutlined />,
+  TeamOutlined: <TeamOutlined />,
 };
 
 export default function AdminLayout() {

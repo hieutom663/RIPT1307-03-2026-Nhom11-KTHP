@@ -2,22 +2,22 @@ import api from '../api';
 
 // Lấy danh sách thông báo Admin
 export async function getDanhSachThongBaoAdminAPI() {
-    return api.get('/admin/thong-bao'); 
+    return api.get('/thong-bao/admin'); 
 }
 
 export async function danhDauDaDocAPI(id: string | number) {
-    return api.put(`/admin/thong-bao/${id}/da-doc`);
+    return api.put(`/thong-bao/admin/${id}/da-doc`);
 }
 
 export async function danhDauDocTatCaAPI() {
-    return api.put('/admin/thong-bao/doc-tat-ca');
+    return api.put('/thong-bao/admin/doc-tat-ca');
 }
 
-//user
+// User
 export async function getDanhSachThongBaoUserAPI(maSV: string) {
-    return api.get(`/admin/thong-bao/user?maSV=${maSV}`); 
+    return api.get(`/thong-bao/user?maSV=${maSV}`); 
 }
 
 export async function danhDauDocTatCaUserAPI(maSV: string) {
-    return api.put('/admin/thong-bao/user/doc-tat-ca', { maSV }); 
+    return api.put('/thong-bao/user/doc-tat-ca', { maSV }); 
 }
