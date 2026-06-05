@@ -12,13 +12,13 @@ const getAdminHome = async (req, res) => {
         ] = await Promise.all([
             // Tổng đồ dùng
             pool.query("SELECT SUM(tong_so_luong) AS total FROM thietbi"),
-            
+
             // Đang cho mượn
             pool.query("SELECT COUNT(*) AS total FROM yeucaumuon WHERE trang_thai = 'Đang mượn'"),
-            
+
             // Yêu cầu mới
             pool.query("SELECT COUNT(*) AS total FROM yeucaumuon WHERE trang_thai = 'Chờ duyệt'"),
-            
+
             // Quá hạn
             pool.query("SELECT COUNT(*) AS total FROM yeucaumuon WHERE trang_thai = 'Đang mượn' AND ngay_tra_du_kien < CURDATE()"),
             
@@ -38,7 +38,7 @@ const getAdminHome = async (req, res) => {
             ORDER BY y.ngay_muon DESC 
             LIMIT 5
             `),
-            
+
             pool.query(`
                 SELECT 
                     y.ma_yeu_cau AS id, 
@@ -74,9 +74,9 @@ const getAdminHome = async (req, res) => {
 
     } catch (error) {
         console.error("Lỗi:", error);
-        res.status(500).json({ 
-            success: false, 
-            message: "Lỗi server khi tải dữ liệu trang chủ" 
+        res.status(500).json({
+            success: false,
+            message: "Lỗi server khi tải dữ liệu trang chủ"
         });
     }
 };

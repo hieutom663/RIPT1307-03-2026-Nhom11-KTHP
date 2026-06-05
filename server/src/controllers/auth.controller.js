@@ -26,13 +26,13 @@ const login = async (req, res) => {
         }
 
         const payload = {
-            id: user.id,
-            role: user.role
+            id: user.ma_sv,
+            role: user.vai_tro
         };
         const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1d' });
 
-        delete user.password;
-        
+        delete user.mat_khau;
+
         res.status(200).json({
             success: true,
             message: "Đăng nhập thành công",

@@ -13,6 +13,7 @@
     "@umijs/route-utils": "^4.0.3",
     "antd": "^6.3.7",
     "axios": "^1.16.1",
+    "nodemon": "^3.1.14",
     "umi": "^4.6.51",
     "umi-request": "^1.4.0"
   },

@@ -39,7 +39,6 @@ const updateProfile = async (req, res) => {
     } catch (error) {
         console.error("Lỗi:", error);
         res.status(500).json({ success: false, message: "Lỗi server khi cập nhật" });
-        console.log(ten);
     }
 };
 

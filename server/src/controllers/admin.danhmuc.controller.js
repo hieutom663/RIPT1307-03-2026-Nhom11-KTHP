@@ -113,7 +113,7 @@ const xoaDanhMuc = async (req, res) => {
         }
 
         const [thietBiRows] = await pool.query(
-            'SELECT COUNT(*) AS so_luong FROM thietbi WHERE id_danhmuc = ?',
+            'SELECT COUNT(*) AS so_luong FROM thietbi WHERE ma_danh_muc = ?',
             [id]
         );
         if (thietBiRows[0].so_luong > 0) {
