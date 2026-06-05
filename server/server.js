@@ -13,6 +13,7 @@ const equipmentRoutes = require('./src/routes/equipments.route');
 const adminEquipmentRoutes = require('./src/routes/admin.equipments.route');
 const historyRoutes = require('./src/routes/history.routes');
 const adminHistoryRoutes = require('./src/routes/admin.history.route');
+const adminUsersRoutes = require('./src/routes/admin.users.route');
 
 const app = express();
 
@@ -39,6 +40,8 @@ app.use('/api/admin', adminEquipmentRoutes);
 app.use('/api/lich-su-muon', historyRoutes);
 
 app.use('/api/admin/lich-su', adminHistoryRoutes);
+
+app.use('/api/admin/nguoi-dung', adminUsersRoutes);
 
 const PORT = process.env.PORT || 3000;
 

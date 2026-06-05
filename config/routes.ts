@@ -70,6 +70,12 @@ export default [
                 icon: 'BarChartOutlined',
                 component: './admin/ThongKe',
             },
+            {
+                path: '/admin/quan-ly-nguoi-dung',
+                name: 'Quản Lý Người Dùng',
+                icon: 'TeamOutlined',
+                component: './admin/QuanLyNguoiDung',
+            },
         ],
     },
     
