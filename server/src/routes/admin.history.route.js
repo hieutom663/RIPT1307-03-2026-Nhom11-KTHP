@@ -3,8 +3,16 @@ const router = express.Router();
 
 const adminHistoryController = require('../controllers/admin.history.controller');
 
-router.post('/thong-ke', adminHistoryController.getThongKeAdmin);
-router.post('/phieu-muon', adminHistoryController.getAllPhieuMuon);
-router.post('/chi-tiet', adminHistoryController.getAllChiTietLichSu);
+// GET: Lấy danh sách chờ giao
+router.get('/cho-giao', adminHistoryController.layDanhSachChoGiao);
+
+// GET: Lấy danh sách đang mượn
+router.get('/dang-muon', adminHistoryController.layDanhSachDangMuon);
+
+// PUT: Ghi nhận cho mượn
+router.put('/cho-muon/:maYC', adminHistoryController.ghiNhanChoMuon);
+
+// PUT: Ghi nhận đã trả
+router.put('/da-tra/:maYC', adminHistoryController.ghiNhanDaTra);
 
 module.exports = router;

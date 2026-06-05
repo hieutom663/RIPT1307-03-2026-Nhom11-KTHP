@@ -5,7 +5,7 @@ require('dotenv').config();
 const thongBaoController = require('./src/controllers/notification.controller');
 
 // db
-const dbPool = require('./src/config/db.config'); 
+const dbPool = require('./src/config/db.config');
 
 // routes
 const authRoutes = require('./src/routes/auth.route');
@@ -18,13 +18,12 @@ const historyRoutes = require('./src/routes/user.history.routes');
 const yeuCauMuonRoutes = require('./src/routes/yeucaumuon.route');
 const thongKeRoutes = require('./src/routes/admin.thongke.route');
 const adminHistoryRoutes = require('./src/routes/admin.history.route');
-const adminNotificationRoutes = require('./src/routes/notification.route');
 
 const app = express();
 
 app.use(cors());
 
-app.use(express.json()); 
+app.use(express.json());
 
 app.use(express.urlencoded({ extended: true }));
 
@@ -44,18 +43,8 @@ app.use('/api', userEquipmentRoutes);
 app.use('/api/admin', adminEquipmentRoutes);
 
 app.use('/api/lich-su-muon', historyRoutes);
-app.use('/api/admin/lich-su-muon', adminHistoryRoutes);
-app.use('/api/admin/yeu-cau-muon', yeuCauMuonRoutes);
-app.use('/api/admin/thong-ke', thongKeRoutes);
-app.use('/api/admin/thong-bao',adminNotificationRoutes);
 
-cron.schedule('0 8 * * *', async () => {
-    console.log('Bắt đầu chạy Cron Job kiểm tra hạn trả đồ lúc 8h sáng...');
-    await thongBaoController.kiemTraVaGuiThongBaoHanTra();
-}, {
-    scheduled: true,
-    timezone: "Asia/Ho_Chi_Minh" 
-});
+app.use('/api/admin/lich-su', adminHistoryRoutes);
 
 const PORT = process.env.PORT || 3000;
 

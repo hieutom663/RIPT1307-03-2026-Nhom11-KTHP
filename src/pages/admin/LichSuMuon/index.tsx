@@ -85,7 +85,7 @@ const LichSuMuon = () => {
     }, []);
 
     return (
-        <Spin spinning={loading} description="Đang tải dữ liệu...">
+        <Spin spinning={loading} tip="Đang tải dữ liệu...">
             <div style={{ minHeight: 'calc(100vh - 64px)' }}>
                 
                 {/* ── HEADER ── */}
@@ -153,6 +153,6 @@ const LichSuMuon = () => {
             </div>
         </Spin>
     );  
-}
+};
 
 export default LichSuMuon;
