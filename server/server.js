@@ -18,6 +18,8 @@ const historyRoutes = require('./src/routes/user.history.routes');
 const yeuCauMuonRoutes = require('./src/routes/yeucaumuon.route');
 const thongKeRoutes = require('./src/routes/admin.thongke.route');
 const adminHistoryRoutes = require('./src/routes/admin.history.route');
+const adminUsersRoutes = require('./src/routes/admin.users.route');
+const notificationRoutes = require('./src/routes/notification.route');
 
 const app = express();
 
@@ -45,6 +47,20 @@ app.use('/api/admin', adminEquipmentRoutes);
 app.use('/api/lich-su-muon', historyRoutes);
 
 app.use('/api/admin/lich-su', adminHistoryRoutes);
+
+app.use('/api/admin/nguoi-dung', adminUsersRoutes);
+
+app.use('/api/admin/thong-ke', thongKeRoutes);
+
+app.use('/api/admin/yeu-cau-muon', yeuCauMuonRoutes);
+
+app.use('/api/thong-bao', notificationRoutes);
+
+// Cron job: Kiểm tra đơn quá hạn mỗi ngày lúc 8h sáng
+cron.schedule('0 8 * * *', () => {
+    console.log('[Cron] Đang quét đơn sắp đến hạn & quá hạn...');
+    thongBaoController.thongBaoQuaHan();
+});
 
 const PORT = process.env.PORT || 3000;
 

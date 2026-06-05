@@ -5,7 +5,7 @@ const bcrypt = require('bcryptjs');
 const layDanhSachNguoiDung = async (req, res) => {
     try {
         const [rows] = await pool.query(
-            "SELECT ma_sv, ten, email, so_phone FROM users ORDER BY ma_sv ASC"
+            "SELECT ma_sv, ho_ten, email, so_phone, vai_tro FROM users ORDER BY ma_sv ASC"
         );
 
         res.json({ success: true, data: rows });
@@ -21,7 +21,7 @@ const xemChiTietNguoiDung = async (req, res) => {
         const maSV = req.params.maSV;
 
         const [rows] = await pool.query(
-            "SELECT ma_sv, ten, email, so_phone FROM users WHERE ma_sv = ?",
+            "SELECT ma_sv, ho_ten, email, so_phone, vai_tro FROM users WHERE ma_sv = ?",
             [maSV]
         );
 
@@ -39,14 +39,18 @@ const xemChiTietNguoiDung = async (req, res) => {
 // Thêm người dùng mới
 const themNguoiDung = async (req, res) => {
     try {
-        const { ma_sv, ten, email, so_phone, mat_khau } = req.body;
+        const { ma_sv, ho_ten, email, so_phone, mat_khau, vai_tro } = req.body;
+
+        if (!ma_sv || !ho_ten || !email || !mat_khau) {
+            return res.status(400).json({ success: false, message: "Vui lòng nhập đầy đủ thông tin bắt buộc" });
+        }
 
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(mat_khau, salt);
 
         await pool.query(
-            "INSERT INTO users (ma_sv, ten, email, so_phone, mat_khau) VALUES (?, ?, ?, ?, ?)",
-            [ma_sv, ten, email, so_phone, hashedPassword]
+            "INSERT INTO users (ma_sv, ho_ten, email, so_phone, mat_khau, vai_tro) VALUES (?, ?, ?, ?, ?, ?)",
+            [ma_sv, ho_ten, email, so_phone || null, hashedPassword, vai_tro || 'user']
         );
 
         res.json({ success: true, message: "Thêm người dùng thành công" });
@@ -63,11 +67,11 @@ const themNguoiDung = async (req, res) => {
 const suaNguoiDung = async (req, res) => {
     try {
         const maSV = req.params.maSV;
-        const { ten, email, so_phone } = req.body;
+        const { ho_ten, email, so_phone, vai_tro } = req.body;
 
         const [result] = await pool.query(
-            "UPDATE users SET ten = ?, email = ?, so_phone = ? WHERE ma_sv = ?",
-            [ten, email, so_phone, maSV]
+            "UPDATE users SET ho_ten = ?, email = ?, so_phone = ?, vai_tro = ? WHERE ma_sv = ?",
+            [ho_ten, email, so_phone || null, vai_tro || 'user', maSV]
         );
 
         if (result.affectedRows === 0) {
@@ -77,6 +81,9 @@ const suaNguoiDung = async (req, res) => {
         res.json({ success: true, message: "Cập nhật thành công" });
     } catch (error) {
         console.error("Lỗi suaNguoiDung:", error);
+        if (error.code === 'ER_DUP_ENTRY') {
+            return res.status(400).json({ success: false, message: "Email đã tồn tại" });
+        }
         res.status(500).json({ success: false, message: "Lỗi server" });
     }
 };
@@ -86,11 +93,30 @@ const xoaNguoiDung = async (req, res) => {
     try {
         const maSV = req.params.maSV;
 
+        // Kiểm tra xem người dùng có đơn mượn đang hoạt động không
+        const [donMuon] = await pool.query(
+            "SELECT COUNT(*) as count FROM yeucaumuon WHERE ma_nguoi_muon = ? AND trang_thai IN ('Chờ duyệt', 'Đang mượn')",
+            [maSV]
+        );
+
+        if (donMuon[0].count > 0) {
+            return res.status(400).json({
+                success: false,
+                message: "Không thể xóa người dùng đang có đơn mượn chưa hoàn thành"
+            });
+        }
+
         await pool.query("DELETE FROM users WHERE ma_sv = ?", [maSV]);
 
         res.json({ success: true, message: "Xóa người dùng thành công" });
     } catch (error) {
         console.error("Lỗi xoaNguoiDung:", error);
+        if (error.code === 'ER_ROW_IS_REFERENCED_2') {
+            return res.status(400).json({
+                success: false,
+                message: "Không thể xóa vì người dùng có liên kết dữ liệu (đơn mượn, thông báo...)"
+            });
+        }
         res.status(500).json({ success: false, message: "Lỗi server" });
     }
 };

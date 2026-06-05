@@ -15,4 +15,13 @@ router.put('/cho-muon/:maYC', adminHistoryController.ghiNhanChoMuon);
 // PUT: Ghi nhận đã trả
 router.put('/da-tra/:maYC', adminHistoryController.ghiNhanDaTra);
 
+// POST: Thống kê lịch sử (cho trang LichSuMuon)
+router.post('/thong-ke', adminHistoryController.getThongKeLichSu);
+
+// POST: Lấy tất cả phiếu mượn
+router.post('/phieu-muon', adminHistoryController.getAllPhieuMuon);
+
+// POST: Lấy chi tiết lịch sử
+router.post('/chi-tiet', adminHistoryController.getAllChiTietLichSu);
+
 module.exports = router;

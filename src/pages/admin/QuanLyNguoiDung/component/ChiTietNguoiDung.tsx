@@ -16,10 +16,7 @@ const ChiTietNguoiDung = (props: any) => {
                             <Tag color="blue">{props.nguoiDung.ma_sv}</Tag>
                         </Descriptions.Item>
                         <Descriptions.Item label="Họ tên">
-                            {props.nguoiDung.ten}
-                        </Descriptions.Item>
-                        <Descriptions.Item label="Ngày sinh">
-                            {props.nguoiDung.ngay_sinh || 'Chưa cập nhật'}
+                            {props.nguoiDung.ho_ten}
                         </Descriptions.Item>
                         <Descriptions.Item label="Email">
                             {props.nguoiDung.email}
@@ -27,8 +24,10 @@ const ChiTietNguoiDung = (props: any) => {
                         <Descriptions.Item label="Số điện thoại">
                             {props.nguoiDung.so_phone || 'Chưa cập nhật'}
                         </Descriptions.Item>
-                        <Descriptions.Item label="Mật khẩu">
-                            {props.nguoiDung.mat_khau || '******'}
+                        <Descriptions.Item label="Vai trò">
+                            <Tag color={props.nguoiDung.vai_tro === 'admin' ? 'red' : 'green'}>
+                                {props.nguoiDung.vai_tro === 'admin' ? 'Admin' : 'User'}
+                            </Tag>
                         </Descriptions.Item>
                     </Descriptions>
                 </Card>

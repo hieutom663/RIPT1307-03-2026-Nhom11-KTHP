@@ -173,7 +173,7 @@ const taoYeuCauMuon = async (req, res) => {
         const insertChiTiet = `
             INSERT INTO chitietdon 
             (ma_don_muon, ma_yeu_cau, ma_thiet_bi, so_luong, trang_thai) 
-            VALUES (?, ?, ?, ?, 'chưa trả')
+            VALUES (?, ?, ?, ?, 'Chưa trả')
         `;
         await connection.query(insertChiTiet, [
             id_chi_tiet, 

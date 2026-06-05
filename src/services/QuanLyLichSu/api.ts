@@ -2,7 +2,7 @@ import apiClient from '../api';
 
 // Lấy danh sách chờ duyệt
 export async function layDanhSachChoDuyetAPI() {
-    return apiClient.get('/admin/lich-su/cho-duyet');
+    return apiClient.get('/admin/lich-su/cho-giao');
 }
 
 // Lấy danh sách đang mượn
