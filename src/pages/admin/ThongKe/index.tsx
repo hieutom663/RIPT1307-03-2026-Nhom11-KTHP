@@ -7,7 +7,7 @@ import StatusDistribution from './components/PhanBoTrangThai';
 
 const { Title, Text } = Typography;
 
-const ThongKe: React.FC = () => {
+const ThongKe = () => {
   return (
     <ConfigProvider theme={{ token: { colorPrimary: '#cf1322' } }}>
       <div style={{ minHeight: 'calc(100vh - 64px)' }}>

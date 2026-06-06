@@ -10,7 +10,7 @@ const ChiTietNguoiDung = (props: any) => {
             width={500}
         >
             {props.nguoiDung && (
-                <Card bordered={false}>
+                <Card variant='borderless'>
                     <Descriptions column={1} bordered size="small">
                         <Descriptions.Item label="Mã SV">
                             <Tag color="blue">{props.nguoiDung.ma_sv}</Tag>

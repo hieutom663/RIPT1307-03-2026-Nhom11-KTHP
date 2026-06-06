@@ -14,8 +14,8 @@ import { getThietBiPhoBienAPI, getThietBiSanAPI } from '../../../services/ThietB
 import { getLichSuCaNhanAPI } from '../../../services/LichSuMuon/api'; 
 
 import { useFormMuon } from '../../../hooks/useFormMuon'; 
-import ChiTietThietBi from '../ThietBi/component/ChiTietThietBi'; 
-import GuiYeuCauMuon from '../ThietBi/component/GuiYeuCauMuon';
+import ChiTietThietBi from '../ThietBi/components/ChiTietThietBi'; 
+import GuiYeuCauMuon from '../ThietBi/components/GuiYeuCauMuon';
 
 const { Meta } = Card;
 const { Title, Text } = Typography;

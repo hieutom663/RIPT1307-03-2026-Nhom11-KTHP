@@ -8,8 +8,8 @@ import {
     CheckCircleOutlined,
     HistoryOutlined
 } from '@ant-design/icons';
-import PhieuMuon from './component/PhieuMuon';
-import TatCaLichSu from './component/TatCaLichSu';
+import PhieuMuon from './components/PhieuMuon';
+import TatCaLichSu from './components/TatCaLichSu';
 
 import { getLichSuCaNhanAPI } from '../../../services/LichSuMuon/api'; 
 

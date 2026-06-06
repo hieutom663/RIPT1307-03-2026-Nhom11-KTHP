@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Table, Button, Input, Select, Space, Popconfirm, message, Tooltip, Image, Card, Typography, ConfigProvider, Tag } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined, DatabaseOutlined, SearchOutlined } from '@ant-design/icons';
 import { useModel } from 'umi';
 
 import { getDanhSachThietBiAdminAPI, themThietBiAPI, suaThietBiAPI, xoaThietBiAPI } from '../../../services/QuanLyThietBi/api'; 
-import ThemSuaThietBi from './component/ThemSuaThietBi';
+import ThemSuaThietBi from './components/ThemSuaThietBi';
 
 const { Search } = Input;
 const { Title, Text } = Typography;

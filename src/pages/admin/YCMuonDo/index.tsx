@@ -17,7 +17,7 @@ export interface YeuCauMuon {
   soLuong: number;
   ngayMuon: string;
   ngayTraDK: string;
-  trangThai: 'cho_duyet' | 'da_duyet' | 'dang_muon' | 'da_tra' | 'qua_han' | 'tu_choi';
+  trangThai: 'cho_duyet' | 'dang_muon' | 'da_tra' | 'qua_han' | 'tu_choi';
 }
 
 export type FilterStatus = 'tat_ca' | YeuCauMuon['trangThai'];

@@ -1,6 +1,8 @@
-import { Input, Table, Tag, message } from "antd";
+import { Input, Table, Tag, message, Typography } from "antd";
 import { useState, useEffect, useMemo } from "react";
-import { getAllPhieuMuonAPI } from "../../../../services/LichSuAdmin/api"; 
+import { getPhieuMuonAPI } from "../../../../services/LichSuMuon/api"; 
+
+const { Text } = Typography;
 
 const PhieuMuon = () => {
     const [dataSourceRaw, setDataSourceRaw] = useState<any[]>([]);
@@ -11,7 +13,11 @@ const PhieuMuon = () => {
         const fetchPhieuMuon = async () => {
             setLoading(true);
             try {
-                const res = await getAllPhieuMuonAPI();
+                const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
+                const ma_sv = userInfo.ma_sv;
+                if (!ma_sv) return;
+
+                const res = await getPhieuMuonAPI(ma_sv);
                 if (res.data?.success) setDataSourceRaw(res.data.data);
             } catch (error) {
                 message.error('Lỗi kết nối!');
@@ -38,15 +44,10 @@ const PhieuMuon = () => {
             render: (_text: any, _record: any, index: number) => index + 1,
         },
         {
-            title: 'Mã SV', 
-            dataIndex: 'ma_sv',
-            key: 'ma_sv',
-            width: 120, 
-        },
-        {
             title: 'Mã Phiếu', 
             dataIndex: 'maYeuCau', 
             key: 'maYeuCau',
+            render: (text: string) => <Text strong style={{ color: '#cf1322', fontFamily: 'monospace' }}>{text}</Text>
         },
         {
             title: 'Ngày tạo phiếu', 
@@ -71,7 +72,6 @@ const PhieuMuon = () => {
             key: 'trangThai',
             filters: [
                 { text: 'Chờ duyệt', value: 'Chờ duyệt' },
-                { text: 'Đã duyệt', value: 'Đã duyệt' },
                 { text: 'Đang mượn', value: 'Đang mượn' },
                 { text: 'Hoàn thành', value: 'Hoàn thành' },
                 { text: 'Bị từ chối', value: 'Bị từ chối' },

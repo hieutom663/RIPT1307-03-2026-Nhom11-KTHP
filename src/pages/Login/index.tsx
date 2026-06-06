@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { Button, Image, Flex, Col, Row, Form, Input, Checkbox, message } from 'antd';
 import { loginAPI } from '../../services/TaiKhoan/index';
 import LogoPtit from '../../assets/LogoPtit.png';

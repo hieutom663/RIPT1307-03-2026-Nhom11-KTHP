@@ -37,7 +37,7 @@ const topColumns = [
   },
 ];
 
-const TopEquipment: React.FC = () => {
+const TopEquipment = () => {
   const [data, setData] = useState<TopThietBiItem[]>([]);
   const [loading, setLoading] = useState(false);
 

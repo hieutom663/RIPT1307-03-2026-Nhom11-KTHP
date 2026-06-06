@@ -93,7 +93,6 @@ const xoaNguoiDung = async (req, res) => {
     try {
         const maSV = req.params.maSV;
 
-        // Kiểm tra xem người dùng có đơn mượn đang hoạt động không
         const [donMuon] = await pool.query(
             "SELECT COUNT(*) as count FROM yeucaumuon WHERE ma_nguoi_muon = ? AND trang_thai IN ('Chờ duyệt', 'Đang mượn')",
             [maSV]

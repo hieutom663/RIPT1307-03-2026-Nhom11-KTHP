@@ -1,8 +1,8 @@
 import { Row, Col, Card, Table, Button, Input, Tag, message, Popconfirm, Space, Tooltip, Typography, ConfigProvider } from 'antd';
 import { UserOutlined, PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined, TeamOutlined, SearchOutlined, ReloadOutlined } from '@ant-design/icons';
 import { useState, useEffect, useCallback } from 'react';
-import ChiTietNguoiDung from './component/ChiTietNguoiDung';
-import ThemSuaNguoiDung from './component/ThemSuaNguoiDung';
+import ChiTietNguoiDung from './components/ChiTietNguoiDung';
+import ThemSuaNguoiDung from './components/ThemSuaNguoiDung';
 import { getDanhSachNguoiDungAPI, themNguoiDungAPI, suaNguoiDungAPI, xoaNguoiDungAPI } from '../../../services/QuanLyNguoiDung/api';
 
 const { Search } = Input;
@@ -102,7 +102,7 @@ const QuanLyNguoiDung = () => {
             }
             setModalThemSua(false);
             setDangSua(null);
-            fetchDanhSach(); // Refresh danh sách từ server
+            fetchDanhSach(); 
         } catch (error: any) {
             const msg = error?.response?.data?.message || 'Lỗi khi lưu người dùng!';
             message.error(msg);
@@ -196,11 +196,10 @@ const QuanLyNguoiDung = () => {
     return (
         <ConfigProvider theme={{ token: { colorPrimary: '#cf1322' } }}>
         <div style={{ padding: 8 }}>
-            {/* Header */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
                 <div>
                     <Title level={3} style={{ margin: 0, marginBottom: 8, color: '#262626', display: 'flex', alignItems: 'center' }}>
-                        <TeamOutlined style={{ color: '#2f54eb', marginRight: 12 }} />
+                        <TeamOutlined style={{ color: '#cf1322', marginRight: 12 }} />
                         Quản lý Người dùng
                     </Title>
                     <Text type="secondary">Quản lý thông tin tài khoản sinh viên trong hệ thống</Text>
@@ -236,9 +235,6 @@ const QuanLyNguoiDung = () => {
                     size="large"
                     style={{ maxWidth: 400 }}
                 />
-                <Tooltip title="Tải lại dữ liệu">
-                    <Button size="large" icon={<ReloadOutlined />} onClick={fetchDanhSach} loading={loading} />
-                </Tooltip>
             </div>
 
             {/* Bảng danh sách */}

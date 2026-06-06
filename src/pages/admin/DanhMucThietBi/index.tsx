@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Button, Table, Tag, Popconfirm, Form, message, Spin, Alert, Typography, Space, Card, ConfigProvider } from 'antd';
 import { EditOutlined, DeleteOutlined, PlusOutlined, ReloadOutlined, AppstoreOutlined } from '@ant-design/icons';
-import BoLocDanhMuc from './component/BoLocDanhMuc';
-import ThemSuaDanhMuc from './component/ThemSuaDanhMuc';
+import BoLocDanhMuc from './components/BoLocDanhMuc';
+import ThemSuaDanhMuc from './components/ThemSuaDanhMuc';
 import {
     getDanhSachDanhMucAPI,
     themDanhMucAPI,
@@ -13,7 +13,7 @@ import {
 
 const { Title, Text } = Typography;
 
-const DanhMucThietBiAdmin: React.FC = () => {
+const DanhMucThietBiAdmin = () => {
     const [danhSachDanhMuc, setDanhSachDanhMuc] = useState<DanhMuc[]>([]);
     const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(false);

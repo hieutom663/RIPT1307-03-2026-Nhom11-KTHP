@@ -75,7 +75,7 @@ const TatCaLichSu = () => {
             dataIndex: 'maDoDung', 
             key: 'maDoDung',
             width: 110,
-            render: (text: string) => <Text strong>{text}</Text>
+            render: (text: string) => <Text strong style={{ color: '#cf1322', fontFamily: 'monospace' }}>{text}</Text>
         },
         { 
             title: 'Tên thiết bị', 
@@ -96,12 +96,12 @@ const TatCaLichSu = () => {
             key: 'hanTra',
             width: 120,
             sorter: (a: any, b: any) => new Date(a.hanTra).getTime() - new Date(b.hanTra).getTime(),
-            render: (text: string) => <Text type="secondary">{text}</Text>
         },
         {
             title: 'Trạng thái', 
             dataIndex: 'trangThai', 
             key: 'trangThai',
+            width: 120,
             filters: [
                 { text: 'Chờ duyệt', value: 'Chờ duyệt' },
                 { text: 'Đã duyệt', value: 'Đã duyệt' },

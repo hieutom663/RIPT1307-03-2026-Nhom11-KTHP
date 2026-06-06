@@ -13,7 +13,7 @@ interface StatusItem {
   pct: number;
 }
 
-const StatusDistribution: React.FC = () => {
+const StatusDistribution = () => {
   const [data, setData] = useState<StatusItem[]>([]);
   const [loading, setLoading] = useState(false);
 

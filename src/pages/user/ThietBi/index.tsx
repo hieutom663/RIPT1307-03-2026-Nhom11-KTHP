@@ -4,8 +4,8 @@ import { useModel } from 'umi';
 import { AppstoreOutlined, SearchOutlined } from '@ant-design/icons';
 import { useFormMuon } from '../../../hooks/useFormMuon';
 
-import ChiTietThietBi from './component/ChiTietThietBi';
-import GuiYeuCauMuon from './component/GuiYeuCauMuon';
+import ChiTietThietBi from './components/ChiTietThietBi';
+import GuiYeuCauMuon from './components/GuiYeuCauMuon';
 import { getDanhSachThietBiAPI } from '../../../services/ThietBi/api'; 
 
 const { Search } = Input; 

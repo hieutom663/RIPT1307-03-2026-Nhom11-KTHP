@@ -26,7 +26,7 @@ const iconMap = [
   { key: 'daHoanThanh', label: 'Đã hoàn thành', icon: <TrophyOutlined />, color: '#52c41a', bg: '#f6ffed' },
 ];
 
-const SummaryCards: React.FC = () => {
+const SummaryCards= () => {
   const [data, setData] = useState<ThongKeData | null>(null);
   const [loading, setLoading] = useState(false);
 
