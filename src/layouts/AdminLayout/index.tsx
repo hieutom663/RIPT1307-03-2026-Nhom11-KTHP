@@ -38,7 +38,7 @@ export default function AdminLayout() {
   const [userName, setUserName] = useState('Admin');
 
   useEffect(() => {
-    const token = localStorage.getItem('accessToken');
+    const token = localStorage.getItem('token');
     const userInfoStr = localStorage.getItem('userInfo');
 
     if (!token || !userInfoStr) {
@@ -76,7 +76,7 @@ export default function AdminLayout() {
     });
 
   const handleLogout = () => {
-    localStorage.removeItem('accessToken');
+    localStorage.removeItem('token');
     localStorage.removeItem('userInfo');
     message.success('Bạn đã đăng xuất thành công!');
     history.push('/login');

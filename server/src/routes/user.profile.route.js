@@ -1,8 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const userProfileController = require('../controllers/user.profile.controller');
+const authMiddleware = require('../middlewares/auth.middleware');
 
-// POST: /api/user/trang-ca-nhan
+router.use(authMiddleware);
+
 router.post('/trang-ca-nhan', userProfileController.getProfile);
 
 router.post('/update', userProfileController.updateProfile);

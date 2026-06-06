@@ -27,7 +27,7 @@ export default function UserLayout() {
   const [userName, setUserName] = useState('Sinh viên');
 
   useEffect(() => {
-    const token = localStorage.getItem('accessToken');
+    const token = localStorage.getItem('token');
     const userInfoStr = localStorage.getItem('userInfo');
 
     if (!token || !userInfoStr) {
@@ -46,7 +46,8 @@ export default function UserLayout() {
 
       setUserName(userInfo.ho_ten || 'Sinh viên');
     } catch (error) {
-      localStorage.clear();
+      localStorage.removeItem('token');
+      localStorage.removeItem('userInfo');
       history.replace('/login');
     }
   }, [location.pathname]);
@@ -65,7 +66,7 @@ export default function UserLayout() {
     });
 
   const handleLogout = () => {
-    localStorage.removeItem('accessToken');
+    localStorage.removeItem('token');
     localStorage.removeItem('userInfo');
     message.success('Bạn đã đăng xuất thành công!');
     history.push('/login');

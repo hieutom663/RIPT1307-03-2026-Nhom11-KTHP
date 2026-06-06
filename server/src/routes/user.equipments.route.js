@@ -2,7 +2,10 @@ const express = require('express');
 const router = express.Router();
 const userEquipmentController = require('../controllers/user.equipments.controller');
 
-// POST: /api/user/thiet-bi
+const authMiddleware = require('../middlewares/auth.middleware');
+
+router.use(authMiddleware);
+
 router.get('/thiet-bi', userEquipmentController.getDanhSachThietBi);
 
 router.get('/thiet-bi/pho-bien', userEquipmentController.getThietBiPhoBien);

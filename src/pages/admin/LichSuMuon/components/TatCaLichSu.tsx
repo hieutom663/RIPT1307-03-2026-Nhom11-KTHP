@@ -1,6 +1,8 @@
-import { Input, Table, Tag, message, Segmented } from "antd";
+import { Input, Table, Tag, message, Segmented, Typography } from "antd";
 import { useState, useEffect, useMemo } from "react";
 import { getChiTietLichSuAPI } from "../../../../services/LichSuAdmin/api"; 
+
+const { Text } = Typography;
 
 const TatCaLichSu = () => {
     const [pageTable, setPageTable] = useState<string>('Tất cả');
@@ -48,9 +50,9 @@ const TatCaLichSu = () => {
 
     const columns = [
         { title: 'STT', key: 'stt', width: 60, render:(_text: any, _record: any, index: number) => index + 1, },
-        { title: 'Mã SV', dataIndex: 'ma_sv', key: 'ma_sv', width: 100 },
-        { title: 'Mã Phiếu', dataIndex: 'maPhieu', key: 'maPhieu' },
-        { title: 'Mã Thiết bị', dataIndex: 'maDoDung', key: 'maDoDung' },
+        { title: 'Mã SV', dataIndex: 'ma_sv', key: 'ma_sv', width: 120, render: (text: string) => <Text strong style={{ color: '#cf1322', fontFamily: 'monospace' }}>{text}</Text> },
+        { title: 'Mã Phiếu', dataIndex: 'maPhieu', key: 'maPhieu', render: (text: string) => <Text strong style={{ color: '#cf1322', fontFamily: 'monospace' }}>{text}</Text> },
+        { title: 'Mã Thiết bị', dataIndex: 'maDoDung', key: 'maDoDung', render: (text: string) => <Text strong style={{ color: '#cf1322', fontFamily: 'monospace' }}>{text}</Text> },
         { title: 'Tên thiết bị', dataIndex: 'tenDoDung', key: 'tenDoDung' },
         { title: 'SL', dataIndex: 'soLuong', key: 'soLuong', width: 60, align: 'center' as const },
         { 

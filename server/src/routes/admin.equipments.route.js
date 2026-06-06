@@ -1,17 +1,17 @@
 const express = require('express');
 const router = express.Router();
 const adminEquipmentController = require('../controllers/admin.equipments.controller');
+const authMiddleware = require('../middlewares/auth.middleware');
+const authorize = require('../middlewares/role.middleware');
 
-// GET: Lấy danh sách thiết bị
+router.use(authMiddleware, authorize(['admin']));
+
 router.get('/thiet-bi', adminEquipmentController.getDanhSachThietBi);
 
-// POST: Thêm thiết bị mới
 router.post('/thiet-bi', adminEquipmentController.themThietBi);
 
-// PUT: Sửa thiết bị
 router.put('/thiet-bi/:id', adminEquipmentController.suaThietBi);
 
-// DELETE: Xóa thiết bị
 router.delete('/thiet-bi/:id', adminEquipmentController.xoaThietBi);
 
 module.exports = router;

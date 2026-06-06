@@ -10,12 +10,10 @@ const Login = () => {
 
   useEffect(() => {
     const savedEmail = localStorage.getItem('rememberEmail');
-    const savedPassword = localStorage.getItem('rememberPassword');
     
-    if (savedEmail && savedPassword) {
+    if (savedEmail) {
       form.setFieldsValue({
         email: savedEmail,
-        password: savedPassword,
         remember: true,
       });
     }
@@ -30,13 +28,12 @@ const Login = () => {
       if (result.success) {
         if (remember) {
           localStorage.setItem('rememberEmail', email);
-          localStorage.setItem('rememberPassword', password);
         } else {
           localStorage.removeItem('rememberEmail');
           localStorage.removeItem('rememberPassword');
         }
 
-        localStorage.setItem('accessToken', result.token ?? '');
+        localStorage.setItem('token', result.token ?? '');
         localStorage.setItem('userInfo', JSON.stringify(result.user));
 
         const userRole = result.user?.vai_tro;
