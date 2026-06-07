@@ -66,7 +66,7 @@ cron.schedule('0 8 * * *', () => {
     thongBaoController.thongBaoQuaHan();
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT;
 app.listen(PORT, () => {
     console.log(`=================================`);
     console.log(`Server chạy tại: http://localhost:${PORT}`);

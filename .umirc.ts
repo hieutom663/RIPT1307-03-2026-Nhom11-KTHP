@@ -7,7 +7,7 @@ export default defineConfig({
   routes: routes,
   proxy: {
     '/api': {
-      'target': 'http://localhost:3000', 
+      'target': 'http://localhost:20226', 
       'changeOrigin': true,
     },
   },
