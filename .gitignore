@@ -8,3 +8,5 @@
 /dist
 .swc
 .turbopack
+/server/.env
+/server/node_modules
