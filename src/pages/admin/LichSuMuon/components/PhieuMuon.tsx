@@ -1,0 +1,164 @@
+import { Input, Table, Tag, message, Typography, Button, Space, Tooltip } from "antd";
+import { useState, useEffect, useMemo } from "react";
+import { EyeOutlined } from '@ant-design/icons';
+import styles from '../../../../global.less'; 
+import { getAllPhieuMuonAPI } from "../../../../services/LichSuAdmin/api"; 
+import ModalChiTiet from "../../YCMuonDo/components/ModalChiTiet"; 
+
+const { Text } = Typography;
+
+const PhieuMuon = () => {
+    const [dataSourceRaw, setDataSourceRaw] = useState<any[]>([]);
+    const [loading, setLoading] = useState(false);
+    const [searchText, setSearchText] = useState('');
+
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [selectedMaYC, setSelectedMaYC] = useState<string | null>(null);
+
+    useEffect(() => {
+        const fetchPhieuMuon = async () => {
+            setLoading(true);
+            try {
+                const res = await getAllPhieuMuonAPI();
+                if (res.data?.success) setDataSourceRaw(res.data.data);
+            } catch (error) {
+                message.error('Lỗi kết nối!');
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchPhieuMuon();
+    }, []);
+
+    const dataSource = useMemo(() => {
+        return dataSourceRaw.filter(item => 
+            item.maYeuCau.toLowerCase().includes(searchText.toLowerCase()) ||
+            item.lyDo.toLowerCase().includes(searchText.toLowerCase())
+        );
+    }, [dataSourceRaw, searchText]);
+
+    const handleViewDetail = (maYeuCau: string) => {
+        setSelectedMaYC(maYeuCau);
+        setIsModalVisible(true);
+    };
+
+    const handleCloseModal = () => {
+        setIsModalVisible(false);
+        setSelectedMaYC(null);
+    };
+
+    const columns = [
+        {
+            title: 'STT',
+            key: 'stt',
+            width: 60,
+            align: 'center' as const,
+            responsive: ['md'] as any, 
+            render: (_text: any, _record: any, index: number) => index + 1,
+        },
+        {
+            title: 'Mã SV', 
+            dataIndex: 'ma_sv',
+            key: 'ma_sv',
+            width: 120, 
+            render: (text: string) => <Text strong style={{ color: '#cf1322', fontFamily: 'monospace' }}>{text}</Text>
+        },
+        {
+            title: 'Mã Phiếu', 
+            dataIndex: 'maYeuCau', 
+            key: 'maYeuCau',
+            width: 120,
+            render: (text: string) => <Text strong style={{ color: '#cf1322', fontFamily: 'monospace' }}>{text}</Text>
+        },
+        {
+            title: 'Ngày tạo phiếu', 
+            dataIndex: 'ngayTao', 
+            key: 'ngayTao',
+            width: 140,
+            sorter: (a: any, b: any) => new Date(a.ngayTao).getTime() - new Date(b.ngayTao).getTime(),
+        },
+        {
+            title: 'Ngày trả dự kiến', 
+            dataIndex: 'ngayTraDuKien', 
+            key: 'ngayTraDuKien',
+            width: 140,
+            sorter: (a: any, b: any) => new Date(a.ngayTraDuKien).getTime() - new Date(b.ngayTraDuKien).getTime(),
+        },
+        {
+            title: 'Lý do mượn', 
+            dataIndex: 'lyDo', 
+            key: 'lyDo',
+            ellipsis: true, 
+            responsive: ['lg'] as any, 
+        },
+        {
+            title: 'Trạng thái', 
+            dataIndex: 'trangThai', 
+            key: 'trangThai',
+            width: 120,
+            align: 'center' as const,
+            filters: [
+                { text: 'Chờ duyệt', value: 'Chờ duyệt' },
+                { text: 'Đã duyệt', value: 'Đã duyệt' },
+                { text: 'Đang mượn', value: 'Đang mượn' },
+                { text: 'Hoàn thành', value: 'Hoàn thành' },
+                { text: 'Bị từ chối', value: 'Bị từ chối' },
+            ],
+            onFilter: (value: any, record: any) => record.trangThai === value,
+            render: (text: string) => {
+                const colors: any = { 'Chờ duyệt': 'blue', 'Đang mượn': 'orange', 'Hoàn thành': 'green', 'Bị từ chối': 'red' };
+                return <Tag color={colors[text] || 'default'} style={{ margin: 0 }}>{text}</Tag>;
+            },
+        },
+        {
+            title: 'Thao tác',
+            key: 'action',
+            width: 100,
+            align: 'center' as const,
+            fixed: 'right' as const,
+            render: (_: any, record: any) => (
+                <Space size="small">
+                    <Tooltip title="Xem chi tiết">
+                        <Button 
+                            type="text" 
+                            style={{ color: '#1677ff', padding: 4 }} 
+                            icon={<EyeOutlined style={{ fontSize: '16px' }}/>} 
+                            onClick={() => handleViewDetail(record.maYeuCau)} 
+                        />
+                    </Tooltip>
+                </Space>
+            ),
+        },
+    ];
+
+    return (
+        <div style={{ padding: '0 8px' }}>
+            <div style={{ marginBottom: 16 }}>
+                <Input.Search 
+                    placeholder="Tìm theo mã phiếu hoặc lý do..." 
+                    onChange={(e) => setSearchText(e.target.value)} 
+                    style={{ maxWidth: 350, width: '100%' }} 
+                    size="large"
+                />
+            </div>
+            <Table 
+                className={styles.tableResponsive}
+                rowKey="maYeuCau"
+                columns={columns} 
+                dataSource={dataSource} 
+                loading={loading}
+                bordered 
+                scroll={{ x: 'max-content' }}
+                pagination={{ showSizeChanger: true, style: { marginTop: 24 } }} 
+            />
+
+            <ModalChiTiet
+                maYC={selectedMaYC}
+                open={isModalVisible}
+                onClose={handleCloseModal}
+            />
+        </div>
+    );
+}
+
+export default PhieuMuon;

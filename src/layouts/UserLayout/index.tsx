@@ -1,8 +1,17 @@
-import { Link, Outlet, useAppData, useLocation } from 'umi';
-import { Layout, Menu, Avatar, Button, Input, Badge, Dropdown } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Link, Outlet, useAppData, useLocation, history } from 'umi';
+import { Layout, Menu, Avatar, Dropdown, message, ConfigProvider} from 'antd';
 import type { MenuProps } from 'antd';
 import styles from './index.less';
-import { HomeOutlined, BellOutlined, UserOutlined, LogoutOutlined, SearchOutlined, HistoryOutlined, LaptopOutlined } from '@ant-design/icons';
+import { 
+  HomeOutlined, 
+  UserOutlined, 
+  LogoutOutlined, 
+  SearchOutlined, 
+  HistoryOutlined, 
+  LaptopOutlined 
+} from '@ant-design/icons';
+import ThongBao from './component/ThongBao';
 
 const { Header, Sider, Content, Footer } = Layout;
 
@@ -15,11 +24,38 @@ const iconMap: Record<string, React.ReactNode> = {
 export default function UserLayout() {
   const location = useLocation();
   const { clientRoutes } = useAppData();
+  const [userName, setUserName] = useState('Sinh viên');
+  
+  const [collapsed, setCollapsed] = useState(false);
 
-  // Tìm route cha '/user' để lấy danh sách children cho sidebar
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    const userInfoStr = localStorage.getItem('userInfo');
+
+    if (!token || !userInfoStr) {
+      message.error('Vui lòng đăng nhập để truy cập hệ thống!');
+      history.replace('/login');
+      return;
+    }
+
+    try {
+      const userInfo = JSON.parse(userInfoStr);
+      
+      if (userInfo.vai_tro !== 'user') {
+        history.replace('/403');
+        return;
+      }
+
+      setUserName(userInfo.ho_ten || 'Sinh viên');
+    } catch (error) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('userInfo');
+      history.replace('/login');
+    }
+  }, [location.pathname]);
+
   const userRoute = clientRoutes.find((r: any) => r.path === '/user');
 
-  // Tạo menu items từ children routes (chỉ lấy route có name)
   const siderItems: MenuProps['items'] = (userRoute?.children ?? [])
     .filter((r: any) => (r as any).name)
     .map((r: any) => {
@@ -31,6 +67,22 @@ export default function UserLayout() {
       };
     });
 
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('userInfo');
+    message.success('Bạn đã đăng xuất thành công!');
+    history.push('/login');
+};
+
+  const onMenuClick: MenuProps['onClick'] = (e) => {
+    if (e.key === 'logout') {
+      handleLogout();
+    }
+    if (e.key === 'profile') {
+      history.push('/user/trang-ca-nhan');
+    }
+  };
+
   const userMenuItems: MenuProps['items'] = [
     { key: 'profile', icon: <UserOutlined />, label: 'Hồ sơ' },
     { type: 'divider' },
@@ -39,47 +91,57 @@ export default function UserLayout() {
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
-
       <Header className={styles.header}>
         <div className={styles.logo}>Hệ thống mượn đồ dùng Sinh viên PTIT</div>
         <div style={{ flex: 1 }} />
-        <Input
-          className={styles.searchBar}
-          placeholder="Tìm kiếm đồ dùng... (vd: máy ảnh, mic, áo phông...)"
-          prefix={<SearchOutlined />}
-        />
         <div className={styles.headerRight}>
-          <Badge count={3}>
-            <Button type="text" icon={<BellOutlined />} className={styles.iconBtn} />
-          </Badge>
-          <Dropdown menu={{ items: userMenuItems }} placement="bottomRight">
-            <div className={styles.userInfo}>
+          <ThongBao />
+          <Dropdown menu={{ items: userMenuItems, onClick: onMenuClick }} placement="bottomRight">
+            <div className={styles.userInfo} style={{ cursor: 'pointer', marginLeft: 16 }}>
               <Avatar icon={<UserOutlined />} />
-              <span>Trần Nam Khánh</span>
+              <span style={{ marginLeft: 8 }}>{userName}</span>
             </div>
           </Dropdown>
         </div>
       </Header>
 
       <Layout>
-        {/* SIDEBAR */}
-        <Sider width={220} className={styles.sider}>
-          <Menu
-            mode="inline"
-            selectedKeys={[location.pathname]}
-            items={siderItems}
-            style={{ height: '100%', borderRight: 0 }}
-          />
+        <Sider 
+          width={220} 
+          className={styles.sider} 
+          theme="light"
+          collapsible 
+          collapsed={collapsed} 
+          onCollapse={(value) => setCollapsed(value)} 
+          breakpoint="lg" 
+        >
+          <ConfigProvider
+            theme={{
+              components: {
+                Menu: {
+                  itemSelectedColor: '#cf1322', 
+                  itemSelectedBg: '#fff1f0',    
+                  itemHoverColor: '#cf1322',   
+                },
+              },
+            }}
+          >
+            <Menu
+              mode="inline"
+              selectedKeys={[location.pathname]}
+              items={siderItems}
+              style={{ height: '100%', borderRight: 0 }}
+            />
+          </ConfigProvider>
         </Sider>
 
-        {/* CONTENT */}
-        <Layout style={{padding:15}}>
+        <Layout style={{ padding: 12 }}>
           <Content className={styles.content}>
             <Outlet />
           </Content>
 
-          <Footer className={styles.footer}>
-            © 2026 Nhóm 11
+          <Footer className={styles.footer} style={{ textAlign: 'center' }}>
+            © 2026 Nhóm X-KTHP
           </Footer>
         </Layout>
       </Layout>

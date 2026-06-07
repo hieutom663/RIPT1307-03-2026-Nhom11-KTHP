@@ -1,5 +1,6 @@
-import { Link, Outlet, useAppData, useLocation } from 'umi';
-import { Layout, Menu, Avatar, Button, Space, Badge, Dropdown } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Link, Outlet, useAppData, useLocation, history } from 'umi';
+import { Layout, Menu, Avatar, Dropdown, message, Typography, ConfigProvider } from 'antd';
 import type { MenuProps } from 'antd';
 import styles from './index.less';
 import {
@@ -13,9 +14,12 @@ import {
   FormOutlined,
   BarChartOutlined,
   SettingOutlined,
+  TeamOutlined
 } from '@ant-design/icons';
+import ThongBao from './component/ThongBao';
 
 const { Header, Sider, Content, Footer } = Layout;
+const { Text } = Typography;
 
 const iconMap: Record<string, React.ReactNode> = {
   HomeOutlined: <HomeOutlined />,
@@ -25,11 +29,40 @@ const iconMap: Record<string, React.ReactNode> = {
   FormOutlined: <FormOutlined />,
   BarChartOutlined: <BarChartOutlined />,
   SettingOutlined: <SettingOutlined />,
+  TeamOutlined: <TeamOutlined />,
 };
 
 export default function AdminLayout() {
   const location = useLocation();
   const { clientRoutes } = useAppData();
+  const [userName, setUserName] = useState('Admin');
+  
+  const [collapsed, setCollapsed] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    const userInfoStr = localStorage.getItem('userInfo');
+
+    if (!token || !userInfoStr) {
+      message.error('Vui lòng đăng nhập để truy cập hệ thống!');
+      history.replace('/login');
+      return;
+    }
+
+    try {
+      const userInfo = JSON.parse(userInfoStr);
+      
+      if (userInfo.vai_tro !== 'admin') {
+        history.replace('/403');
+        return;
+      }
+
+      setUserName(userInfo.ten || 'Admin');
+    } catch (error) {
+      localStorage.clear();
+      history.replace('/login');
+    }
+  }, [location.pathname]);
 
   const adminRoute = clientRoutes.find((r: any) => r.path === '/admin');
 
@@ -44,52 +77,79 @@ export default function AdminLayout() {
       };
     });
 
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('userInfo');
+    message.success('Bạn đã đăng xuất thành công!');
+    history.push('/login');
+  };
+
+  const onUserMenuClick: MenuProps['onClick'] = (e) => {
+    if (e.key === 'logout') {
+      handleLogout();
+    }
+  };
+
   const userMenuItems: MenuProps['items'] = [
-    { key: 'profile', icon: <UserOutlined />, label: 'Hồ sơ' },
-    { type: 'divider' },
     { key: 'logout', icon: <LogoutOutlined />, label: 'Đăng xuất', danger: true },
   ];
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
-
       <Header className={styles.header}>
         <div className={styles.logo}>Hệ thống mượn đồ dùng Sinh viên PTIT (Admin)</div>
         <div style={{ flex: 1 }} />
         <div className={styles.headerRight}>
-          <Badge count={3}>
-            <Button type="text" icon={<BellOutlined />} className={styles.iconBtn} />
-          </Badge>
-          <Dropdown menu={{ items: userMenuItems }} placement="bottomRight">
-            <div className={styles.userInfo}>
+          <ThongBao />
+          <Dropdown menu={{ items: userMenuItems, onClick: onUserMenuClick }} placement="bottomRight">
+            <div className={styles.userInfo} style={{ cursor: 'pointer', marginLeft: 16 }}>
               <Avatar icon={<UserOutlined />} />
-              <span>Admin</span>
+              <span style={{ marginLeft: 8 }}>{userName}</span>
             </div>
           </Dropdown>
         </div>
       </Header>
 
       <Layout>
-        <Sider width={220} className={styles.sider}>
-          <Menu
-            mode="inline"
-            selectedKeys={[location.pathname]}
-            items={siderItems}
-            style={{ height: '100%', borderRight: 0 }}
-          />
+        <Sider 
+          width={220} 
+          className={styles.sider} 
+          theme="light"
+          collapsible 
+          collapsed={collapsed} 
+          onCollapse={(value) => setCollapsed(value)} 
+          breakpoint="lg" 
+        >
+          <ConfigProvider
+            theme={{
+              components: {
+                Menu: {
+                  itemSelectedColor: '#cf1322', 
+                  itemSelectedBg: '#fff1f0', 
+                  itemHoverColor: '#cf1322',
+                },
+              },
+            }}
+          >
+            <Menu
+              mode="inline"
+              selectedKeys={[location.pathname]}
+              items={siderItems}
+              style={{ height: '100%', borderRight: 0 }}
+            />
+          </ConfigProvider>
         </Sider>
 
-        <Layout style={{ padding: '15px' }}>
+        <Layout style={{ padding: '12px' }}>
           <Content className={styles.content}>
             <Outlet />
           </Content>
 
-          <Footer className={styles.footer}>
-            © 2026 Nhóm 11
+          <Footer className={styles.footer} style={{ textAlign: 'center' }}>
+            © 2026 Nhóm X-KTHP
           </Footer>
         </Layout>
       </Layout>
-
     </Layout>
   );
 }

@@ -4,6 +4,9 @@
   gap: 16px;
   padding: 0 24px;
   background-color: #C8102E !important;
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
 .logo {
@@ -39,6 +42,10 @@
 }
 
 .sider {
+  position: sticky;
+  top: 64px;
+  height: calc(100vh - 64px);
+  overflow-y: auto;
   background: #fff;
   border-right: 1px solid #f0f0f0;
 }

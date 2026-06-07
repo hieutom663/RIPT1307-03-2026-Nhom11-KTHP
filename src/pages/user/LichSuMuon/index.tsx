@@ -1,149 +1,166 @@
-import { Row, Col, Card, Tabs } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Row, Col, Card, Tabs, Spin, message, Typography, ConfigProvider } from 'antd';
 import type { TabsProps } from 'antd';
-import { ClockCircleOutlined, FileTextOutlined, ExclamationCircleOutlined, CheckCircleOutlined } from '@ant-design/icons';
-import PhieuMuon from './component/PhieuMuon';
-import TatCaLichSu from './component/TatCaLichSu';
+import { 
+    ClockCircleOutlined, 
+    FileTextOutlined, 
+    ExclamationCircleOutlined, 
+    CheckCircleOutlined,
+    HistoryOutlined
+} from '@ant-design/icons';
+import PhieuMuon from './components/PhieuMuon';
+import TatCaLichSu from './components/TatCaLichSu';
+
+import { getLichSuCaNhanAPI } from '../../../services/LichSuMuon/api'; 
+
+const { Title, Text } = Typography;
 
 const items: TabsProps['items'] = [
-  {
-    key: '1',
-    label: 'Phiếu mượn',
-    children: <PhieuMuon />,
-  },
-  {
-    key: '2',
-    label: 'Tất cả lịch sử',
-    children: <TatCaLichSu />,
-  },
+    { key: '1', label: <span style={{ fontSize: '15px', fontWeight: 500 }}>Phiếu mượn</span>, children: <PhieuMuon /> },
+    { key: '2', label: <span style={{ fontSize: '15px', fontWeight: 500 }}>Tất cả lịch sử</span>, children: <TatCaLichSu /> },
 ];
 
-const LichSuMuon = () => {
-    return(
-        <div style={{padding: 8}}>
-            <h3>Thống Kê Mượn/Trả đồ dùng</h3>
-            <div className="thongKe">
-                <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} >
-                    <Col span={6}> 
-                        <Card
-                            hoverable
-                            style={{ 
-                            backgroundColor: '#f0f5ff', 
-                            borderRadius: '8px' 
-                            }}
-                            styles={{ 
-                            body: { 
-                                padding: '16px', 
-                                display: 'flex', 
-                                justifyContent: 'space-between', 
-                                alignItems: 'center' 
-                            } 
-                            }}
-                        >
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                                <div style={{ color: '#2f54eb', fontSize: '18px' }}>
-                                    <ClockCircleOutlined />
-                                </div>
-                                <span style={{ fontWeight: 500, fontSize: '14px' }}>
-                                    Chờ xử lý
-                                </span>
-                                </div>
-                            <div style={{ color: '#2f54eb', fontSize: '28px', fontWeight: 'bold' }}>
-                            0
-                            </div>
-                        </Card>
-                    </Col>
-                    <Col span={6}> 
-                        <Card
-                            hoverable
-                            style={{ 
-                            backgroundColor: '#fff7e6', 
-                            borderRadius: '8px' 
-                            }}
-                            styles={{ 
-                            body: { 
-                                padding: '16px', 
-                                display: 'flex', 
-                                justifyContent: 'space-between', 
-                                alignItems: 'center' 
-                            } 
-                            }}
-                        >
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                                <div style={{ color: '#fa8c16', fontSize: '18px' }}>
-                                    <FileTextOutlined />
-                                </div>
-                                <span style={{ fontWeight: 500, fontSize: '14px' }}>
-                                    Đang mượn
-                                </span>
-                                </div>
-                            <div style={{ color: '#fa8c16', fontSize: '28px', fontWeight: 'bold' }}>
-                            0
-                            </div>
-                        </Card>
-                    </Col>
-                    <Col span={6}> 
-                        <Card
-                            hoverable
-                            style={{ 
-                            backgroundColor: '#fff1f0', 
-                            borderRadius: '8px' 
-                            }}
-                            styles={{ 
-                            body: { 
-                                padding: '16px', 
-                                display: 'flex', 
-                                justifyContent: 'space-between', 
-                                alignItems: 'center' 
-                            } 
-                            }}
-                        >
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                                <div style={{ color: '#f5222d', fontSize: '18px' }}>
-                                    <ExclamationCircleOutlined />
-                                </div>
-                                <span style={{ fontWeight: 500, fontSize: '14px' }}>
-                                    Quá hạn mượn
-                                </span>
-                                </div>
-                            <div style={{ color: '#f5222d', fontSize: '28px', fontWeight: 'bold' }}>
-                            0
-                            </div>
-                        </Card>
-                    </Col>
-                    <Col span={6}> 
-                        <Card
-                            hoverable
-                            style={{ 
-                            backgroundColor: '#f6ffed', 
-                            borderRadius: '8px' 
-                            }}
-                            styles={{ 
-                            body: { 
-                                padding: '16px', 
-                                display: 'flex', 
-                                justifyContent: 'space-between', 
-                                alignItems: 'center' 
-                            } 
-                            }}
-                        >
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                                <div style={{ color: '#52c41a', fontSize: '18px' }}>
-                                    <CheckCircleOutlined />
-                                </div>
-                                <span style={{ fontWeight: 500, fontSize: '14px' }}>
-                                    Chờ xử lý
-                                </span>
-                                </div>
-                            <div style={{ color: '#52c41a', fontSize: '28px', fontWeight: 'bold' }}>
-                            0
-                            </div>
-                        </Card>
-                    </Col>
-                </Row>
+const StatCard = ({ title, count, icon, color, bgColor }: { title: string, count: number | string, icon: React.ReactNode, color: string, bgColor: string }) => {
+    const [isHover, setIsHover] = useState(false);
+
+    return (
+        <Card 
+            variant='borderless'
+            onMouseEnter={() => setIsHover(true)}
+            onMouseLeave={() => setIsHover(false)}
+            style={{ 
+                borderRadius: '16px', 
+                boxShadow: isHover ? '0 8px 24px rgba(0,0,0,0.1)' : '0 4px 12px rgba(0,0,0,0.03)',
+                transform: isHover ? 'translateY(-4px)' : 'none',
+                transition: 'all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)',
+                cursor: 'pointer'
+            }} 
+            styles={{ body: { padding: '16px' } }}
+        >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                    <Text type="secondary" style={{ fontSize: '13px', fontWeight: 500 }}>
+                        {title}
+                    </Text>
+                    <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#262626', lineHeight: 1 }}>
+                        {count}
+                    </div>
+                </div>
+                <div style={{ 
+                    width: '48px', height: '48px', borderRadius: '50%', 
+                    backgroundColor: bgColor, color: color, 
+                    display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '24px' 
+                }}>
+                    {icon}
+                </div>
             </div>
-            <Tabs defaultActiveKey="1" items={items} style={{marginTop: 8}}  />
-        </div>
+        </Card>
+    );
+};
+
+const LichSuMuon = () => {
+    const [loading, setLoading] = useState(false);
+    const [thongKe, setThongKe] = useState({ choXuLy: 0, dangMuon: 0, quaHan: 0, daTra: 0 });
+
+    useEffect(() => {
+        const fetchThongKe = async () => {
+            setLoading(true);
+            try {
+                const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
+                const ma_sv = userInfo.ma_sv;
+
+                if (!ma_sv) {
+                    message.error("Không tìm thấy thông tin sinh viên!");
+                    setLoading(false);
+                    return;
+                }
+
+                const res = await getLichSuCaNhanAPI(ma_sv);
+                
+                if (res.data && res.data.success) {
+                    setThongKe(res.data.data);
+                } else {
+                    message.error(res.data?.message || "Không thể tải số liệu thống kê!");
+                }
+            } catch (error) {
+                console.error("Lỗi lấy thống kê:", error);
+                message.error("Lỗi kết nối đến máy chủ!");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchThongKe();
+    }, []);
+
+    return (
+        <ConfigProvider
+                        theme={{
+                            token: {
+                                colorPrimary: '#cf1322',
+                            },
+                        }}
+                    >
+            <Spin spinning={loading} description="Đang tải dữ liệu...">
+                <div style={{ padding: '16px 8px', backgroundColor: '#f5f7fa', minHeight: 'calc(100vh - 120px)' }}>
+                    
+                    <div style={{ marginBottom: 24, padding: '0 8px' }}>
+                        <Title level={3} style={{ margin: 0, color: '#262626', display: 'flex', alignItems: 'center' }}>
+                            <HistoryOutlined style={{ marginRight: 12, color: '#cf1322' }} />
+                            Lịch sử Mượn/Trả
+                        </Title>
+                        <Text type="secondary" style={{ fontSize: '13px' }}>Theo dõi trạng thái các phiếu mượn của bạn.</Text>
+                    </div>
+                    
+                    <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+                        <Col xs={12} sm={12} lg={6}>
+                            <StatCard 
+                                title="Chờ xử lý" 
+                                count={thongKe.choXuLy} 
+                                icon={<ClockCircleOutlined />} 
+                                color="#1677ff" 
+                                bgColor="#e6f4ff" 
+                            />
+                        </Col>
+                        <Col xs={12} sm={12} lg={6}>
+                            <StatCard 
+                                title="Đang mượn" 
+                                count={thongKe.dangMuon} 
+                                icon={<FileTextOutlined />} 
+                                color="#fa8c16" 
+                                bgColor="#fff7e6" 
+                            />
+                        </Col>
+                        <Col xs={12} sm={12} lg={6}>
+                            <StatCard 
+                                title="Quá hạn" 
+                                count={thongKe.quaHan} 
+                                icon={<ExclamationCircleOutlined />} 
+                                color="#f5222d" 
+                                bgColor="#fff1f0" 
+                            />
+                        </Col>
+                        <Col xs={12} sm={12} lg={6}>
+                            <StatCard 
+                                title="Hoàn thành" 
+                                count={thongKe.daTra} 
+                                icon={<CheckCircleOutlined />} 
+                                color="#52c41a" 
+                                bgColor="#f6ffed" 
+                            />
+                        </Col>
+                    </Row>
+
+                    <div style={{ backgroundColor: '#fff', padding: '12px 16px', borderRadius: '16px', boxShadow: '0 4px 12px rgba(0,0,0,0.03)' }}>
+                        
+                            <Tabs defaultActiveKey="1" items={items} />
+                        
+                    </div>
+
+                </div>
+            </Spin>
+        </ConfigProvider>
     );  
-    
 }
+
 export default LichSuMuon;

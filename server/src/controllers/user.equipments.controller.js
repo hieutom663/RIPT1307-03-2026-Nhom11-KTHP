@@ -1,0 +1,211 @@
+const pool = require('../config/db.config');
+
+const getDanhSachThietBi = async (req, res) => {
+    try {
+        const ma_danh_muc = req.query.danhMuc || 'tat-ca'; 
+        const tuKhoa = req.query.tuKhoa || '';
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const offset = (page - 1) * limit;
+
+        let queryStr = `
+            SELECT 
+                ma_thiet_bi, 
+                ten_thiet_bi, 
+                hinh_anh AS img, 
+                mo_ta AS moTa, 
+                tong_so_luong AS soLuongTong, 
+                so_luong_con_lai AS soLuongConLai, 
+                ma_danh_muc, 
+                tinh_trang
+            FROM thietbi
+            WHERE 1=1
+        `;
+        let countQueryStr = "SELECT COUNT(*) as total FROM thietbi WHERE 1=1";
+        let queryParams = [];
+
+        if (ma_danh_muc !== 'tat-ca') {
+            queryStr += " AND ma_danh_muc = ?";
+            countQueryStr += " AND ma_danh_muc = ?";
+            queryParams.push(ma_danh_muc);
+        }
+
+        if (tuKhoa.trim() !== '') {
+            queryStr += " AND ten_thiet_bi LIKE ?";
+            countQueryStr += " AND ten_thiet_bi LIKE ?";
+            queryParams.push(`%${tuKhoa}%`);
+        }
+
+        queryStr += " LIMIT ? OFFSET ?";
+        
+        const countParams = [...queryParams];
+        queryParams.push(limit, offset);
+
+        const [dataRows] = await pool.query(queryStr, queryParams);
+        const [countRows] = await pool.query(countQueryStr, countParams);
+
+        res.json({
+            success: true,
+            total: countRows[0].total,
+            data: dataRows
+        });
+
+    } catch (error) {
+        console.error("Lỗi:", error);
+        res.status(500).json({ success: false, message: "Lỗi server khi lấy dữ liệu" });
+    }
+};
+
+const getThietBiPhoBien = async (req, res) => {
+    try {
+        const queryStr = `
+            SELECT 
+                ma_thiet_bi, 
+                ten_thiet_bi, 
+                hinh_anh AS img,
+                mo_ta AS moTa, 
+                tong_so_luong AS soLuongTong, 
+                so_luong_con_lai AS soLuongConLai, 
+                tinh_trang
+            FROM thietbi 
+            WHERE so_luong_da_cho_muon > 0
+            ORDER BY so_luong_da_cho_muon DESC 
+            LIMIT 7
+        `;
+        const [rows] = await pool.query(queryStr);
+        res.json({ success: true, data: rows });
+    } catch (error) {
+        console.error("Lỗi getThietBiPhoBien:", error);
+        res.status(500).json({ success: false, message: "Lỗi server" });
+    }
+};
+
+const getThietBiSan = async (req, res) => {
+    try {
+        const queryStr = `
+            SELECT 
+                ma_thiet_bi, 
+                ten_thiet_bi, 
+                hinh_anh AS img,
+                mo_ta AS moTa, 
+                tong_so_luong AS soLuongTong, 
+                so_luong_con_lai AS soLuongConLai, 
+                tinh_trang
+            FROM thietbi 
+            WHERE so_luong_con_lai > 0
+            ORDER BY ma_thiet_bi DESC 
+            LIMIT 7
+        `;
+        const [rows] = await pool.query(queryStr);
+        res.json({ success: true, data: rows });
+    } catch (error) {
+        console.error("Lỗi getThietBiSan:", error);
+        res.status(500).json({ success: false, message: "Lỗi server" });
+    }
+};
+
+const getTatCaDanhMuc = async (req, res) => {
+    try {
+        const [rows] = await pool.query("SELECT ma_danh_muc, ten_danh_muc FROM danhmuc");
+        res.json({ success: true, data: rows });
+    } catch (error) {
+        console.log("Lỗi: ", error)
+        res.status(500).json({ success: false, message: "Lỗi lấy danh mục" });
+    }
+};
+
+const taoYeuCauMuon = async (req, res) => {
+    const connection = await pool.getConnection();
+
+    try {
+        const { ma_thiet_bi, so_luong_muon, ngay_muon, ngay_tra, ly_do, ma_sv } = req.body;
+
+        await connection.beginTransaction();
+
+        const [thietBiRows] = await connection.query(
+            "SELECT so_luong_con_lai FROM thietbi WHERE ma_thiet_bi = ?", 
+            [ma_thiet_bi]
+        );
+
+        if (thietBiRows.length === 0) {
+            await connection.rollback(); 
+            connection.release();
+            return res.json({ success: false, message: "Không tìm thấy thiết bị này!" });
+        }
+
+        const soLuongConLai = thietBiRows[0].so_luong_con_lai;
+
+        if (so_luong_muon > soLuongConLai) {
+            await connection.rollback(); 
+            connection.release();
+            return res.json({ success: false, message: "Số lượng thiết bị không đủ đáp ứng!" });
+        }
+
+        const [maxYCM] = await connection.query("SELECT MAX(ma_yeu_cau) as maxId FROM yeucaumuon");
+        let ma_yeu_cau = 'YCM0001'; 
+        if (maxYCM[0].maxId) {
+            const currentNum = parseInt(maxYCM[0].maxId.replace('YCM', ''), 10);
+            const nextNum = currentNum + 1;
+            ma_yeu_cau = 'YCM' + nextNum.toString().padStart(4, '0'); 
+        }
+
+        const [maxCTD] = await connection.query("SELECT MAX(ma_don_muon) as maxId FROM chitietdon");
+        let id_chi_tiet = 'CTD0001';
+        if (maxCTD[0].maxId) {
+            const currentNum = parseInt(maxCTD[0].maxId.replace('CTD', ''), 10);
+            const nextNum = currentNum + 1;
+            id_chi_tiet = 'CTD' + nextNum.toString().padStart(4, '0');
+        }
+
+        const insertYeuCau = `
+            INSERT INTO yeucaumuon 
+            (ma_yeu_cau, ma_nguoi_muon, ngay_muon, ngay_tra_du_kien, ly_do_muon, trang_thai) 
+            VALUES (?, ?, ?, ?, ?, 'Chờ duyệt')
+        `;
+        await connection.query(insertYeuCau, [
+            ma_yeu_cau, 
+            ma_sv, 
+            ngay_muon, 
+            ngay_tra, 
+            ly_do    
+        ]);
+
+        const insertChiTiet = `
+            INSERT INTO chitietdon 
+            (ma_don_muon, ma_yeu_cau, ma_thiet_bi, so_luong, trang_thai) 
+            VALUES (?, ?, ?, ?, 'Chưa trả')
+        `;
+        await connection.query(insertChiTiet, [
+            id_chi_tiet, 
+            ma_yeu_cau,  
+            ma_thiet_bi, 
+            so_luong_muon
+        ]);
+
+        const tieuDeThongBao = 'Yêu cầu mới';
+        const noiDungThongBao = `Có đơn chờ xử lý từ ${ma_sv} (${ma_yeu_cau}).`;
+        const nguoiNhanId = 'AD0001'; 
+        const loaiThongBao = 'duyệt';
+        
+
+        const insertThongBao = `
+            INSERT INTO thongbao (tieu_de, noi_dung, ngay, nguoinhan_id, loai, trang_thai) 
+            VALUES (?, ?, NOW(), ?, ?, 'chua_doc')
+        `;
+        
+        await connection.query(insertThongBao, [tieuDeThongBao, noiDungThongBao, nguoiNhanId, loaiThongBao]);
+
+        await connection.commit();
+        connection.release(); 
+
+        res.json({ success: true, message: "Gửi yêu cầu mượn thành công!" });
+
+    } catch (error) {
+        await connection.rollback();
+        connection.release();
+        console.error("Lỗi:", error);
+        res.status(500).json({ success: false, message: "Lỗi server xử lý mượn" });
+    }
+};
+
+module.exports = { getDanhSachThietBi, getThietBiPhoBien, getThietBiSan, getTatCaDanhMuc, taoYeuCauMuon };
