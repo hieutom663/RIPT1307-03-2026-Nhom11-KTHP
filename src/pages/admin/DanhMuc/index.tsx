@@ -1,1 +1,1 @@
-export default () => <div>Danh M?c</div>
+export default () => <div>Danh Mục</div>
