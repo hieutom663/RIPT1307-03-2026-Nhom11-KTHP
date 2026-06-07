@@ -7,7 +7,7 @@ export default defineConfig({
   routes: routes,
   proxy: {
     '/api': {
-      'target': 'http://localhost:20226', 
+      'target': 'https://ript1307-03-2026-nhom11-kthp-1.onrender.com', 
       'changeOrigin': true,
     },
   },
