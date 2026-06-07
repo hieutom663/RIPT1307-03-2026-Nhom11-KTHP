@@ -35,21 +35,21 @@ const StatCard = ({ title, count, icon, color, bgColor }: { title: string, count
                 transition: 'all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)',
                 cursor: 'pointer'
             }} 
-            styles={{ body: { padding: '24px' } }}
+            styles={{ body: { padding: '16px' } }}
         >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                    <Text type="secondary" style={{ fontSize: '15px', fontWeight: 500 }}>
+                    <Text type="secondary" style={{ fontSize: '13px', fontWeight: 500 }}>
                         {title}
                     </Text>
-                    <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#262626', lineHeight: 1 }}>
+                    <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#262626', lineHeight: 1 }}>
                         {count}
                     </div>
                 </div>
                 <div style={{ 
-                    width: '60px', height: '60px', borderRadius: '50%', 
+                    width: '48px', height: '48px', borderRadius: '50%', 
                     backgroundColor: bgColor, color: color, 
-                    display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '28px' 
+                    display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '24px' 
                 }}>
                     {icon}
                 </div>
@@ -95,18 +95,18 @@ const LichSuMuon = () => {
 
     return (
         <Spin spinning={loading} description="Đang tải dữ liệu...">
-            <div style={{ padding: '24px 20px', backgroundColor: '#f5f7fa', minHeight: 'calc(100vh - 120px)' }}>
+            <div style={{ padding: '16px 8px', backgroundColor: '#f5f7fa', minHeight: 'calc(100vh - 120px)' }}>
                 
-                <div style={{ marginBottom: 32 }}>
+                <div style={{ marginBottom: 24, padding: '0 8px' }}>
                     <Title level={3} style={{ margin: 0, color: '#262626', display: 'flex', alignItems: 'center' }}>
                         <HistoryOutlined style={{ marginRight: 12, color: '#cf1322' }} />
-                        Lịch sử Mượn/Trả đồ dùng
+                        Lịch sử Mượn/Trả
                     </Title>
-                    <Text type="secondary">Theo dõi trạng thái các phiếu mượn và lịch sử sử dụng thiết bị của bạn.</Text>
+                    <Text type="secondary" style={{ fontSize: '13px' }}>Theo dõi trạng thái các phiếu mượn của bạn.</Text>
                 </div>
                 
-                <Row gutter={[24, 24]} style={{ marginBottom: 32 }}>
-                    <Col xs={24} sm={12} lg={6}>
+                <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+                    <Col xs={12} sm={12} lg={6}>
                         <StatCard 
                             title="Chờ xử lý" 
                             count={thongKe.choXuLy} 
@@ -115,7 +115,7 @@ const LichSuMuon = () => {
                             bgColor="#e6f4ff" 
                         />
                     </Col>
-                    <Col xs={24} sm={12} lg={6}>
+                    <Col xs={12} sm={12} lg={6}>
                         <StatCard 
                             title="Đang mượn" 
                             count={thongKe.dangMuon} 
@@ -124,16 +124,16 @@ const LichSuMuon = () => {
                             bgColor="#fff7e6" 
                         />
                     </Col>
-                    <Col xs={24} sm={12} lg={6}>
+                    <Col xs={12} sm={12} lg={6}>
                         <StatCard 
-                            title="Quá hạn mượn" 
+                            title="Quá hạn" 
                             count={thongKe.quaHan} 
                             icon={<ExclamationCircleOutlined />} 
                             color="#f5222d" 
                             bgColor="#fff1f0" 
                         />
                     </Col>
-                    <Col xs={24} sm={12} lg={6}>
+                    <Col xs={12} sm={12} lg={6}>
                         <StatCard 
                             title="Đã trả" 
                             count={thongKe.daTra} 
@@ -144,7 +144,7 @@ const LichSuMuon = () => {
                     </Col>
                 </Row>
 
-                <div style={{ backgroundColor: '#fff', padding: '16px 24px 24px', borderRadius: '16px', boxShadow: '0 4px 12px rgba(0,0,0,0.03)' }}>
+                <div style={{ backgroundColor: '#fff', padding: '12px 16px', borderRadius: '16px', boxShadow: '0 4px 12px rgba(0,0,0,0.03)' }}>
                     <ConfigProvider
                         theme={{
                             token: {
@@ -152,7 +152,7 @@ const LichSuMuon = () => {
                             },
                         }}
                     >
-                        <Tabs defaultActiveKey="1" items={items} size="large" tabBarGutter={32} />
+                        <Tabs defaultActiveKey="1" items={items} />
                     </ConfigProvider>
                 </div>
 

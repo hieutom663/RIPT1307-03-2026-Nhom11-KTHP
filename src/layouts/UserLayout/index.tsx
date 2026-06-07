@@ -25,6 +25,8 @@ export default function UserLayout() {
   const location = useLocation();
   const { clientRoutes } = useAppData();
   const [userName, setUserName] = useState('Sinh viên');
+  
+  const [collapsed, setCollapsed] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -104,7 +106,15 @@ export default function UserLayout() {
       </Header>
 
       <Layout>
-        <Sider width={220} className={styles.sider} theme="light">
+        <Sider 
+          width={220} 
+          className={styles.sider} 
+          theme="light"
+          collapsible 
+          collapsed={collapsed} 
+          onCollapse={(value) => setCollapsed(value)} 
+          breakpoint="lg" 
+        >
           <ConfigProvider
             theme={{
               components: {

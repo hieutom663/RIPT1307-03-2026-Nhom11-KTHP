@@ -54,7 +54,7 @@ const Login = () => {
   return (
     <div style={{ backgroundColor: '#8c2825', minHeight: '100vh', overflow: 'hidden' }}>
       <Row style={{ minHeight: '100vh' }}>
-        <Col span={11} style={{ display: 'flex', flexDirection: 'column', padding: '24px' }}>
+        <Col xs={24} lg={11} style={{ display: 'flex', flexDirection: 'column', padding: '24px' }}>
           
           <Flex className='logo' align='center'>
             <Link to={'/'} style={{ display: 'flex', alignItems: 'center' }}>
@@ -112,7 +112,6 @@ const Login = () => {
                 <Input.Password placeholder='Password' size="large" />
               </Form.Item>
 
-              {/* Checkbox Ghi nhớ */}
               <Form.Item name="remember" valuePropName="checked" style={{ marginBottom: 16 }}>
                 <Checkbox>Ghi nhớ</Checkbox>
               </Form.Item>
@@ -134,7 +133,7 @@ const Login = () => {
           </Flex>
         </Col>
 
-        <Col span={13} style={{ height: '100vh' }}>
+        <Col xs={0} lg={13} style={{ height: '100vh' }}>
           <Image
             src={hocVien}
             width='100%'

@@ -1,8 +1,9 @@
-import { Row, Col, Card, Typography, Table, Spin, Space, Tag } from 'antd';
+import { Row, Col, Card, Typography, Table, Spin, Space, Tag, message } from 'antd';
 import { LaptopOutlined, BookOutlined, ClockCircleOutlined, UsergroupAddOutlined } from '@ant-design/icons';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'umi';
+import { getAdminHomeDataAPI } from '@/services/TrangChuAdmin/api';
 
 const { Title, Text } = Typography;
 
@@ -19,21 +20,22 @@ const AdminDashboard = () => {
 
     useEffect(() => {
         const fetchAdminHome = async () => {
-            try {
-                const response = await axios.get('http://localhost:3000/api/admin/trang-chu');
-                
-                if (response.data.success) {
-                    setStats(response.data.data.stats);
-                    setPendingList(response.data.data.pendingList);
-                    setRecentActivities(response.data.data.recentActivities);
-                }
-            } catch (error) {
-                console.error("Lỗi tải dữ liệu Dashboard:", error);
-            } finally {
-                setLoading(false);
+        try {
+            setLoading(true);
+            const response = await getAdminHomeDataAPI();
+            
+            if (response.data.success) {
+                setStats(response.data.data.stats);
+                setPendingList(response.data.data.pendingList);
+                setRecentActivities(response.data.data.recentActivities);
             }
-        };
-
+        } catch (error: any) {
+            console.error("Lỗi tải dữ liệu Dashboard:", error);
+            message.error(error.response?.data?.message || 'Không thể lấy dữ liệu hệ thống. Vui lòng thử lại!');
+        } finally {
+            setLoading(false);
+        }
+    };
         fetchAdminHome();
     }, []);
 

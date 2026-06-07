@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import { Table, Button, Input, Select, Space, Popconfirm, message, Tooltip, Image, Card, Typography, ConfigProvider, Tag } from 'antd';
+import { Table, Button, Input, Select, Space, Popconfirm, message, Tooltip, Image, Typography, ConfigProvider, Tag } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined, DatabaseOutlined, SearchOutlined } from '@ant-design/icons';
 import { useModel } from 'umi';
 
@@ -109,6 +109,7 @@ const QuanLyThietBiAdmin = () => {
             key: 'stt',
             width: 60,
             align: 'center' as const,
+            responsive: ['md'] as any,
             render: (_: any, __: any, index: number) => <Text type="secondary">{(trangHienTai - 1) * soThietBiMoiTrang + index + 1}</Text>,
         },
         {
@@ -139,6 +140,7 @@ const QuanLyThietBiAdmin = () => {
             title: 'Danh mục',
             dataIndex: 'ma_danh_muc',
             width: 180,
+            responsive: ['md'] as any, 
             render: (ma_danh_muc: string) => {
                 const dm = danhSachDanhMuc.find((d: any) => d.ma_danh_muc === ma_danh_muc);
                 return <Tag color="blue" style={{ borderRadius: '4px' }}>{dm ? dm.ten_danh_muc : ma_danh_muc}</Tag>;
@@ -148,6 +150,7 @@ const QuanLyThietBiAdmin = () => {
             title: 'Mô tả',
             dataIndex: 'mo_ta',
             ellipsis: true,
+            responsive: ['lg'] as any,
             render: (text: string) => <Text type="secondary">{text}</Text>
         },
         {
@@ -155,6 +158,7 @@ const QuanLyThietBiAdmin = () => {
             dataIndex: 'tong_so_luong',
             width: 80,
             align: 'center' as const,
+            responsive: ['sm'] as any, 
             sorter: (a: any, b: any) => a.tong_so_luong - b.tong_so_luong,
             render: (val: number) => <Text strong>{val}</Text>
         },
@@ -169,14 +173,15 @@ const QuanLyThietBiAdmin = () => {
         {
             title: 'Hành động',
             key: 'action',
-            width: 120,
+            width: 100,
             align: 'center' as const,
+            fixed: 'right' as const, 
             render: (_: any, record: any) => (
-                <Space size="middle">
+                <Space size="small">
                     <Tooltip title="Sửa thiết bị">
                         <Button type="text" style={{ color: '#1677ff', padding: 4 }} icon={<EditOutlined style={{ fontSize: '16px' }}/>} onClick={() => moModalSua(record)} />
                     </Tooltip>
-                    <Popconfirm title="Xóa thiết bị" description="Bạn có chắc chắn muốn xóa thiết bị này không?" onConfirm={() => xuLyXoa(record.ma_thiet_bi)} okButtonProps={{ danger: true }}>
+                    <Popconfirm title="Xác nhận" description="Xóa thiết bị này?" onConfirm={() => xuLyXoa(record.ma_thiet_bi)} okButtonProps={{ danger: true }}>
                         <Tooltip title="Xóa">
                             <Button type="text" danger style={{ padding: 4 }} icon={<DeleteOutlined style={{ fontSize: '16px' }}/>} />
                         </Tooltip>
@@ -196,54 +201,54 @@ const QuanLyThietBiAdmin = () => {
 
     return (
         <ConfigProvider theme={{ token: { colorPrimary: '#cf1322' } }}>
-            <div style={{ minHeight: 'calc(100vh - 64px)' }}>
+            <div style={{ minHeight: 'calc(100vh - 64px)', padding: '0 8px' }}>
                 
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+                    <div style={{ display: 'flex', alignItems: 'flex-start' }}>
+                        <DatabaseOutlined style={{ fontSize: 24, color: '#cf1322', marginRight: 12, marginTop: 4 }} />
                         <div>
-                            <Title level={3} style={{ margin: 0, marginBottom: 8, color: '#262626', display: 'flex', alignItems: 'center' }}>
-                                <DatabaseOutlined style={{ color: '#cf1322', marginRight: 12 }} />
-                                Quản lý Kho Thiết bị
-                            </Title>
-                            <Text type="secondary">Quản lý thêm, sửa, xóa và kiểm tra số lượng thiết bị trong kho</Text>
+                            <Title level={3} style={{ margin: 0, marginBottom: 4, color: '#262626' }}>Kho Thiết Bị</Title>
+                            <Text type="secondary" style={{ fontSize: '13px' }}>Quản lý số lượng và danh sách thiết bị</Text>
                         </div>
-                        <Button type="primary" size="large" icon={<PlusOutlined />} onClick={moModalThemMoi} style={{ borderRadius: '8px', fontWeight: 500 }}>
-                            Thêm thiết bị mới
-                        </Button>
                     </div>
+                    <Button type="primary" size="large" icon={<PlusOutlined />} onClick={moModalThemMoi} style={{ borderRadius: '8px', fontWeight: 500 }}>
+                        Thêm mới
+                    </Button>
+                </div>
 
-                    <div style={{ display: 'flex', gap: '16px', marginBottom: 24 }}>
-                        <Search
-                            placeholder="Tìm tên hoặc mã thiết bị..."
-                            allowClear
-                            enterButton={<Button type="primary" icon={<SearchOutlined />}>Tìm kiếm</Button>}
-                            onSearch={(value) => { setTuKhoa(value); setTrangHienTai(1); }}
-                            size="large"
-                            style={{ maxWidth: 400 }}
-                        />
-                        <Select
-                            value={boLoc}
-                            onChange={(giaTri) => { setBoLoc(giaTri); setTrangHienTai(1); }}
-                            style={{ width: 250 }}
-                            size="large"
-                            options={danhMucOptions}
-                        />
-                    </div>
-
-                    <Table
-                        columns={columns}
-                        dataSource={danhSachThietBi}
-                        rowKey="ma_thiet_bi"
-                        loading={loading}
-                        pagination={{
-                            current: trangHienTai,
-                            pageSize: soThietBiMoiTrang,
-                            total: tongSoLuong,
-                            showSizeChanger: false,
-                            onChange: (page) => setTrangHienTai(page),
-                            style: { marginTop: '24px' }
-                        }}
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', marginBottom: 24 }}>
+                    <Search
+                        placeholder="Tìm tên hoặc mã thiết bị..."
+                        allowClear
+                        enterButton={<Button type="primary" icon={<SearchOutlined />}>Tìm</Button>}
+                        onSearch={(value) => { setTuKhoa(value); setTrangHienTai(1); }}
+                        size="large"
+                        style={{ flex: '1 1 250px', maxWidth: 400 }} 
                     />
-                
+                    <Select
+                        value={boLoc}
+                        onChange={(giaTri) => { setBoLoc(giaTri); setTrangHienTai(1); }}
+                        style={{ flex: '1 1 200px', maxWidth: 250 }}
+                        size="large"
+                        options={danhMucOptions}
+                    />
+                </div>
+
+                <Table
+                    columns={columns}
+                    dataSource={danhSachThietBi}
+                    rowKey="ma_thiet_bi"
+                    loading={loading}
+                    scroll={{ x: 'max-content' }}
+                    pagination={{
+                        current: trangHienTai,
+                        pageSize: soThietBiMoiTrang,
+                        total: tongSoLuong,
+                        showSizeChanger: false,
+                        onChange: (page) => setTrangHienTai(page),
+                        style: { marginTop: '24px' }
+                    }}
+                />
 
                 <ThemSuaThietBi
                     visible={modalVisible}

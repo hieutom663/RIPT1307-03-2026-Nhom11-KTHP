@@ -72,7 +72,7 @@ const GuiYeuCauMuon = (props: any) => {
             open={props.visible}
             onCancel={props.onClose}
             footer={null}
-            width={500}
+            style={{ top: 20, maxWidth: '100%', padding: '0 10px' }}
         >
             <div style={{ marginBottom: 12 }}>
                 <strong>Thiết bị:</strong> {props.thietBi.ten_thiet_bi}

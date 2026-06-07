@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, Descriptions, Tag, Avatar, Row, Col, Button, Modal, Form, Input, message, Space, Typography } from 'antd';
 import { UserOutlined, EditOutlined, KeyOutlined, SafetyCertificateOutlined } from '@ant-design/icons';
-import request from 'umi-request';
+import { getTrangCaNhanAPI, updateTrangCaNhanAPI, changePasswordAPI } from '@/services/TrangCaNhan/api';
 
 const { Title, Text } = Typography;
 
@@ -19,12 +19,9 @@ const TrangCaNhan = () => {
         if (!info.ma_sv) return;
 
         try {
-            const res = await request.post('/api/user/trang-ca-nhan', {
-                data: { ma_sv: info.ma_sv }
-            });
-            
-            if (res.success) {
-                setUserData(res.data);
+            const res = await getTrangCaNhanAPI(info.ma_sv);          
+            if (res.data && res.data.success) {
+                setUserData(res.data.data);
             }
         } catch (err) {
             message.error('Không kết nối được server');
@@ -36,9 +33,8 @@ const TrangCaNhan = () => {
     const handleSaveInfo = async (values: any) => {
         const info = JSON.parse(localStorage.getItem('userInfo') || '{}');
         try {
-            await request.post('/api/user/update', {
-                data: { ...values, ma_sv: info.ma_sv }
-            });
+            await updateTrangCaNhanAPI({ ...values, ma_sv: info.ma_sv });
+            
             message.success('Cập nhật thành công!');
             setIsEditModalOpen(false);
             fetchProfile();
@@ -50,23 +46,25 @@ const TrangCaNhan = () => {
     const handleChangePassword = async (values: any) => {
         const info = JSON.parse(localStorage.getItem('userInfo') || '{}');
         try {
-            const res = await request.post('/api/user/change-password', {
-                data: { 
-                    ma_sv: info.ma_sv,
-                    matKhauCu: values.matKhauCu,
-                    matKhauMoi: values.matKhauMoi
-                }
-            });
+            const payload = { 
+                ma_sv: info.ma_sv,
+                matKhauCu: values.matKhauCu,
+                matKhauMoi: values.matKhauMoi
+            };
+            
+            const res = await changePasswordAPI(payload);
 
-            if (res.success) {
+            if (res.data && res.data.success) {
                 message.success('Đổi mật khẩu thành công!');
                 setIsPasswordModalOpen(false);
                 passwordForm.resetFields();
             } else {
-                message.error(res.message || 'Mật khẩu cũ không đúng!');
+                message.error(res.data.message || 'Mật khẩu cũ không đúng!');
             }
-        } catch (error) {
-            message.error('Lỗi khi đổi mật khẩu');
+        } catch (error: any) {
+            // Bắt lỗi xịn hơn từ backend ném ra
+            const msg = error.response?.data?.message || 'Lỗi khi đổi mật khẩu';
+            message.error(msg);
         }
     };
 

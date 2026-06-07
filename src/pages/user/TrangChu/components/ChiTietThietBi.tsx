@@ -17,7 +17,13 @@ const ChiTietThietBi = (props: any) => {
                 <img
                     src={props.thietBi.img}
                     alt={props.thietBi.ten_thiet_bi}
-                    style={{ width: 200, height: 200, borderRadius: 8, objectFit: 'cover' }}
+                    style={{ 
+                        width: '100%',       
+                        maxWidth: 250,       
+                        aspectRatio: '1/1',  
+                        borderRadius: 8, 
+                        objectFit: 'cover' 
+                    }}
                 />
             </div>
             <div style={{ marginBottom: 12 }}>

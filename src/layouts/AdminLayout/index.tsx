@@ -36,6 +36,8 @@ export default function AdminLayout() {
   const location = useLocation();
   const { clientRoutes } = useAppData();
   const [userName, setUserName] = useState('Admin');
+  
+  const [collapsed, setCollapsed] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -80,7 +82,7 @@ export default function AdminLayout() {
     localStorage.removeItem('userInfo');
     message.success('Bạn đã đăng xuất thành công!');
     history.push('/login');
-};
+  };
 
   const onUserMenuClick: MenuProps['onClick'] = (e) => {
     if (e.key === 'logout') {
@@ -91,7 +93,6 @@ export default function AdminLayout() {
   const userMenuItems: MenuProps['items'] = [
     { key: 'logout', icon: <LogoutOutlined />, label: 'Đăng xuất', danger: true },
   ];
-;
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
@@ -110,7 +111,15 @@ export default function AdminLayout() {
       </Header>
 
       <Layout>
-        <Sider width={220} className={styles.sider} theme="light">
+        <Sider 
+          width={220} 
+          className={styles.sider} 
+          theme="light"
+          collapsible 
+          collapsed={collapsed} 
+          onCollapse={(value) => setCollapsed(value)} 
+          breakpoint="lg" 
+        >
           <ConfigProvider
             theme={{
               components: {

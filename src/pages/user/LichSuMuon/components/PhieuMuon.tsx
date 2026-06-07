@@ -1,5 +1,6 @@
 import { Input, Table, Tag, message, Typography } from "antd";
 import { useState, useEffect, useMemo } from "react";
+import styles from '../../../../global.less'; 
 import { getPhieuMuonAPI } from "../../../../services/LichSuMuon/api"; 
 
 const { Text } = Typography;
@@ -20,7 +21,7 @@ const PhieuMuon = () => {
                 const res = await getPhieuMuonAPI(ma_sv);
                 if (res.data?.success) setDataSourceRaw(res.data.data);
             } catch (error) {
-                message.error('Lỗi kết nối!');
+                message.error('Lỗi kết nối máy chủ!');
             } finally {
                 setLoading(false);
             }
@@ -41,35 +42,44 @@ const PhieuMuon = () => {
             key: 'stt',
             width: 60,
             align: 'center' as const,
+            responsive: ['md'] as any, 
             render: (_text: any, _record: any, index: number) => index + 1,
         },
         {
             title: 'Mã Phiếu', 
             dataIndex: 'maYeuCau', 
             key: 'maYeuCau',
+            width: 100,
             render: (text: string) => <Text strong style={{ color: '#cf1322', fontFamily: 'monospace' }}>{text}</Text>
         },
         {
             title: 'Ngày tạo phiếu', 
             dataIndex: 'ngayTao', 
             key: 'ngayTao',
+            width: 130,
             sorter: (a: any, b: any) => new Date(a.ngayTao).getTime() - new Date(b.ngayTao).getTime(),
         },
         {
             title: 'Ngày trả dự kiến', 
             dataIndex: 'ngayTraDuKien', 
             key: 'ngayTraDuKien',
+            width: 140,
             sorter: (a: any, b: any) => new Date(a.ngayTraDuKien).getTime() - new Date(b.ngayTraDuKien).getTime(),
         },
         {
             title: 'Lý do mượn', 
             dataIndex: 'lyDo', 
             key: 'lyDo',
+            ellipsis: true, 
+            responsive: ['lg'] as any, 
         },
         {
             title: 'Trạng thái', 
             dataIndex: 'trangThai', 
             key: 'trangThai',
+            width: 110,
+            align: 'center' as const,
+            fixed: 'right' as const, 
             filters: [
                 { text: 'Chờ duyệt', value: 'Chờ duyệt' },
                 { text: 'Đang mượn', value: 'Đang mượn' },
@@ -79,29 +89,34 @@ const PhieuMuon = () => {
             onFilter: (value: any, record: any) => record.trangThai === value,
             render: (text: string) => {
                 const colors: any = { 'Chờ duyệt': 'blue', 'Đang mượn': 'orange', 'Hoàn thành': 'green', 'Bị từ chối': 'red' };
-                return <Tag color={colors[text] || 'default'}>{text}</Tag>;
+                return <Tag color={colors[text] || 'default'} style={{ margin: 0 }}>{text}</Tag>;
             },
         },
     ];
 
     return (
-        <div>
+        <div style={{ padding: '0 8px' }}>
             <div style={{ marginBottom: 16 }}>
                 <Input.Search 
                     placeholder="Tìm theo mã phiếu hoặc lý do..." 
                     onChange={(e) => setSearchText(e.target.value)} 
-                    style={{ maxWidth: 300 }} 
+                    style={{ width: '100%', maxWidth: 350 }} 
+                    size="large"
+                    allowClear
                 />
             </div>
             <Table 
+                className={styles.tableResponsive} 
                 rowKey="maYeuCau"
                 columns={columns} 
                 dataSource={dataSource} 
                 loading={loading}
                 bordered 
-                pagination={{ showSizeChanger: true }} 
+                scroll={{ x: 'max-content' }} 
+                pagination={{ showSizeChanger: true, style: { marginTop: 24 } }} 
             />
         </div>
     );
 }
+
 export default PhieuMuon;

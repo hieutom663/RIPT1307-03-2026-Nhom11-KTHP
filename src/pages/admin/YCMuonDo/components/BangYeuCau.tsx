@@ -5,6 +5,7 @@ import type { ColumnsType } from 'antd/es/table';
 import type { YeuCauMuon } from '../index';
 import { duyetYeuCauAPI, tuChoiYeuCauAPI, xacNhanTraThietBiAPI } from '@/services/YeuCauMuon/api';
 import ModalChiTiet from './ModalChiTiet';
+import styles from '../../../../global.less'; 
 
 const { Text } = Typography;
 const { TextArea } = Input;
@@ -120,13 +121,13 @@ const BangYeuCau: React.FC<Props> = ({ data, onRefresh }) => {
       title: 'Mã YC', 
       dataIndex: 'maYC', 
       key: 'maYC', 
-      width: 100,
+      width: 90,
       render: (v: string) => <Text strong style={{ color: '#cf1322', fontFamily: 'monospace' }}>{v}</Text>,
     },
     {
       title: 'Sinh viên', 
       key: 'sinhVien', 
-      width: 180,
+      width: 150,
       render: (_: unknown, r: YeuCauMuon) => (
         <div>
           <Text strong style={{ fontSize: '14px' }}>{r.tenSV}</Text>
@@ -139,20 +140,43 @@ const BangYeuCau: React.FC<Props> = ({ data, onRefresh }) => {
       title: 'Thiết bị đăng ký mượn', 
       dataIndex: 'thietBi', 
       key: 'thietBi',
+      ellipsis: true, 
       render: (text: string) => <Text strong>{text}</Text>
     },
-    { title: 'SL', dataIndex: 'soLuong', key: 'soLuong', width: 60, align: 'center' as const, render: (val) => <Text strong>{val}</Text> },
-    { title: 'Ngày mượn', dataIndex: 'ngayMuon', key: 'ngayMuon', width: 120, render: (val) => <Text type="secondary">{val}</Text> },
-    { title: 'Ngày trả DK', dataIndex: 'ngayTraDK', key: 'ngayTraDK', width: 120, render: (val) => <Text type="secondary">{val}</Text> },
+    { 
+      title: 'SL', 
+      dataIndex: 'soLuong', 
+      key: 'soLuong', 
+      width: 60, 
+      align: 'center' as const, 
+      responsive: ['sm'] as any, 
+      render: (val) => <Text strong>{val}</Text> 
+    },
+    { 
+      title: 'Ngày mượn', 
+      dataIndex: 'ngayMuon', 
+      key: 'ngayMuon', 
+      width: 110, 
+      responsive: ['md'] as any, 
+      render: (val) => <Text type="secondary">{val}</Text> 
+    },
+    { 
+      title: 'Ngày trả DK', 
+      dataIndex: 'ngayTraDK', 
+      key: 'ngayTraDK', 
+      width: 110, 
+      responsive: ['lg'] as any, 
+      render: (val) => <Text type="secondary">{val}</Text> 
+    },
     {
       title: 'Trạng thái', 
       key: 'trangThai', 
-      width: 130, 
+      width: 110, 
       align: 'center' as const,
       render: (_: unknown, r: YeuCauMuon) => {
         const cfg = statusConfig[r.trangThai];
         return (
-          <Tag style={{ color: cfg.color, backgroundColor: cfg.bg, border: `1px solid ${cfg.color}25`, borderRadius: 4, fontWeight: 500, padding: '2px 10px' }}>
+          <Tag style={{ margin: 0, color: cfg.color, backgroundColor: cfg.bg, border: `1px solid ${cfg.color}25`, borderRadius: 4, fontWeight: 500, padding: '2px 8px' }}>
             {cfg.label}
           </Tag>
         );
@@ -161,10 +185,11 @@ const BangYeuCau: React.FC<Props> = ({ data, onRefresh }) => {
     {
       title: 'Hành động', 
       key: 'action', 
-      width: 200, 
+      width: 220, 
       align: 'center' as const,
+      fixed: 'right' as const, 
       render: (_: unknown, record: YeuCauMuon) => (
-        <Space size="middle">
+        <Space size="small">
           <Tooltip title="Xem chi tiết phiếu">
             <Button size="small" type="text" icon={<EyeOutlined />} style={{ color: '#595959', padding: '0 4px' }} onClick={() => handleXemChiTiet(record)}>Xem</Button>
           </Tooltip>
@@ -194,10 +219,11 @@ const BangYeuCau: React.FC<Props> = ({ data, onRefresh }) => {
 
   return (
     <>
-      {/* ĐÃ SỬA: Loại bỏ lớp Card bọc thừa để Table phẳng lì và thoáng đãng trên trang cha */}
       <Table
+        className={styles.tableResponsive} 
         columns={columns}
         dataSource={data}
+        scroll={{ x: 'max-content' }} 
         pagination={{ 
           pageSize: 10, 
           showTotal: (total) => `Tổng số ${total} yêu cầu`,
@@ -205,7 +231,7 @@ const BangYeuCau: React.FC<Props> = ({ data, onRefresh }) => {
           style: { marginTop: '24px' } 
         }}
         size="middle"
-        rowKey="key"
+        rowKey="maYC" 
         locale={{ emptyText: 'Không tìm thấy phiếu mượn nào phù hợp' }}
       />
 

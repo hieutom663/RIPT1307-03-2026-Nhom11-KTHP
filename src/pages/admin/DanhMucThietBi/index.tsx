@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Button, Table, Tag, Popconfirm, Form, message, Spin, Alert, Typography, Space, Card, ConfigProvider } from 'antd';
-import { EditOutlined, DeleteOutlined, PlusOutlined, ReloadOutlined, AppstoreOutlined } from '@ant-design/icons';
+import { Button, Table, Tag, Popconfirm, Form, message, Alert, Typography, Space, ConfigProvider } from 'antd';
+import { EditOutlined, DeleteOutlined, PlusOutlined, AppstoreOutlined } from '@ant-design/icons';
 import BoLocDanhMuc from './components/BoLocDanhMuc';
 import ThemSuaDanhMuc from './components/ThemSuaDanhMuc';
 import {
@@ -124,6 +124,7 @@ const DanhMucThietBiAdmin = () => {
             title: 'Mô tả',
             dataIndex: 'mo_ta',
             key: 'mo_ta',
+            responsive: ['md'] as any, 
             render: (val: string) => <Text type="secondary">{val || '—'}</Text>,
         },
         {
@@ -132,6 +133,7 @@ const DanhMucThietBiAdmin = () => {
             key: 'so_luong_thiet_bi',
             width: 120,
             align: 'center' as const,
+            responsive: ['sm'] as any,
             render: (val: number) => (
                 <Tag color={val > 0 ? 'processing' : 'default'} style={{ borderRadius: '4px' }}>
                     {val ?? 0} thiết bị
@@ -142,11 +144,11 @@ const DanhMucThietBiAdmin = () => {
             title: 'Trạng thái',
             dataIndex: 'trang_thai',
             key: 'trang_thai',
-            width: 160,
+            width: 140,
             align: 'center' as const,
             render: (val: string) => (
                 <Tag color={val === 'hoat-dong' ? 'success' : 'error'} style={{ borderRadius: '4px', padding: '2px 8px' }}>
-                    {val === 'hoat-dong' ? 'Đang hoạt động' : 'Ngừng hoạt động'}
+                    {val === 'hoat-dong' ? 'Hoạt động' : 'Đã ngừng'}
                 </Tag>
             ),
         },
@@ -155,8 +157,9 @@ const DanhMucThietBiAdmin = () => {
             key: 'action',
             width: 120,
             align: 'center' as const,
+            fixed: 'right' as const,
             render: (_: any, record: DanhMuc) => (
-                <Space size="middle">
+                <Space size="small">
                     <Button
                         type="text"
                         icon={<EditOutlined style={{ fontSize: '16px' }} />}
@@ -168,8 +171,8 @@ const DanhMucThietBiAdmin = () => {
                         title="Xác nhận xóa?"
                         description={
                             record.so_luong_thiet_bi && record.so_luong_thiet_bi > 0
-                                ? `Danh mục này đang có ${record.so_luong_thiet_bi} thiết bị, không thể xóa!`
-                                : 'Bạn có chắc muốn xóa danh mục này?'
+                                ? `Đang có ${record.so_luong_thiet_bi} thiết bị, không thể xóa!`
+                                : 'Xóa danh mục này?'
                         }
                         onConfirm={() =>
                             record.so_luong_thiet_bi && record.so_luong_thiet_bi > 0
@@ -195,56 +198,64 @@ const DanhMucThietBiAdmin = () => {
 
     return (
         <ConfigProvider theme={{ token: { colorPrimary: '#cf1322' } }}>
-            <div style={{ minHeight: 'calc(100vh - 64px)' }}>
+            <div style={{ minHeight: 'calc(100vh - 64px)', padding: '0 8px' }}>
                 
-                    {/* Header */}
-                    <div style={{ marginBottom: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                        <div style={{ display: 'flex', alignItems: 'center' }}>
-                            <AppstoreOutlined style={{ fontSize: 24, color: '#cf1322', marginRight: 12 }} />
-                            <div>
-                                <Title level={3} style={{ margin: 0, marginBottom: 8, color: '#262626' }}>Quản Lý Danh Mục Thiết Bị</Title>
-                                <Text type="secondary">Quản lý danh mục thiết bị và dụng cụ hỗ trợ học tập</Text>
-                            </div>
+                <div style={{ 
+                    marginBottom: 24, 
+                    display: 'flex', 
+                    flexWrap: 'wrap', 
+                    gap: '16px', 
+                    justifyContent: 'space-between', 
+                    alignItems: 'center' 
+                }}>
+                    <div style={{ display: 'flex', alignItems: 'flex-start' }}>
+                        <AppstoreOutlined style={{ fontSize: 24, color: '#cf1322', marginRight: 12, marginTop: 4 }} />
+                        <div>
+                            <Title level={3} style={{ margin: 0, marginBottom: 4, color: '#262626' }}>Danh Mục Thiết Bị</Title>
+                            <Text type="secondary" style={{ fontSize: '13px' }}>Quản lý danh mục dụng cụ học tập</Text>
                         </div>
-                        <Button type="primary" size="large" icon={<PlusOutlined />} onClick={handleAdd} style={{ borderRadius: '8px', fontWeight: 500 }}>
-                            Thêm danh mục
-                        </Button>
                     </div>
+                    <Button 
+                        type="primary" 
+                        size="large" 
+                        icon={<PlusOutlined />} 
+                        onClick={handleAdd} 
+                        style={{ borderRadius: '8px', fontWeight: 500 }}
+                    >
+                        Thêm mới
+                    </Button>
+                </div>
 
-                    {/* Bộ lọc */}
-                    <div style={{ marginBottom: 24 }}>
-                        <BoLocDanhMuc boLoc={boLoc} onChangeLoc={(giaTri: any) => setBoLoc(giaTri)} />
-                    </div>
+                <div style={{ marginBottom: 24 }}>
+                    <BoLocDanhMuc boLoc={boLoc} onChangeLoc={(giaTri: any) => setBoLoc(giaTri)} />
+                </div>
 
-                    {/* Lỗi */}
-                    {error && (
-                        <Alert
-                            title={error}
-                            type="error"
-                            showIcon
-                            closable
-                            style={{ marginBottom: 24, borderRadius: '8px' }}
-                            onClose={() => setError(null)}
-                        />
-                    )}
-
-                    {/* Bảng dữ liệu */}
-                    <Table
-                        dataSource={danhSachDanhMuc}
-                        columns={columns}
-                        rowKey="ma_danh_muc"
-                        loading={loading}
-                        pagination={{ 
-                            pageSize: 10, 
-                            showTotal: (total) => `Tổng ${total} danh mục`,
-                            showSizeChanger: false,
-                            style: { marginTop: '24px' }
-                        }}
-                        locale={{ emptyText: 'Chưa có danh mục nào' }}
+                {error && (
+                    <Alert
+                        title={error}
+                        type="error"
+                        showIcon
+                        closable
+                        style={{ marginBottom: 24, borderRadius: '8px' }}
+                        onClose={() => setError(null)}
                     />
-            
+                )}
 
-                {/* Modal Thêm / Sửa */}
+                <Table
+                    dataSource={danhSachDanhMuc}
+                    columns={columns}
+                    rowKey="ma_danh_muc"
+                    loading={loading}
+                    scroll={{ x: 'max-content' }}
+                    pagination={{ 
+                        pageSize: 10, 
+                        showTotal: (total) => `Tổng ${total} mục`,
+                        showSizeChanger: false,
+                        style: { marginTop: '24px' }
+                    }}
+                    locale={{ emptyText: 'Chưa có danh mục nào' }}
+                />
+
                 <ThemSuaDanhMuc
                     visible={isModalVisible}
                     danhMuc={editingDanhMuc}
