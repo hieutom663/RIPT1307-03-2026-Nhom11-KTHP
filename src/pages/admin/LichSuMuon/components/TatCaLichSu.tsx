@@ -1,7 +1,9 @@
-import { Input, Table, Tag, message, Segmented, Typography } from "antd";
-import { useState, useEffect, useMemo } from "react"
+import { Input, Table, Tag, message, Segmented, Typography, Button, Space, Tooltip } from "antd";
+import { useState, useEffect, useMemo } from "react";
+import { EyeOutlined } from '@ant-design/icons';
 import styles from '../../../../global.less'; 
 import { getChiTietLichSuAPI } from "../../../../services/LichSuAdmin/api"; 
+import ModalChiTiet from "../../YCMuonDo/components/ModalChiTiet"; 
 
 const { Text } = Typography;
 
@@ -10,6 +12,9 @@ const TatCaLichSu = () => {
     const [dataSourceRaw, setDataSourceRaw] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
     const [searchText, setSearchText] = useState('');
+
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [selectedMaYC, setSelectedMaYC] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchChiTietLichSu = async () => {
@@ -48,6 +53,16 @@ const TatCaLichSu = () => {
         });
     }, [pageTable, dataSourceRaw, searchText]);
 
+    const handleViewDetail = (maPhieu: string) => {
+        setSelectedMaYC(maPhieu);
+        setIsModalVisible(true);
+    };
+
+    const handleCloseModal = () => {
+        setIsModalVisible(false);
+        setSelectedMaYC(null);
+    };
+
     const columns = [
         { 
             title: 'STT', 
@@ -60,19 +75,21 @@ const TatCaLichSu = () => {
             title: 'Mã SV', 
             dataIndex: 'ma_sv', 
             key: 'ma_sv', 
-            width: 110, 
+            width: 120, 
             render: (text: string) => <Text strong style={{ color: '#cf1322', fontFamily: 'monospace' }}>{text}</Text> 
         },
         { 
             title: 'Mã Phiếu', 
             dataIndex: 'maPhieu', 
             key: 'maPhieu', 
+            width: 120, 
             render: (text: string) => <Text strong style={{ color: '#cf1322', fontFamily: 'monospace' }}>{text}</Text> 
         },
         { 
             title: 'Mã Thiết bị', 
             dataIndex: 'maDoDung', 
             key: 'maDoDung', 
+            width: 120, 
             responsive: ['lg'] as any, 
             render: (text: string) => <Text strong style={{ color: '#cf1322', fontFamily: 'monospace' }}>{text}</Text> 
         },
@@ -80,7 +97,8 @@ const TatCaLichSu = () => {
             title: 'Tên thiết bị', 
             dataIndex: 'tenDoDung', 
             key: 'tenDoDung',
-            ellipsis: true 
+            ellipsis: true ,
+            render: (text: any) => (<Text strong>{text}</Text>),
         },
         { 
             title: 'SL', 
@@ -93,7 +111,7 @@ const TatCaLichSu = () => {
             title: 'Hạn trả', 
             dataIndex: 'hanTra', 
             key: 'hanTra',
-            width: 110,
+            width: 140,
             sorter: (a: any, b: any) => new Date(a.hanTra).getTime() - new Date(b.hanTra).getTime(),
         },
         {
@@ -102,11 +120,29 @@ const TatCaLichSu = () => {
             key: 'trangThai',
             width: 100,
             align: 'center' as const,
-            fixed: 'right' as const, 
             render: (text: string) => {
                 const colors: any = { 'Đã trả': 'green', 'Quá hạn': 'red', 'Đang mượn': 'orange', 'Chưa trả': 'orange' };
                 return <Tag color={colors[text] || 'default'} style={{ margin: 0 }}>{text}</Tag>;
             },
+        },
+        {
+            title: 'Thao tác',
+            key: 'action',
+            width: 90,
+            align: 'center' as const,
+            fixed: 'right' as const,
+            render: (_: any, record: any) => (
+                <Space size="small">
+                    <Tooltip title="Xem chi tiết phiếu">
+                        <Button 
+                            type="text" 
+                            style={{ color: '#1677ff', padding: 4 }} 
+                            icon={<EyeOutlined style={{ fontSize: '16px' }}/>} 
+                            onClick={() => handleViewDetail(record.maPhieu)} 
+                        />
+                    </Tooltip>
+                </Space>
+            ),
         },
     ];
 
@@ -142,6 +178,12 @@ const TatCaLichSu = () => {
                 bordered 
                 scroll={{ x: 'max-content' }}
                 pagination={{ showSizeChanger: true, style: { marginTop: 24 } }} 
+            />
+
+            <ModalChiTiet
+                maYC={selectedMaYC}
+                open={isModalVisible}
+                onClose={handleCloseModal}
             />
         </div>
     );

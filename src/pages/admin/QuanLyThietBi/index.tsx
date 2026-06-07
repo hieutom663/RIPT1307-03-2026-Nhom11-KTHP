@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import { Table, Button, Input, Select, Space, Popconfirm, message, Tooltip, Image, Typography, ConfigProvider, Tag } from 'antd';
+import { Table, Button, Input, Select, Space, Popconfirm, message, Tooltip, Image, Typography, ConfigProvider, Tag, Skeleton } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined, DatabaseOutlined, SearchOutlined } from '@ant-design/icons';
 import { useModel } from 'umi';
 
@@ -142,7 +142,7 @@ const QuanLyThietBiAdmin = () => {
             width: 180,
             responsive: ['md'] as any, 
             render: (ma_danh_muc: string) => {
-                const dm = danhSachDanhMuc.find((d: any) => d.ma_danh_muc === ma_danh_muc);
+                const dm = danhSachDanhMuc?.find((d: any) => d.ma_danh_muc === ma_danh_muc);
                 return <Tag color="blue" style={{ borderRadius: '4px' }}>{dm ? dm.ten_danh_muc : ma_danh_muc}</Tag>;
             },
         },
@@ -191,13 +191,17 @@ const QuanLyThietBiAdmin = () => {
         },
     ];
 
-    const danhMucOptions = useMemo(() => [
-        { value: 'tat-ca', label: 'Tất cả danh mục' },
-        ...danhSachDanhMuc.map((dm: any) => ({
+    const danhMucOptions = useMemo(() => {
+        const options = danhSachDanhMuc ? danhSachDanhMuc.map((dm: any) => ({
             value: dm.ma_danh_muc,
             label: dm.ten_danh_muc
-        }))
-    ], [danhSachDanhMuc]);
+        })) : [];
+
+        return [
+            { value: 'tat-ca', label: 'Tất cả danh mục' },
+            ...options
+        ];
+    }, [danhSachDanhMuc]);
 
     return (
         <ConfigProvider theme={{ token: { colorPrimary: '#cf1322' } }}>
@@ -220,9 +224,10 @@ const QuanLyThietBiAdmin = () => {
                     <Search
                         placeholder="Tìm tên hoặc mã thiết bị..."
                         allowClear
-                        enterButton={<Button type="primary" icon={<SearchOutlined />}>Tìm</Button>}
+                        enterButton={<Button type="primary" icon={<SearchOutlined />} disabled={loading}>Tìm</Button>}
                         onSearch={(value) => { setTuKhoa(value); setTrangHienTai(1); }}
                         size="large"
+                        disabled={loading} 
                         style={{ flex: '1 1 250px', maxWidth: 400 }} 
                     />
                     <Select
@@ -230,25 +235,33 @@ const QuanLyThietBiAdmin = () => {
                         onChange={(giaTri) => { setBoLoc(giaTri); setTrangHienTai(1); }}
                         style={{ flex: '1 1 200px', maxWidth: 250 }}
                         size="large"
+                        disabled={loading || !danhSachDanhMuc || danhSachDanhMuc.length === 0}
                         options={danhMucOptions}
                     />
                 </div>
 
-                <Table
-                    columns={columns}
-                    dataSource={danhSachThietBi}
-                    rowKey="ma_thiet_bi"
-                    loading={loading}
-                    scroll={{ x: 'max-content' }}
-                    pagination={{
-                        current: trangHienTai,
-                        pageSize: soThietBiMoiTrang,
-                        total: tongSoLuong,
-                        showSizeChanger: false,
-                        onChange: (page) => setTrangHienTai(page),
-                        style: { marginTop: '24px' }
-                    }}
-                />
+                {loading && danhSachThietBi.length === 0 ? (
+                    <div style={{ backgroundColor: '#fff', padding: '24px', borderRadius: '8px' }}>
+                        <Title level={5} type="secondary" style={{ marginBottom: 24 }}>Đang tải danh sách thiết bị...</Title>
+                        <Skeleton active paragraph={{ rows: 8 }} />
+                    </div>
+                ) : (
+                    <Table
+                        columns={columns}
+                        dataSource={danhSachThietBi}
+                        rowKey="ma_thiet_bi"
+                        loading={loading}
+                        scroll={{ x: 'max-content' }}
+                        pagination={{
+                            current: trangHienTai,
+                            pageSize: soThietBiMoiTrang,
+                            total: tongSoLuong,
+                            showSizeChanger: false,
+                            onChange: (page) => setTrangHienTai(page),
+                            style: { marginTop: '24px' }
+                        }}
+                    />
+                )}
 
                 <ThemSuaThietBi
                     visible={modalVisible}

@@ -1,6 +1,6 @@
 import { Modal, InputNumber, DatePicker, Input, Button, message } from 'antd';
 import { useState } from 'react';
-import { guiDonMuonThietBi } from '../../../../services/YeuCauMuon/api'; 
+import { guiDonMuonThietBi } from '../../../../services/YeuCauMuonAdmin/api'; 
 
 const GuiYeuCauMuon = (props: any) => {
     const [isSubmitting, setIsSubmitting] = useState(false);

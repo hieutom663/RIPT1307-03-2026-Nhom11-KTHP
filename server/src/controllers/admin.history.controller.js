@@ -108,18 +108,15 @@ const ghiNhanChoMuon = async (req, res) => {
     }
 };
 
-// Ghi nhận đã trả (chuyển trạng thái sang "Hoàn thành" và cập nhật ngày trả)
 const ghiNhanDaTra = async (req, res) => {
     try {
         const maYC = req.params.maYC;
 
-        // Cập nhật trạng thái chi tiết đơn
         await pool.query(
             "UPDATE chitietdon SET trang_thai = 'Đã trả', ngay_tra = CURDATE() WHERE ma_yeu_cau = ?",
             [maYC]
         );
 
-        // Cập nhật trạng thái yêu cầu mượn
         const [result] = await pool.query(
             "UPDATE yeucaumuon SET trang_thai = 'Hoàn thành' WHERE ma_yeu_cau = ? AND trang_thai = 'Đang mượn'",
             [maYC]
@@ -129,7 +126,6 @@ const ghiNhanDaTra = async (req, res) => {
             return res.status(404).json({ success: false, message: "Không tìm thấy yêu cầu hoặc yêu cầu không ở trạng thái 'Đang mượn'" });
         }
 
-        // Cập nhật lại số lượng thiết bị đã cho mượn
         const [chiTiet] = await pool.query(
             "SELECT ma_thiet_bi, so_luong FROM chitietdon WHERE ma_yeu_cau = ?",
             [maYC]

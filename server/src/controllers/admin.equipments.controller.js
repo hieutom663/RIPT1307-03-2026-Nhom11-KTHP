@@ -39,7 +39,7 @@ const getDanhSachThietBi = async (req, res) => {
                    ma_danh_muc, tinh_trang
             FROM thietbi 
             ${whereClause} 
-            ORDER BY ma_thiet_bi DESC 
+            ORDER BY ma_thiet_bi ASC 
             LIMIT ? OFFSET ?
         `;
         const [rows] = await pool.query(dataQuery, [...queryParams, limit, offset]);

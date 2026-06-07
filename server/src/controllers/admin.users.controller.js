@@ -45,6 +45,23 @@ const themNguoiDung = async (req, res) => {
             return res.status(400).json({ success: false, message: "Vui lòng nhập đầy đủ thông tin bắt buộc" });
         }
 
+        const [existingUsers] = await pool.query(
+            "SELECT ma_sv, email FROM users WHERE ma_sv = ? OR email = ?",
+            [ma_sv, email]
+        );
+
+        if (existingUsers.length > 0) {
+            const isEmailExist = existingUsers.some(user => user.email === email);
+            const isMaSvExist = existingUsers.some(user => user.ma_sv === ma_sv);
+            
+            let message = "Người dùng đã tồn tại";
+            if (isMaSvExist && isEmailExist) message = "Mã SV và Email đã được sử dụng";
+            else if (isMaSvExist) message = "Mã SV đã tồn tại";
+            else if (isEmailExist) message = "Email đã được sử dụng";
+            
+            return res.status(400).json({ success: false, message });
+        }
+
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(mat_khau, salt);
 
@@ -56,9 +73,6 @@ const themNguoiDung = async (req, res) => {
         res.json({ success: true, message: "Thêm người dùng thành công" });
     } catch (error) {
         console.error("Lỗi themNguoiDung:", error);
-        if (error.code === 'ER_DUP_ENTRY') {
-            return res.status(400).json({ success: false, message: "Mã SV hoặc email đã tồn tại" });
-        }
         res.status(500).json({ success: false, message: "Lỗi server" });
     }
 };

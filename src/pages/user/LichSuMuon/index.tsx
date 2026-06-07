@@ -94,70 +94,72 @@ const LichSuMuon = () => {
     }, []);
 
     return (
-        <Spin spinning={loading} description="Đang tải dữ liệu...">
-            <div style={{ padding: '16px 8px', backgroundColor: '#f5f7fa', minHeight: 'calc(100vh - 120px)' }}>
-                
-                <div style={{ marginBottom: 24, padding: '0 8px' }}>
-                    <Title level={3} style={{ margin: 0, color: '#262626', display: 'flex', alignItems: 'center' }}>
-                        <HistoryOutlined style={{ marginRight: 12, color: '#cf1322' }} />
-                        Lịch sử Mượn/Trả
-                    </Title>
-                    <Text type="secondary" style={{ fontSize: '13px' }}>Theo dõi trạng thái các phiếu mượn của bạn.</Text>
-                </div>
-                
-                <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
-                    <Col xs={12} sm={12} lg={6}>
-                        <StatCard 
-                            title="Chờ xử lý" 
-                            count={thongKe.choXuLy} 
-                            icon={<ClockCircleOutlined />} 
-                            color="#1677ff" 
-                            bgColor="#e6f4ff" 
-                        />
-                    </Col>
-                    <Col xs={12} sm={12} lg={6}>
-                        <StatCard 
-                            title="Đang mượn" 
-                            count={thongKe.dangMuon} 
-                            icon={<FileTextOutlined />} 
-                            color="#fa8c16" 
-                            bgColor="#fff7e6" 
-                        />
-                    </Col>
-                    <Col xs={12} sm={12} lg={6}>
-                        <StatCard 
-                            title="Quá hạn" 
-                            count={thongKe.quaHan} 
-                            icon={<ExclamationCircleOutlined />} 
-                            color="#f5222d" 
-                            bgColor="#fff1f0" 
-                        />
-                    </Col>
-                    <Col xs={12} sm={12} lg={6}>
-                        <StatCard 
-                            title="Đã trả" 
-                            count={thongKe.daTra} 
-                            icon={<CheckCircleOutlined />} 
-                            color="#52c41a" 
-                            bgColor="#f6ffed" 
-                        />
-                    </Col>
-                </Row>
-
-                <div style={{ backgroundColor: '#fff', padding: '12px 16px', borderRadius: '16px', boxShadow: '0 4px 12px rgba(0,0,0,0.03)' }}>
-                    <ConfigProvider
+        <ConfigProvider
                         theme={{
                             token: {
                                 colorPrimary: '#cf1322',
                             },
                         }}
                     >
-                        <Tabs defaultActiveKey="1" items={items} />
-                    </ConfigProvider>
-                </div>
+            <Spin spinning={loading} description="Đang tải dữ liệu...">
+                <div style={{ padding: '16px 8px', backgroundColor: '#f5f7fa', minHeight: 'calc(100vh - 120px)' }}>
+                    
+                    <div style={{ marginBottom: 24, padding: '0 8px' }}>
+                        <Title level={3} style={{ margin: 0, color: '#262626', display: 'flex', alignItems: 'center' }}>
+                            <HistoryOutlined style={{ marginRight: 12, color: '#cf1322' }} />
+                            Lịch sử Mượn/Trả
+                        </Title>
+                        <Text type="secondary" style={{ fontSize: '13px' }}>Theo dõi trạng thái các phiếu mượn của bạn.</Text>
+                    </div>
+                    
+                    <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+                        <Col xs={12} sm={12} lg={6}>
+                            <StatCard 
+                                title="Chờ xử lý" 
+                                count={thongKe.choXuLy} 
+                                icon={<ClockCircleOutlined />} 
+                                color="#1677ff" 
+                                bgColor="#e6f4ff" 
+                            />
+                        </Col>
+                        <Col xs={12} sm={12} lg={6}>
+                            <StatCard 
+                                title="Đang mượn" 
+                                count={thongKe.dangMuon} 
+                                icon={<FileTextOutlined />} 
+                                color="#fa8c16" 
+                                bgColor="#fff7e6" 
+                            />
+                        </Col>
+                        <Col xs={12} sm={12} lg={6}>
+                            <StatCard 
+                                title="Quá hạn" 
+                                count={thongKe.quaHan} 
+                                icon={<ExclamationCircleOutlined />} 
+                                color="#f5222d" 
+                                bgColor="#fff1f0" 
+                            />
+                        </Col>
+                        <Col xs={12} sm={12} lg={6}>
+                            <StatCard 
+                                title="Hoàn thành" 
+                                count={thongKe.daTra} 
+                                icon={<CheckCircleOutlined />} 
+                                color="#52c41a" 
+                                bgColor="#f6ffed" 
+                            />
+                        </Col>
+                    </Row>
 
-            </div>
-        </Spin>
+                    <div style={{ backgroundColor: '#fff', padding: '12px 16px', borderRadius: '16px', boxShadow: '0 4px 12px rgba(0,0,0,0.03)' }}>
+                        
+                            <Tabs defaultActiveKey="1" items={items} />
+                        
+                    </div>
+
+                </div>
+            </Spin>
+        </ConfigProvider>
     );  
 }
 

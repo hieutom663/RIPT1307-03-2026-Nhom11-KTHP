@@ -49,14 +49,14 @@ const PhieuMuon = () => {
             title: 'Mã Phiếu', 
             dataIndex: 'maYeuCau', 
             key: 'maYeuCau',
-            width: 100,
+            width: 120,
             render: (text: string) => <Text strong style={{ color: '#cf1322', fontFamily: 'monospace' }}>{text}</Text>
         },
         {
             title: 'Ngày tạo phiếu', 
             dataIndex: 'ngayTao', 
             key: 'ngayTao',
-            width: 130,
+            width: 140,
             sorter: (a: any, b: any) => new Date(a.ngayTao).getTime() - new Date(b.ngayTao).getTime(),
         },
         {
@@ -77,11 +77,12 @@ const PhieuMuon = () => {
             title: 'Trạng thái', 
             dataIndex: 'trangThai', 
             key: 'trangThai',
-            width: 110,
+            width: 120,
             align: 'center' as const,
             fixed: 'right' as const, 
             filters: [
                 { text: 'Chờ duyệt', value: 'Chờ duyệt' },
+                { text: 'Đã duyệt', value: 'Đã duyệt' },
                 { text: 'Đang mượn', value: 'Đang mượn' },
                 { text: 'Hoàn thành', value: 'Hoàn thành' },
                 { text: 'Bị từ chối', value: 'Bị từ chối' },

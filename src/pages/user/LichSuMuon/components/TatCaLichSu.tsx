@@ -57,68 +57,58 @@ const TatCaLichSu = () => {
     }, [pageTable, dataSourceRaw, searchText]);
 
     const columns = [
-        {
-            title: 'STT',
-            key: 'stt',
-            width: 60,
-            align: 'center' as const,
+        { 
+            title: 'STT', 
+            key: 'stt', 
+            width: 60, 
             responsive: ['md'] as any, 
-            render: (_text: any, _record: any, index: number) => <Text type="secondary">{index + 1}</Text>,
+            render: (_text: any, _record: any, index: number) => index + 1 
         },
         { 
             title: 'Mã Phiếu', 
             dataIndex: 'maPhieu', 
-            key: 'maPhieu',
-            width: 100,
-            render: (text: string) => <Text strong style={{ color: '#cf1322', fontFamily: 'monospace' }}>{text}</Text>
+            key: 'maPhieu', 
+            width: 120, 
+            render: (text: string) => <Text strong style={{ color: '#cf1322', fontFamily: 'monospace' }}>{text}</Text> 
         },
         { 
-            title: 'Mã TB', 
+            title: 'Mã Thiết bị', 
             dataIndex: 'maDoDung', 
-            key: 'maDoDung',
-            width: 90,
+            key: 'maDoDung', 
+            width: 120, 
             responsive: ['lg'] as any, 
-            render: (text: string) => <Text strong style={{ color: '#cf1322', fontFamily: 'monospace' }}>{text}</Text>
+            render: (text: string) => <Text strong style={{ color: '#cf1322', fontFamily: 'monospace' }}>{text}</Text> 
         },
         { 
             title: 'Tên thiết bị', 
             dataIndex: 'tenDoDung', 
             key: 'tenDoDung',
-            ellipsis: true, 
-            render: (text: string) => <Text strong style={{ fontSize: '14px' }}>{text}</Text>
+            ellipsis: true ,
+            render: (text: any) => (<Text strong>{text}</Text>),
         },
         { 
             title: 'SL', 
             dataIndex: 'soLuong', 
             key: 'soLuong', 
-            width: 60,
-            align: 'center' as const,
-            render: (val: number) => <Text strong>{val}</Text>
+            width: 60, 
+            align: 'center' as const 
         },
         { 
             title: 'Hạn trả', 
             dataIndex: 'hanTra', 
             key: 'hanTra',
-            width: 110,
+            width: 140,
             sorter: (a: any, b: any) => new Date(a.hanTra).getTime() - new Date(b.hanTra).getTime(),
         },
         {
             title: 'Trạng thái', 
             dataIndex: 'trangThai', 
             key: 'trangThai',
-            width: 110,
-            fixed: 'right' as const, 
+            width: 100,
             align: 'center' as const,
-            filters: [
-                { text: 'Chờ duyệt', value: 'Chờ duyệt' },
-                { text: 'Đã duyệt', value: 'Đã duyệt' },
-                { text: 'Đang mượn', value: 'Đang mượn' },
-                { text: 'Hoàn thành', value: 'Hoàn thành' },
-                { text: 'Bị từ chối', value: 'Bị từ chối' },
-            ],
-            onFilter: (value: any, record: any) => record.trangThai === value,
+            fixed: 'right' as const, 
             render: (text: string) => {
-                const colors: any = { 'Chờ duyệt': 'blue', 'Đang mượn': 'orange', 'Chưa trả': 'orange', 'Đã trả': 'green', 'Hoàn thành': 'green', 'Quá hạn': 'red' };
+                const colors: any = { 'Đã trả': 'green', 'Quá hạn': 'red', 'Đang mượn': 'orange', 'Chưa trả': 'orange' };
                 return <Tag color={colors[text] || 'default'} style={{ margin: 0 }}>{text}</Tag>;
             },
         },

@@ -37,7 +37,7 @@ const ThemSuaNguoiDung = (props: any) => {
             okText="Lưu"
             cancelText="Hủy"
             confirmLoading={props.loading}
-            destroyOnClose
+            destroyOnHidden
         >
             <Form form={form} layout="vertical" style={{ marginTop: 16 }} initialValues={{ vai_tro: 'user' }}>
                 <Form.Item

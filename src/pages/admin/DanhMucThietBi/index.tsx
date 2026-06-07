@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Button, Table, Tag, Popconfirm, Form, message, Alert, Typography, Space, ConfigProvider } from 'antd';
 import { EditOutlined, DeleteOutlined, PlusOutlined, AppstoreOutlined } from '@ant-design/icons';
 import BoLocDanhMuc from './components/BoLocDanhMuc';
@@ -10,10 +10,14 @@ import {
     xoaDanhMucAPI,
     DanhMuc,
 } from '@/services/DanhMuc/api';
+import { useModel } from 'umi';
 
 const { Title, Text } = Typography;
 
 const DanhMucThietBiAdmin = () => {
+
+    const { refresh } = useModel('danhMuc');
+
     const [danhSachDanhMuc, setDanhSachDanhMuc] = useState<DanhMuc[]>([]);
     const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(false);
@@ -64,6 +68,7 @@ const DanhMucThietBiAdmin = () => {
             if (res.data.success) {
                 message.success('Xóa danh mục thành công');
                 fetchData();
+                refresh();
             } else {
                 message.error(res.data.message || 'Xóa thất bại');
             }
@@ -93,6 +98,7 @@ const DanhMucThietBiAdmin = () => {
                 setIsModalVisible(false);
                 form.resetFields();
                 fetchData();
+                refresh();
             } else {
                 message.error(res.data.message || 'Thao tác thất bại');
             }

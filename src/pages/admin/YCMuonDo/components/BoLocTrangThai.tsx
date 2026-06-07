@@ -7,7 +7,7 @@ const filterTabs: { key: FilterStatus; label: string; color: string }[] = [
   { key: 'cho_duyet', label: 'Chờ duyệt', color:'#1677ff'  },
   { key: 'dang_muon', label: 'Đang mượn', color: 'orange' },
   { key: 'qua_han', label: 'Quá hạn', color: '#f5222d' },
-  { key: 'da_tra', label: 'Đã trả', color: '#52c41a' },
+  { key: 'da_tra', label: 'Hoàn thành', color: '#52c41a' },
   { key: 'tu_choi', label: 'Từ chối', color: '#ff4d4f' },
 ];
 

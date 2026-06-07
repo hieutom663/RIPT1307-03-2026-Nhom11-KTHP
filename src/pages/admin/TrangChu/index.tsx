@@ -1,7 +1,6 @@
-import { Row, Col, Card, Typography, Table, Spin, Space, Tag, message } from 'antd';
+import { Row, Col, Card, Typography, Table, Spin, Tag, message, ConfigProvider } from 'antd';
 import { LaptopOutlined, BookOutlined, ClockCircleOutlined, UsergroupAddOutlined } from '@ant-design/icons';
 import { useState, useEffect } from 'react';
-import axios from 'axios';
 import { Link } from 'umi';
 import { getAdminHomeDataAPI } from '@/services/TrangChuAdmin/api';
 
@@ -97,7 +96,7 @@ const AdminDashboard = () => {
             width: 120,
             render: (status: string) => {
                 let color = 'default';
-                if (status === 'Đang mượn') color = 'processing';
+                if (status === 'Đang mượn') color = '#fa8c16';
                 if (status === 'Hoàn thành') color = 'success';
                 if (status === 'Quá hạn') color = 'error';
                 return <Tag color={color} style={{ borderRadius: 4 }}>{status}</Tag>;
@@ -130,7 +129,14 @@ const AdminDashboard = () => {
     );
 
     return (
-        <Spin spinning={loading} description="Đang tải dữ liệu hệ thống...">
+        <ConfigProvider
+            theme={{
+                token: {
+                    colorPrimary: '#cf1322',
+                },
+            }}
+        >
+        <Spin spinning={loading} description="Đang tải dữ liệu hệ thống..." >
             <div style={{ minHeight: 'calc(100vh - 64px)' }}>
                 <div style={{ marginBottom: 32 }}>
                     <Title level={3} style={{ margin: 0, color: '#262626' }}>Tổng quan hệ thống</Title>
@@ -213,6 +219,7 @@ const AdminDashboard = () => {
                 </Row>
             </div>
         </Spin>
+        </ConfigProvider>
     );
 }
 

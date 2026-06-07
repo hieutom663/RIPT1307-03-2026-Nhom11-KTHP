@@ -1,7 +1,9 @@
-import { Input, Table, Tag, message, Typography } from "antd";
+import { Input, Table, Tag, message, Typography, Button, Space, Tooltip } from "antd";
 import { useState, useEffect, useMemo } from "react";
+import { EyeOutlined } from '@ant-design/icons';
 import styles from '../../../../global.less'; 
 import { getAllPhieuMuonAPI } from "../../../../services/LichSuAdmin/api"; 
+import ModalChiTiet from "../../YCMuonDo/components/ModalChiTiet"; 
 
 const { Text } = Typography;
 
@@ -9,6 +11,9 @@ const PhieuMuon = () => {
     const [dataSourceRaw, setDataSourceRaw] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
     const [searchText, setSearchText] = useState('');
+
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [selectedMaYC, setSelectedMaYC] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchPhieuMuon = async () => {
@@ -31,6 +36,16 @@ const PhieuMuon = () => {
             item.lyDo.toLowerCase().includes(searchText.toLowerCase())
         );
     }, [dataSourceRaw, searchText]);
+
+    const handleViewDetail = (maYeuCau: string) => {
+        setSelectedMaYC(maYeuCau);
+        setIsModalVisible(true);
+    };
+
+    const handleCloseModal = () => {
+        setIsModalVisible(false);
+        setSelectedMaYC(null);
+    };
 
     const columns = [
         {
@@ -82,7 +97,6 @@ const PhieuMuon = () => {
             key: 'trangThai',
             width: 120,
             align: 'center' as const,
-            fixed: 'right' as const, 
             filters: [
                 { text: 'Chờ duyệt', value: 'Chờ duyệt' },
                 { text: 'Đã duyệt', value: 'Đã duyệt' },
@@ -95,6 +109,25 @@ const PhieuMuon = () => {
                 const colors: any = { 'Chờ duyệt': 'blue', 'Đang mượn': 'orange', 'Hoàn thành': 'green', 'Bị từ chối': 'red' };
                 return <Tag color={colors[text] || 'default'} style={{ margin: 0 }}>{text}</Tag>;
             },
+        },
+        {
+            title: 'Thao tác',
+            key: 'action',
+            width: 100,
+            align: 'center' as const,
+            fixed: 'right' as const,
+            render: (_: any, record: any) => (
+                <Space size="small">
+                    <Tooltip title="Xem chi tiết">
+                        <Button 
+                            type="text" 
+                            style={{ color: '#1677ff', padding: 4 }} 
+                            icon={<EyeOutlined style={{ fontSize: '16px' }}/>} 
+                            onClick={() => handleViewDetail(record.maYeuCau)} 
+                        />
+                    </Tooltip>
+                </Space>
+            ),
         },
     ];
 
@@ -117,6 +150,12 @@ const PhieuMuon = () => {
                 bordered 
                 scroll={{ x: 'max-content' }}
                 pagination={{ showSizeChanger: true, style: { marginTop: 24 } }} 
+            />
+
+            <ModalChiTiet
+                maYC={selectedMaYC}
+                open={isModalVisible}
+                onClose={handleCloseModal}
             />
         </div>
     );

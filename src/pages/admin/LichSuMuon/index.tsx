@@ -85,7 +85,14 @@ const LichSuMuon = () => {
     }, []);
 
     return (
-        <Spin spinning={loading} tip="Đang tải dữ liệu...">
+        <ConfigProvider
+            theme={{
+                token: {
+                    colorPrimary: '#cf1322',
+                },
+            }}
+        >
+        <Spin spinning={loading} description="Đang tải dữ liệu...">
             <div style={{ minHeight: 'calc(100vh - 64px)' }}>
                 <div style={{ marginBottom: 32 }}>
                     <Title level={3} style={{ margin: 0, color: '#262626', display: 'flex', alignItems: 'center' }}>
@@ -125,7 +132,7 @@ const LichSuMuon = () => {
                     </Col>
                     <Col xs={24} sm={12} lg={6}>
                         <StatCard 
-                            title="Đã trả" 
+                            title="Hoàn thành" 
                             count={thongKe.daTra} 
                             icon={<CheckCircleOutlined />} 
                             color="#52c41a" 
@@ -135,19 +142,14 @@ const LichSuMuon = () => {
                 </Row>
 
                 <div style={{ backgroundColor: '#fff', padding: '16px 24px 24px', borderRadius: '16px', boxShadow: '0 4px 12px rgba(0,0,0,0.03)' }}>
-                    <ConfigProvider
-                        theme={{
-                            token: {
-                                colorPrimary: '#cf1322',
-                            },
-                        }}
-                    >
+                    
                         <Tabs defaultActiveKey="1" items={items} size="large" tabBarGutter={32} />
-                    </ConfigProvider>
+                    
                 </div>
 
             </div>
         </Spin>
+        </ConfigProvider>
     );  
 };
 

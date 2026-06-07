@@ -1,6 +1,7 @@
 import { Modal, InputNumber, DatePicker, Input, Button, message, Typography, Row, Col } from 'antd';
 import { useState } from 'react';
-import { guiDonMuonThietBi } from '../../../../services/YeuCauMuon/api'; 
+import { guiDonMuonThietBi } from '../../../../services/YeuCauMuonAdmin/api'; 
+import dayjs from 'dayjs';
 
 const { Text } = Typography;
 
@@ -69,6 +70,17 @@ const GuiYeuCauMuon = (props: any) => {
         }
     };
 
+    const disabledPastDates = (current: any) => {
+        return current && current < dayjs().startOf('day');
+    };
+
+    const disabledReturnDates = (current: any) => {
+        if (!props.ngayMuon) {
+            return current && current < dayjs().startOf('day');
+        }
+        return current && current < props.ngayMuon.startOf('day');
+    };
+
     return (
         <Modal
             title={<span style={{ fontSize: '18px' }}>Lập phiếu mượn thiết bị</span>}
@@ -118,6 +130,7 @@ const GuiYeuCauMuon = (props: any) => {
                         onChange={(ngay) => props.onChangeNgayMuon(ngay)}
                         style={{ width: '100%', borderRadius: '6px' }}
                         format="DD/MM/YYYY"
+                        disabledDate={disabledPastDates} 
                     />
                 </Col>
                 <Col span={12}>
@@ -128,6 +141,7 @@ const GuiYeuCauMuon = (props: any) => {
                         onChange={(ngay) => props.onChangeNgayTra(ngay)}
                         style={{ width: '100%', borderRadius: '6px' }}
                         format="DD/MM/YYYY"
+                        disabledDate={disabledReturnDates}
                     />
                 </Col>
             </Row>

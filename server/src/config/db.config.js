@@ -14,7 +14,6 @@ const pool = mysql.createPool(process.env.DB_URL || {
 pool.getConnection()
     .then(connection => {
         console.log('Đã kết nối thành công tới MySQL Database trên mây!');
-        console.log(process.env.DB_HOST, process.env.DB_USER, process.env.DB_NAME)
         connection.release();
     })
     .catch(err => {

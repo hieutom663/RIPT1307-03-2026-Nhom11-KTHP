@@ -4,7 +4,7 @@ import { FileTextOutlined } from '@ant-design/icons';
 import ThanhTimKiem from './components/ThanhTimKiem';
 import BoLocTrangThai from './components/BoLocTrangThai';
 import BangYeuCau from './components/BangYeuCau';
-import { getDanhSachYeuCauAPI } from '@/services/YeuCauMuon/api';
+import { getDanhSachYeuCauAPI } from '@/services/YeuCauMuonAdmin/api';
 
 const { Title, Text } = Typography;
 

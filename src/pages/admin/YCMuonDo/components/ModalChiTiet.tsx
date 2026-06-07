@@ -4,15 +4,14 @@ import {
   UserOutlined, PhoneOutlined, MailOutlined, CalendarOutlined,
   FileTextOutlined, CheckCircleOutlined, ToolOutlined,
 } from '@ant-design/icons';
-import { getChiTietYeuCauAPI } from '@/services/YeuCauMuon/api';
+import { getChiTietYeuCauAPI } from '@/services/YeuCauMuonAdmin/api';
 
 const { Text, Title } = Typography;
 
 const statusConfig: Record<string, { label: string; color: string; bg: string }> = {
-  cho_duyet: { label: 'Chờ duyệt', color: '#fa8c16', bg: '#fff7e6' },
-  da_duyet: { label: 'Đã duyệt', color: '#1677ff', bg: '#e6f4ff' },
-  dang_muon: { label: 'Đang mượn', color: '#52c41a', bg: '#f6ffed' },
-  da_tra: { label: 'Đã trả', color: '#8c8c8c', bg: '#fafafa' },
+  cho_duyet: { label: 'Chờ duyệt', color: '#1677ff', bg: '#f6ffed' },
+  dang_muon: { label: 'Đang mượn', color: '#fa8c16', bg: '#fff7e6' },
+  da_tra: { label: 'Hoàn thành', color: '#52c41a', bg: '#fafafa' },
   qua_han: { label: 'Quá hạn', color: '#f5222d', bg: '#fff1f0' },
   tu_choi: { label: 'Từ chối', color: '#ff4d4f', bg: '#fff1f0' },
 };
@@ -80,7 +79,7 @@ const ModalChiTiet: React.FC<Props> = ({ maYC, open, onClose }) => {
   const tbColumns = [
     {
       title: 'Mã TB', dataIndex: 'maThietBi', key: 'maThietBi', width: 90,
-      render: (v: string) => <Text code>{v}</Text>,
+      render: (v: string) => <Text color='#cf1322'>{v}</Text>,
     },
     { title: 'Tên thiết bị', dataIndex: 'tenThietBi', key: 'tenThietBi', width: 160 },
     {
@@ -92,8 +91,8 @@ const ModalChiTiet: React.FC<Props> = ({ maYC, open, onClose }) => {
       title: 'Trạng thái', dataIndex: 'trangThaiThietBi', key: 'trangThaiThietBi', width: 100,
       render: (v: string) => {
         const colorMap: Record<string, string> = {
-          'Chưa trả': 'orange',
-          'Đã trả': 'green',
+          'Đang mượn': 'orange',
+          'Hoàn thành': 'green',
           'Quá hạn': 'red',
         };
         return <Tag color={colorMap[v] || 'default'}>{v}</Tag>;
@@ -109,8 +108,8 @@ const ModalChiTiet: React.FC<Props> = ({ maYC, open, onClose }) => {
     <Modal
       title={
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <FileTextOutlined style={{ color: '#1677ff', fontSize: 20 }} />
-          <span>Chi Tiết Yêu Cầu Mượn {maYC && <Text strong style={{ color: '#1677ff' }}>{maYC}</Text>}</span>
+          <FileTextOutlined style={{ color: '#cf1322', fontSize: 20 }} />
+          <span>Chi Tiết Yêu Cầu Mượn {maYC && <Text strong style={{ color: '#cf1322' }}>{maYC}</Text>}</span>
         </div>
       }
       open={open}
@@ -122,7 +121,6 @@ const ModalChiTiet: React.FC<Props> = ({ maYC, open, onClose }) => {
       <Spin spinning={loading}>
         {data && (
           <div>
-            {/* Trạng thái */}
             <div style={{ textAlign: 'center', marginBottom: 16 }}>
               {trangThaiCfg && (
                 <Tag
@@ -141,8 +139,7 @@ const ModalChiTiet: React.FC<Props> = ({ maYC, open, onClose }) => {
               )}
             </div>
 
-            {/* Thông tin sinh viên */}
-            <Divider orientation="horizontal" style={{ fontSize: 14, color: '#1677ff' }}>
+            <Divider orientation="horizontal" style={{ fontSize: 14, color: '#cf1322' }}>
               <UserOutlined /> Thông tin sinh viên
             </Divider>
             <Descriptions column={2} size="small" bordered style={{ marginBottom: 16 }}>
@@ -152,8 +149,7 @@ const ModalChiTiet: React.FC<Props> = ({ maYC, open, onClose }) => {
               <Descriptions.Item label={<><PhoneOutlined /> SĐT</>}>{data.sdtSV || '—'}</Descriptions.Item>
             </Descriptions>
 
-            {/* Thông tin yêu cầu */}
-            <Divider orientation="horizontal" style={{ fontSize: 14, color: '#1677ff' }}>
+            <Divider orientation="horizontal" style={{ fontSize: 14, color: '#cf1322' }}>
               <CalendarOutlined /> Thông tin yêu cầu
             </Divider>
             <Descriptions column={2} size="small" bordered style={{ marginBottom: 16 }}>
@@ -172,8 +168,7 @@ const ModalChiTiet: React.FC<Props> = ({ maYC, open, onClose }) => {
               )}
             </Descriptions>
 
-            {/* Chi tiết thiết bị */}
-            <Divider orientation="horizontal" style={{ fontSize: 14, color: '#1677ff' }}>
+            <Divider orientation="horizontal" style={{ fontSize: 14, color: '#cf1322' }}>
               <ToolOutlined /> Chi tiết thiết bị ({data.chiTietThietBi.length})
             </Divider>
             <Table

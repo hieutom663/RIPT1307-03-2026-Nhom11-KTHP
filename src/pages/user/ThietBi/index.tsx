@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { Card, Pagination, Select, Spin, message, Input, Row, Col, Typography, Badge, ConfigProvider, Button } from 'antd'; 
+import { Card, Pagination, Select, Spin, message, Input, Row, Col, Typography, Badge, ConfigProvider, Button, Skeleton } from 'antd'; 
 import { useModel } from 'umi';
 import { AppstoreOutlined, SearchOutlined } from '@ant-design/icons';
 import { useFormMuon } from '../../../hooks/useFormMuon';
@@ -90,7 +90,7 @@ const ThietBi = () => {
         setLoading(true);
         try {
             const response = await getDanhSachThietBiAPI({
-                danhMuc: boLoc, 
+                danhMuc: boLoc === 'tat-ca' ? '' : boLoc, 
                 tuKhoa: tuKhoa, 
                 page: trangHienTai,
                 limit: soThietBiMoiTrang
@@ -115,12 +115,14 @@ const ThietBi = () => {
     }, [fetchDanhSachThietBi]);
 
     const danhMucOptions = useMemo(() => {
+        const options = danhSachDanhMuc ? danhSachDanhMuc.map((dm: any) => ({
+            value: dm.ma_danh_muc, 
+            label: dm.ten_danh_muc
+        })) : [];
+
         return [
             { value: 'tat-ca', label: 'Tất cả thiết bị' },
-            ...danhSachDanhMuc.map((dm: any) => ({
-                value: dm.ma_danh_muc, 
-                label: dm.ten_danh_muc
-            }))
+            ...options
         ];
     }, [danhSachDanhMuc]);
 
@@ -130,116 +132,129 @@ const ThietBi = () => {
     };
 
     return (
-        <Spin spinning={loading} description="Đang tải danh sách thiết bị...">
-            <div style={{ backgroundColor: '#f5f7fa', minHeight: 'calc(100vh - 120px)', padding: '20px' }}>
+        <div style={{ backgroundColor: '#f5f7fa', minHeight: 'calc(100vh - 120px)', padding: '20px' }}>
+            <div style={{ marginBottom: 32 }}>
+                <Title level={3} style={{ margin: 0, color: '#262626', display: 'flex', alignItems: 'center' }}>
+                    <AppstoreOutlined style={{ marginRight: 12, color: '#cf1322' }} /> 
+                    Kho Thiết Bị
+                </Title>
+                <Text type="secondary">Tìm kiếm và gửi yêu cầu mượn các thiết bị phục vụ học tập, sự kiện.</Text>
+            </div>
 
-                <div style={{ marginBottom: 32 }}>
-                    <Title level={3} style={{ margin: 0, color: '#262626', display: 'flex', alignItems: 'center' }}>
-                        <AppstoreOutlined style={{ marginRight: 12, color: '#cf1322' }} /> 
-                        Kho Thiết Bị
-                    </Title>
-                    <Text type="secondary">Tìm kiếm và gửi yêu cầu mượn các thiết bị phục vụ học tập, sự kiện.</Text>
-                </div>
+            <div style={{ 
+                backgroundColor: '#fff', 
+                padding: '24px', 
+                borderRadius: '16px', 
+                boxShadow: '0 4px 12px rgba(0,0,0,0.03)',
+                display: 'flex', 
+                gap: '16px', 
+                flexWrap: 'wrap',
+                marginBottom: '32px'
+            }}>
+                <Search
+                    placeholder="Nhập tên thiết bị bạn muốn mượn..."
+                    allowClear
+                    enterButton={<Button type="primary" style={{ backgroundColor: '#cf1322' }} icon={<SearchOutlined />} disabled={loading}>Tìm kiếm</Button>}
+                    onSearch={onSearch}
+                    size="large"
+                    disabled={loading}
+                    style={{ maxWidth: 500, flexGrow: 1 }}
+                />
+                <Select
+                    value={boLoc}
+                    onChange={(giaTri) => { setBoLoc(giaTri); setTrangHienTai(1); }}
+                    style={{ width: 280 }}
+                    size="large"
+                    disabled={loading || !danhSachDanhMuc || danhSachDanhMuc.length === 0}
+                    options={danhMucOptions}
+                    popupMatchSelectWidth={false}
+                />
+            </div>
 
-                <div style={{ 
-                    backgroundColor: '#fff', 
-                    padding: '24px', 
-                    borderRadius: '16px', 
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.03)',
-                    display: 'flex', 
-                    gap: '16px', 
-                    flexWrap: 'wrap',
-                    marginBottom: '32px'
-                }}>
-                    <Search
-                        placeholder="Nhập tên thiết bị bạn muốn mượn..."
-                        allowClear
-                        enterButton={<Button type="primary" style={{ backgroundColor: '#cf1322' }} icon={<SearchOutlined />}>Tìm kiếm</Button>}
-                        onSearch={onSearch}
-                        size="large"
-                        style={{ maxWidth: 500, flexGrow: 1 }}
-                    />
-                    <Select
-                        value={boLoc}
-                        onChange={(giaTri) => { setBoLoc(giaTri); setTrangHienTai(1); }}
-                        style={{ width: 280 }}
-                        size="large"
-                        options={danhMucOptions}
-                        popupMatchSelectWidth={false}
-                    />
-                </div>
-
+            {loading && danhSachThietBi.length === 0 ? (
                 <Row gutter={[24, 24]}>
-                    {danhSachThietBi.map((thietBi) => (
-                        <Col xs={24} sm={12} md={8} lg={6} xl={4} key={thietBi.ma_thiet_bi} style={{ display: 'flex', flexDirection: 'column' }}>
-                            <ThietBiCard 
-                                thietBi={thietBi} 
-                                onClick={formMuon.moChiTiet} 
-                            />
+                    {Array.from({ length: 12 }).map((_, index) => (
+                        <Col xs={24} sm={12} md={8} lg={6} xl={4} key={index}>
+                            <Card style={{ borderRadius: '16px', padding: '16px', height: '100%', borderColor: '#f0f0f0' }}>
+                                <Skeleton.Image active style={{ width: '100%', height: 160, marginBottom: 16 }} />
+                                <Skeleton active title={false} paragraph={{ rows: 2, width: ['100%', '60%'] }} />
+                            </Card>
                         </Col>
                     ))}
                 </Row>
+            ) : (
+                <Spin spinning={loading} description="Đang cập nhật danh sách...">
+                    <Row gutter={[24, 24]}>
+                        {danhSachThietBi.map((thietBi) => (
+                            <Col xs={24} sm={12} md={8} lg={6} xl={4} key={thietBi.ma_thiet_bi} style={{ display: 'flex', flexDirection: 'column' }}>
+                                <ThietBiCard 
+                                    thietBi={thietBi} 
+                                    onClick={formMuon.moChiTiet} 
+                                />
+                            </Col>
+                        ))}
+                    </Row>
+                </Spin>
+            )}
 
-                {danhSachThietBi.length > 0 && (
-                    <div style={{ marginTop: '40px', textAlign: 'center' }}>
-                        {/* Đã bọc ConfigProvider để đổi màu Pagination sang Đỏ PTIT */}
-                        <ConfigProvider
-                            theme={{
-                                token: {
-                                    colorPrimary: '#cf1322',
-                                },
+            {danhSachThietBi.length > 0 && (
+                <div style={{ marginTop: '40px', textAlign: 'center' }}>
+                    <ConfigProvider
+                        theme={{
+                            token: {
+                                colorPrimary: '#cf1322',
+                            },
+                        }}
+                    >
+                        <Pagination
+                            current={trangHienTai}
+                            total={tongSoLuong} 
+                            pageSize={soThietBiMoiTrang}
+                            onChange={(trang) => setTrangHienTai(trang)}
+                            showSizeChanger={false}
+                            style={{ 
+                                display: 'inline-block', 
+                                backgroundColor: '#fff', 
+                                padding: '12px 24px', 
+                                borderRadius: '100px',
+                                boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
                             }}
-                        >
-                            <Pagination
-                                current={trangHienTai}
-                                total={tongSoLuong} 
-                                pageSize={soThietBiMoiTrang}
-                                onChange={(trang) => setTrangHienTai(trang)}
-                                showSizeChanger={false}
-                                style={{ 
-                                    display: 'inline-block', 
-                                    backgroundColor: '#fff', 
-                                    padding: '12px 24px', 
-                                    borderRadius: '100px',
-                                    boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
-                                }}
-                            />
-                        </ConfigProvider>
+                        />
+                    </ConfigProvider>
+                </div>
+            )}
+
+            {!loading && danhSachThietBi.length === 0 && (
+                <div style={{ textAlign: 'center', padding: '80px 0' }}>
+                    <img src="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg" alt="empty" style={{ height: 120, opacity: 0.6 }} />
+                    <div style={{ marginTop: 16, color: '#8c8c8c', fontSize: 16 }}>
+                        Opps! Không tìm thấy thiết bị nào phù hợp với từ khóa của bạn.
                     </div>
-                )}
+                </div>
+            )}
 
-                {!loading && danhSachThietBi.length === 0 && (
-                    <div style={{ textAlign: 'center', padding: '80px 0' }}>
-                        <img src="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg" alt="empty" style={{ height: 120, opacity: 0.6 }} />
-                        <div style={{ marginTop: 16, color: '#8c8c8c', fontSize: 16 }}>
-                            Opps! Không tìm thấy thiết bị nào phù hợp với từ khóa của bạn.
-                        </div>
-                    </div>
-                )}
+            <ChiTietThietBi
+                visible={formMuon.visible}
+                thietBi={formMuon.thietBiChon}
+                onClose={formMuon.dongChiTiet}
+                onMuonNgay={formMuon.moFormMuon}
+            />
 
-                <ChiTietThietBi
-                    visible={formMuon.visible}
-                    thietBi={formMuon.thietBiChon}
-                    onClose={formMuon.dongChiTiet}
-                    onMuonNgay={formMuon.moFormMuon}
-                />
-
-                <GuiYeuCauMuon
-                    visible={formMuon.muonVisible}
-                    thietBi={formMuon.thietBiChon}
-                    soLuongMuon={formMuon.soLuongMuon}
-                    ngayMuon={formMuon.ngayMuon}
-                    ngayTra={formMuon.ngayTra}
-                    lyDo={formMuon.lyDo}
-                    onChangeSoLuongMuon={formMuon.handleChangeSoLuongMuon}
-                    onChangeNgayMuon={formMuon.handleChangeNgayMuon}
-                    onChangeNgayTra={formMuon.handleChangeNgayTra}
-                    onChangeLyDo={formMuon.handleChangeLyDo}
-                    onClose={formMuon.dongFormMuon}
-                    onSuccess={fetchDanhSachThietBi} 
-                />
-            </div>
-        </Spin>
+            <GuiYeuCauMuon
+                visible={formMuon.muonVisible}
+                thietBi={formMuon.thietBiChon}
+                soLuongMuon={formMuon.soLuongMuon}
+                ngayMuon={formMuon.ngayMuon}
+                ngayTra={formMuon.ngayTra}
+                lyDo={formMuon.lyDo}
+                onChangeSoLuongMuon={formMuon.handleChangeSoLuongMuon}
+                onChangeNgayMuon={formMuon.handleChangeNgayMuon}
+                onChangeNgayTra={formMuon.handleChangeNgayTra}
+                onChangeLyDo={formMuon.handleChangeLyDo}
+                onClose={formMuon.dongFormMuon}
+                onSuccess={fetchDanhSachThietBi} 
+            />
+        </div>
     );
 }
 

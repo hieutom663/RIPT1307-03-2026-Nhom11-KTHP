@@ -4,8 +4,8 @@ import { getDanhSachDanhMucAPI } from '@/services/ThietBi/api';
 export default function useDanhMucModel() {
     const [danhSachDanhMuc, setDanhSachDanhMuc] = useState<any[]>([]);
     
-    const fetchDanhMuc = async () => {
-        if (danhSachDanhMuc.length > 0) return; 
+    const fetchDanhMuc = async (force = false) => {
+        if (!force && danhSachDanhMuc.length > 0) return; 
 
         try {
             const response = await getDanhSachDanhMucAPI();
@@ -17,6 +17,8 @@ export default function useDanhMucModel() {
         }
     };
 
+    const refresh = () => fetchDanhMuc(true);
+
     useEffect(() => {
         fetchDanhMuc();
     }, []);
@@ -24,5 +26,6 @@ export default function useDanhMucModel() {
     return {
         danhSachDanhMuc,
         fetchDanhMuc,
+        refresh, 
     };
 }

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Image, Button, Card, Spin, Typography } from 'antd';
+import { Row, Col, Image, Button, Card, Spin, Typography, ConfigProvider } from 'antd';
 import { Link } from 'umi';
 import { 
     FireTwoTone, 
@@ -7,7 +7,7 @@ import {
     ClockCircleOutlined, 
     SyncOutlined, 
     WarningOutlined,
-    ArrowRightOutlined
+    ArrowRightOutlined,
 } from '@ant-design/icons';
 import banner from '../../../assets/banner.jpg';
 import { getThietBiPhoBienAPI, getThietBiSanAPI } from '../../../services/ThietBi/api'; 
@@ -104,7 +104,14 @@ const TrangChu = () => {
     );
 
     return (
-        <Spin spinning={loading} description="Đang tải...">
+        <ConfigProvider 
+            theme={{ 
+                token: { 
+                    colorPrimary: '#cf1322',
+                } 
+            }}
+        >
+        <Spin spinning={loading}  description="Đang tải...">
             <div style={{ padding: '12px 18px', backgroundColor: '#f5f7fa', minHeight: 'calc(100vh - 64px)' }}>
                 
                 <div style={{ 
@@ -235,6 +242,7 @@ const TrangChu = () => {
                 />
             </div>
         </Spin>
+        </ConfigProvider>
     );
 }
 
